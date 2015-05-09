@@ -72,22 +72,125 @@ double aTypeCharge(TheTime *startTime, TheTime *endTime) {
     //printf("\nstart: %d  end: %d  duration: %d\n", startHour, endHour, endHour - startHour);
 
     //Finally, We have to use if-else-if-else.
-    if (startHour < 8) {
-        if (endHour < 8) {
+    if (startHour < 10) {
+        if (endHour < 10 && (endHour - startHour) < 0) {
+            //printf("e < s case\n");
+
+            charge += DAY_CHARGE_FIRST_HOUR_A * 4 + DAY_CHARGE_NORMAL_A * 4 * 13;
+
+            duration = 10 - startHour;
+
+            tail = duration % 2;
+
+            charge += (duration / 2 + tail) * NIGHT_CHARGE_A;
+
+            duration = endHour;
+
+            tail = duration % 2;
+
+            charge += (duration / 2 + tail) * NIGHT_CHARGE_A;
+
+        } else if (endHour < 10) {
             duration = endHour - startHour;
+
+            //printf("Duration: %d.\n", duration);
 
             tail = duration % 2;
 
             charge += (duration / 2 + tail) * NIGHT_CHARGE_A;
         } else {
-            duration = 8 - endHour;
+            //Left of a night.
+            duration = 10 - startHour;
+
+            tail = duration % 2;
+
+            charge += (duration / 2 + tail) * NIGHT_CHARGE_A;
+
+            //First hour of day.
+            duration = endHour - 10;
+
+            int minuteLeft = (endTime->minute % 15) > 0;
+
+            duration = (duration > 0) ? duration : 0;
+
+            //If it's a full hour, count it, or count minutes and finish it.
+            charge += (duration > 0 ?
+                       DAY_CHARGE_FIRST_HOUR_A * 4 :
+                       (double)(((endTime->minute) / 15) + minuteLeft) * DAY_CHARGE_FIRST_HOUR_A );
+
+            if(duration <= 0)return charge;
+
+            --duration;
+
+            charge += (duration > 0 ?
+                       duration * 4 * DAY_CHARGE_NORMAL_A + (double)(((endTime->minute) / 15) + minuteLeft) * DAY_CHARGE_NORMAL_A :
+                       (double)(((endTime->minute) / 15) + minuteLeft) * DAY_CHARGE_NORMAL_A );
+        }
+    } else {
+        //printf("\nstart: %d  end: %d  duration: %d\n", startHour, endHour, endHour - startHour);
+        if (endHour >= 10 && (endHour - startHour) < 0) {
+            //printf("e < s case\n");
+
+            charge += NIGHT_CHARGE_A * 5;
+
+            duration = 24 - startHour;
+
+            int minuteLeft = startTime->minute / 15 + ((startTime->minute  % 15) > 0);
+
+            charge += (duration > 0 ?
+                       (4 * DAY_CHARGE_FIRST_HOUR_A + ((duration - 1) * 4 + minuteLeft) * DAY_CHARGE_NORMAL_A) :
+                        minuteLeft * DAY_CHARGE_FIRST_HOUR_A);
+
+            duration = endHour - 10;
+
+            minuteLeft = endTime->minute / 15 + ((endTime->minute  % 15) > 0);
+
+            charge += (duration > 0 ?
+                       (4 * DAY_CHARGE_FIRST_HOUR_A + ((duration - 1) * 4 + minuteLeft) * DAY_CHARGE_NORMAL_A) :
+                       minuteLeft * DAY_CHARGE_FIRST_HOUR_A);
+
+            /*
+            tail = duration % 2;
+
+            charge += (duration / 2 + tail) * NIGHT_CHARGE_A;
+
+            duration = endHour;
+
+            tail = duration % 2;
+
+            charge += (duration / 2 + tail) * NIGHT_CHARGE_A;
+             */
+
+        } else if (endHour >= 10) {
+            //printf("Case ?");
+            duration = endHour - startHour;
+
+            //printf("Duration: %d.\n", duration);
+
+            tail = endTime->minute - startTime->minute;
+
+            tail = tail / 15 + (tail % 15 > 0);
+
+            charge += (duration > 0 ?
+                                 (4 * DAY_CHARGE_FIRST_HOUR_A + ((duration - 1) * 4 + tail) * DAY_CHARGE_NORMAL_A) :
+                                 tail * DAY_CHARGE_FIRST_HOUR_A);;
+        } else {
+            duration = 24 - startHour;
+
+            int minuteLeft = startTime->minute / 15 + ((startTime->minute  % 15) > 0);
+
+            charge += (duration > 0 ?
+                       (4 * DAY_CHARGE_FIRST_HOUR_A + ((duration - 1) * 4 + minuteLeft) * DAY_CHARGE_NORMAL_A) :
+                       minuteLeft * DAY_CHARGE_FIRST_HOUR_A);
+
+            //printf("Charge:%lf ", charge);
+
+            duration = endHour;
 
             tail = duration % 2;
 
             charge += (duration / 2 + tail) * NIGHT_CHARGE_A;
         }
-    } else {
-
     }
     /*
     duration = endHour - startHour;

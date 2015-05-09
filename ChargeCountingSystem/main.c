@@ -4,7 +4,7 @@
 
 //static FILE* dataSource = stdin;
 
-int testGetTheTimeByString();
+//int testGetTheTimeByString();
 
 int main(int argc, char* argv[]) {
 
@@ -47,6 +47,7 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+/*
 int testGetTheTimeByString(){
 
     FILE* dataSource = fopen("/run/media/cfwloader/Documents/Project/LittleProjects/ChargeCountingSystem/samples.txt", "r");
@@ -86,3 +87,4 @@ int testGetTheTimeByString(){
     fclose(dataSource);
 
 }
+ */
