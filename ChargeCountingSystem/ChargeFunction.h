@@ -5,13 +5,7 @@
 #ifndef CHARGECOUNTINGSYSTEM_CHARGEFUNCTION_H
 #define CHARGECOUNTINGSYSTEM_CHARGEFUNCTION_H
 
-typedef struct TheTime {
-    int year;
-    int month;
-    int day;
-    int hour;
-    int minute;
-} TheTime;
+#include "DateCount.h"
 
 static const double DAY_CHARGE_FIRST_HOUR_A = 2.5;
 static const double DAY_CHARGE_NORMAL_A = 3.75;
@@ -23,13 +17,13 @@ static const double NIGHT_CHARGE_B = 2;
 
 double getCharge(char carType, char *startTimeString, char *endTimeString);
 
-double aTypeCharge(TheTime *startTime, TheTime *endTime);
-
-double bTypeCharge(TheTime *startTime, TheTime *endTime);
+double calculateTypeCharge(TheTime *startTime, TheTime *endTime);
 
 int getTheTimeByString(char *timeString, struct TheTime *theTime);
 
 int getIntValueByString(char *string, int startIndex, int endIndex);
+
+double partOfLessThan24Hour(TheTime *startTime, TheTime *endTime);
 
 //Due to the specified requirement, the interval of hour can be calculated via an equivalent rule.
 //But it seem can be replaced with a simple statement.
@@ -45,20 +39,41 @@ double getCharge(char carType, char *startTimeString, char *endTimeString) {
         return -1.0;
     }
 
-    if (carType == 'A')return aTypeCharge(&startTime, &endTime);
-    if (carType == 'B')return bTypeCharge(&startTime, &endTime);
+    if (carType == 'A')return calculateTypeCharge(&startTime, &endTime);
+    if (carType == 'B')return 2 * calculateTypeCharge(&startTime, &endTime);
 
     return -2.0;
 }
 
-double aTypeCharge(TheTime *startTime, TheTime *endTime) {
+double calculateTypeCharge(TheTime *startTime, TheTime *endTime){
+    double charge = 0;
+    //Over days calculation.
+
+    int day = timeToTime(*endTime) - timeToTime(*startTime);
+
+    //Check if a complete day.Minus it if not.
+    if(endTime->hour - startTime->hour < 0){
+        --day;
+    }
+
+    int chargeOfACompleteDay = 4 * (DAY_CHARGE_FIRST_HOUR_A + DAY_CHARGE_NORMAL_A * 13) + NIGHT_CHARGE_A * 5;
+
+    charge += chargeOfACompleteDay * day;
+
+    //printf("Days between date : %d.\n", day);
+    //The part less than 24 hours.
+    charge += partOfLessThan24Hour(startTime, endTime);
+
+    return charge;
+}
+
+double partOfLessThan24Hour(TheTime *startTime, TheTime *endTime) {
 
     double charge = 0;
 
     int duration;
-    int leftPart;
+    //int leftPart;
     int tail;
-    //Over days calculation.
 
     //Calculating the part less than 24 hours.
     //You have to calculate the charge time duration.
@@ -233,13 +248,6 @@ double aTypeCharge(TheTime *startTime, TheTime *endTime) {
      */
 
     return charge;
-}
-
-double bTypeCharge(TheTime *startTime, TheTime *endTime) {
-    //Over days calculation.
-
-    //Calculating the part less than 24 hours.
-    return 0;
 }
 
 //Using pointer for leaving the return value for return code.
