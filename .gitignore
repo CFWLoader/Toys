@@ -27,5 +27,8 @@
 *.out
 *.app
 
+# Backups
+*~
+
 # IDE files
 .idea

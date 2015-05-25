@@ -1,3 +1,13 @@
+//
+// Created by cfwloader on 5/24/15.
+// Version 0.1
+//
+
+/**
+ * This version, all threads start together.
+ * The consumer will randomly access the items.
+ */
+
 #include <iostream>
 #include <pthread.h>
 
@@ -76,14 +86,16 @@ void* produce(void* args)
     }
 }
 
-void* consume(void* args)
-{
+void* consume(void* args){
+
     int i;
 
     for(i = 0; i < nitems; ++i){
 
         consumeWait(i);
 
+        //If synchronization failed, we output it.
+        //Actually, we won't see this output via mutex.
         if(shared.buffer[i] != i){
             printf("buffer[%d] = %d.\n", i, shared.buffer[i]);
         }
@@ -92,8 +104,7 @@ void* consume(void* args)
     return 0;
 }
 
-void consumeWait(int i)
-{
+void consumeWait(int i){
     for(;;){
         pthread_mutex_lock(&shared.mutex);
 

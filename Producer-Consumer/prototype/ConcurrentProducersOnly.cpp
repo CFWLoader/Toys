@@ -1,3 +1,13 @@
+//
+// Created by cfwloader on 5/24/15.
+// Version 0.2
+//
+
+/**
+ * This version only producers are concurrent execution.
+ * Consumer executes after them.
+ */
+
 #include <iostream>
 #include <pthread.h>
 
@@ -17,7 +27,6 @@ struct {
 
 void* produce(void*);
 void* consume(void*);
-void consumeWait(int);
 
 using namespace std;
 
@@ -35,13 +44,11 @@ int main(int argc, char* argv[])
     /* Specified for solaris.*/
     //set_concurrency(nthreads);
 
-    /* start all threads.*/
+    /* start producer threads.*/
     for(i = 0; i < nthreads; ++i){
         count[i] = 0;
         pthread_create(&producers[i], NULL, produce, &count[i]);
     }
-
-    pthread_create(&consumer, NULL, consume, NULL);
 
     /* wait for all the producer threads.*/
     for(i = 0; i < nthreads; ++i){
@@ -50,6 +57,8 @@ int main(int argc, char* argv[])
     }
 
     /* start, then wait for the  consumer thread.*/
+    pthread_create(&consumer, NULL, consume, NULL);
+
     pthread_join(consumer, NULL);
 
     return 0;
@@ -76,34 +85,14 @@ void* produce(void* args)
     }
 }
 
-void* consume(void* args)
-{
+void* consume(void* args){
     int i;
 
     for(i = 0; i < nitems; ++i){
-
-        consumeWait(i);
-
         if(shared.buffer[i] != i){
             printf("buffer[%d] = %d.\n", i, shared.buffer[i]);
         }
     }
 
     return 0;
-}
-
-void consumeWait(int i)
-{
-    for(;;){
-        pthread_mutex_lock(&shared.mutex);
-
-        if(i < shared.nput){
-
-            pthread_mutex_unlock(&shared.mutex);
-
-            return;
-        }
-
-        pthread_mutex_unlock(&shared.mutex);
-    }
 }
