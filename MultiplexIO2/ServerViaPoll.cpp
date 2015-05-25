@@ -20,7 +20,15 @@ int runServer(int argc, char* argv[])
 
     ssize_t n;
 
-    //char appendMessage[] = "(Echo from server)";
+    char appendMessage[] = "(Echo from server)\n";
+    int messageLength = strlen(appendMessage);
+
+    FILE* serviceLog = fopen("/run/media/cfwloader/Documents/Project/LittleProjects/MultiplexIO2/ServiceLogs.txt", "w+");
+
+    if(serviceLog == NULL){
+        fprintf(stderr, "Open file failed.\n");
+        abort();
+    }
 
     //fd_set readSet, allSet;
 
@@ -47,32 +55,32 @@ int runServer(int argc, char* argv[])
     listen(listenFileDescriptor, LISTEN_QUEUE);
     // Server initialization finished.
 
-    client[0].fd = listenFileDescriptor;
-    client[0].events = POLLIN;//POLLRDNORM;
-
     for(i = 0; i < OPEN_MAX; ++i)
     {
         client[i].fd = -1;                                 /* -1 means the slot is available. */
     }
 
+    client[0].fd = listenFileDescriptor;
+    client[0].events = POLLRDNORM;//POLLRDNORM;
+
     maxIndex = 0;
 
-    fprintf(stdout, "Initialization finished.\n");
+    //fprintf(stdout, "Initialization finished.\n");
 
     /* All initialization finished. Start listening events. */
     for(;;)
     {
         //printf("New loop happen.");
         //nReady = select(maxFileDescriptor + 1, &readSet, NULL, NULL, NULL);
-        fprintf(stdout, "New loop happen.\n");
-        nReady = poll(client, maxIndex + 1, 2000);
+        //fprintf(stdout, "New loop happen.\n");
+        nReady = poll(client, maxIndex + 1, INF_TIME_OUT);
         //fprintf(stdout, "Polled.\n");
 
         /* Listen socket event happened, add the new client at first.*/
-        if(client[0].revents &  (POLLIN | POLLERR))
+        if(client[0].revents &  (POLLRDNORM | POLLERR))
         {                                               /* New client connection. */
 
-            fprintf(stdout, "A client accepting.\n");
+            //fprintf(stdout, "A client accepting.\n");
 
             clientLength = sizeof(clientAddr);
             connectFileDescriptor = accept(listenFileDescriptor, (sockaddr*)&clientAddr, &clientLength);
@@ -113,7 +121,7 @@ int runServer(int argc, char* argv[])
         {
             if((socketFileDescriptor = client[i].fd) < 0)continue;     /* Empty client.*/
 
-            fprintf(stdout, "A socket sent a message.\n");
+            //fprintf(stdout, "A socket sent a message.\n");
 
             if(client[i].revents & (POLLRDNORM | POLLERR))              /* Readable or Error-happened. */
             {
@@ -124,12 +132,18 @@ int runServer(int argc, char* argv[])
                         //FD_CLR(socketFileDescriptor, &allSet);
                         client[i].fd = -1;                                 /* Mark it available. */
                     } else {
-                        fprintf(stderr, "Read error.\n");
+                        fprintf(stderr, "Read error. Code: %d.\n", errno);
                     }
                 } else if( n == 0){
                     close(socketFileDescriptor);
                     client[i].fd = -1;
                 } else {
+
+                    buffer[n - 2] = buffer[n];
+                    n = n + messageLength - 1;
+                    strncat(buffer, appendMessage, MAXLINE);
+                    fprintf(serviceLog, "Generating info:%s to client %d.\n", buffer, client[i].fd);
+
                     write(socketFileDescriptor, buffer, n);
                 }
 
@@ -139,8 +153,10 @@ int runServer(int argc, char* argv[])
             }
         }
 
-        fprintf(stdout, "No events.\n");
+        //fprintf(stdout, "No events.\n");
     }
+
+    fclose(serviceLog);
 }
 
 void stringClient(FILE* fp, int socketFd){
