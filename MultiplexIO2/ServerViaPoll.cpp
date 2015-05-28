@@ -138,12 +138,12 @@ int runServer(int argc, char* argv[])
                     close(socketFileDescriptor);
                     client[i].fd = -1;
                 } else {
-
+                    /*
                     buffer[n - 2] = buffer[n];
                     n = n + messageLength - 1;
                     strncat(buffer, appendMessage, MAXLINE);
                     fprintf(serviceLog, "Generating info:%s to client %d.\n", buffer, client[i].fd);
-
+                     */
                     write(socketFileDescriptor, buffer, n);
                 }
 
