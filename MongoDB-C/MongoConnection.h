@@ -2,6 +2,8 @@
 #define MONGOCONNECTION_H_
 
 #include <iosfwd>
+#include <utility>
+#include <vector>
 
 #include <bson.h>
 #include <mongoc.h>
@@ -15,7 +17,7 @@ namespace clown
 
 		~MongoConnection();
 
-		int executeQuery();
+		std::vector<std::string> find(const std::vector<std::pair<std::string, std::string>>&);
 
 	private:
 		mongoc_client_t* client;
