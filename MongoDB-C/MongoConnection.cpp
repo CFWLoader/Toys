@@ -146,24 +146,16 @@ int MongoConnection::update(const std::string& objectId, const std::vector<std::
 
     query = BCON_NEW ("_id", BCON_OID (&oid));
 
-    update = BCON_NEW ("$set", "{",
-                           "hello", BCON_UTF8 ("Everybody!"),
-                           "updated", BCON_BOOL (true),
-                       "}");
-    /*
-    update = BCON_NEW ("$set", "{");
+	update = ::bson_new();
 
-    auto queryIterator = objectProperties.begin(), queryEnd = objectProperties.end();
+    auto propertiesIterator = objectProperties.begin(), propertiesEnd = objectProperties.end();
 
-    while(queryIterator != queryEnd)
+    while(propertiesIterator != propertiesEnd)
     {
-    	BCON_APPEND(update, (queryIterator->first).c_str(), BCON_UTF8((queryIterator->second).c_str()));
+    	::BSON_APPEND_UTF8 (update, propertiesIterator->first.c_str(), propertiesIterator->second.c_str());
 
-    	++queryIterator;
+    	++propertiesIterator;
     }
-
-    BCON_APPEND(update, "}");
-    */
 
     if (!mongoc_collection_update (collection, MONGOC_UPDATE_NONE, query, update, NULL, &error))
     {
