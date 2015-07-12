@@ -17,10 +17,17 @@ namespace clown
 
 		~MongoConnection();
 
-		std::vector<std::string> find(const std::vector<std::pair<std::string, std::string>>&);
+		std::vector<std::string>* find(const std::vector<std::pair<std::string, std::string>>&);
+
+		int insert(const std::vector<std::pair<std::string, std::string>>&);
+
+		int remove(const std::string&);
+
+		int update(const std::string&, const std::vector<std::pair<std::string, std::string>>&);
 
 	private:
 		mongoc_client_t* client;
+
 		mongoc_collection_t* collection;
 	};
 }
