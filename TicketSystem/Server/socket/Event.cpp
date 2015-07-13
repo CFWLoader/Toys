@@ -65,6 +65,7 @@ void clown::Event::serveFunction()
         echoMessage.clear();
 	}
 
+	//auto destructing after the event is finished.
 	delete this;
 }
 
