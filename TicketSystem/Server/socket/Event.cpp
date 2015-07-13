@@ -47,13 +47,24 @@ void clown::Event::serveFunction()
 	}
 	else
 	{
-		buffer[nRead] = '\0';
+		//buffer[nRead] = '\0';
 
-		this->saveData(buffer);
+		/*
+		Json::Reader reader;
+		Json::Value root;
 
-        write(clientFD, echoMessage.c_str(), echoMessage.size());
+		if(!reader.parse(buffer, root))return;
 
-        echoMessage.clear();
+		std::string por = root["obj"].asString();
+		*/
+
+		std::cout << buffer << std::endl;
+
+		//this->saveData(std::string(buffer));
+
+        //write(clientFD, echoMessage.c_str(), echoMessage.size());
+
+        //echoMessage.clear();
 	}
 }
 
@@ -71,8 +82,10 @@ int clown::Event::happen()
 	return 0;
 }
 
-int saveData(const char* jsonObject)
+int clown::Event::saveData(const std::string& jsonObject)
 {
+	std::cout << "In saveData:" << std::endl;
+
 	Json::Reader reader;
 	Json::Value root;
 
@@ -80,7 +93,7 @@ int saveData(const char* jsonObject)
 
 	std::string por = root["obj"].asString();
 
-	std::cout << por << std::endl;
+	std::cout << jsonObject << std::endl;
 
 	return 0;
 }

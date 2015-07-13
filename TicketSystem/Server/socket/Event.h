@@ -3,6 +3,8 @@
 
 #include "TcpServer.h"
 
+#include <iosfwd>
+
 namespace clown
 {
 	class MongoConnection;
@@ -18,7 +20,7 @@ namespace clown
 
 		int happen();
 
-		int saveData(const char*);
+		int saveData(const std::string&);
 
 		inline bool isFinished() const;
 
