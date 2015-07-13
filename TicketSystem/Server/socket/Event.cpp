@@ -4,17 +4,19 @@
 #include "../database/MongoConnection.h"
 
 #include <functional>
-#include <iostream>
+#include <vector>
+#include <utility>
 #include <string>
+#include <iostream>
 
 #include <unistd.h>
 #include <cassert>
 
 #include <json/json.h>
 
-clown::Event::Event(int socketFD, TcpServer* serverPtr) :
+clown::Event::Event(int socketFD, const HandleClose& callBack) :
 	clientFD(socketFD),
-	serverPointer(serverPtr),
+	closeCallBack(callBack),
 	connection(new MongoConnection("evan", "123456", "clown", "tickets"))
 {}
 
@@ -39,33 +41,31 @@ void clown::Event::serveFunction()
 
 		perror("Details: ");
 
-		serverPointer->closeClientFD(clientFD);
+		closeCallBack();
 	}
 	else if(nRead == 0)
 	{
-		serverPointer->closeClientFD(clientFD);
+		closeCallBack();
 	}
 	else
 	{
-		//buffer[nRead] = '\0';
+		std::string strBuffer(buffer);
 
-		/*
-		Json::Reader reader;
-		Json::Value root;
+		if(this->saveData(strBuffer))
+		{
+			echoMessage.append("Error.\n");
+		}
+		else
+		{
+			echoMessage.append("Succeeded.\n");
+		}
 
-		if(!reader.parse(buffer, root))return;
+        write(clientFD, echoMessage.c_str(), echoMessage.size());
 
-		std::string por = root["obj"].asString();
-		*/
-
-		std::cout << buffer << std::endl;
-
-		//this->saveData(std::string(buffer));
-
-        //write(clientFD, echoMessage.c_str(), echoMessage.size());
-
-        //echoMessage.clear();
+        echoMessage.clear();
 	}
+
+	delete this;
 }
 
 int clown::Event::happen()
@@ -84,16 +84,20 @@ int clown::Event::happen()
 
 int clown::Event::saveData(const std::string& jsonObject)
 {
-	std::cout << "In saveData:" << std::endl;
-
 	Json::Reader reader;
 	Json::Value root;
 
 	if(!reader.parse(jsonObject, root))return -1;
 
-	std::string por = root["obj"].asString();
+	std::vector<std::pair<std::string, std::string>> objectProperties;
 
-	std::cout << jsonObject << std::endl;
+	objectProperties.push_back(std::make_pair("origin", root["origin"].asString()));
+	objectProperties.push_back(std::make_pair("destination", root["destination"].asString()));
+	objectProperties.push_back(std::make_pair("price", root["price"].asString()));
+	objectProperties.push_back(std::make_pair("paid", root["paid"].asString()));
+	objectProperties.push_back(std::make_pair("charge", root["charge"].asString()));
+
+	connection->insert(objectProperties);
 
 	return 0;
 }

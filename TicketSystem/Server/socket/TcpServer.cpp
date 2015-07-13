@@ -177,9 +177,10 @@ int clown::TcpServer::serve()
 			}
 			else
 			{
-				clown::Event clientEventThread(clientEvents[i].data.fd, this);
+				clown::Event* clientEventThread = new clown::Event(clientEvents[i].data.fd, 
+					std::bind(&TcpServer::closeClientFD, this, static_cast<int>(clientEvents[i].data.fd)));
 
-				clientEventThread.happen();
+				clientEventThread->happen();
 			}
 		}
 	}

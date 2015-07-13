@@ -11,8 +11,9 @@ namespace clown
 
 	class Event{
 	public:
+		typedef TcpServer::CallBackOfServerCloseFD HandleClose;
 
-		explicit Event(int, TcpServer*);
+		explicit Event(int, const HandleClose&);
 
 		~Event();
 
@@ -28,9 +29,9 @@ namespace clown
 
 		int clientFD;
 
-		bool finishedFlag;
+		HandleClose closeCallBack;
 
-		TcpServer* serverPointer;
+		bool finishedFlag;
 
 		MongoConnection* connection;
 	};
