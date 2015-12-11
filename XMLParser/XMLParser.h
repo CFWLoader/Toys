@@ -18,6 +18,14 @@ namespace XMLUtilities
     {
     public:
 
+        XMLObject(const std::string& = "", const std::string& = "");
+
+        int setName(const std::string&);
+
+        const std::string& getName() const;
+
+        int setRawValue(const std::string&);
+
         int putConfiguration(const std::string&, const std::string&);
 
         std::string getConfiguration(const std::string&) const;
@@ -28,55 +36,35 @@ namespace XMLUtilities
 
         // Extracting basic data type value functions.
 
-        bool getBool(const std::string&) const;
+        bool extractBool() const;
 
-        std::vector<bool> getBoolArray(const std::string&) const;
+        short extractShort() const;
 
-        short getShort(const std::string&) const;
+        unsigned short extractUnsignedShort() const;
 
-        std::vector<short> getShortArray(const std::string&) const;
+        int extractInt() const;
 
-        unsigned short getUnsignedShort(const std::string&) const;
+        unsigned int extractUnsignedInt() const;
 
-        std::vector<unsigned short> getUnsignedShortArray(const std::string&) const;
+        char extractChar() const;
 
-        int getInt(const std::string&) const;
+        long extractLong() const;
 
-        std::vector<int> getIntArray(const std::string&) const;
+        unsigned long extractUnsignedLong() const;
 
-        unsigned int getUnsignedInt(const std::string&) const;
+        float extractFloat() const;
 
-        std::vector<unsigned int> getUnsignedIntArray(const std::string&) const;
+        double extractDouble() const;
 
-        char getChar(const std::string&) const;
+        // long double extractLongDouble() const;                            // C++ 11 specified.
 
-        std::vector<char> getCharArray(const std::string&) const;
-
-        long getLong(const std::string&) const;
-
-        std::vector<long> getLongArray(const std::string&) const;
-
-        unsigned long getUnsignedLong(const std::string&) const;
-
-        std::vector<unsigned long> getUnsignedLongArray(const std::string&) const;
-
-        float getFloat(const std::string&) const;
-
-        std::vector<float> getFloatArray(const std::string&) const;
-
-        double getDouble(const std::string&) const;
-
-        std::vector<double> getDoubleArray(const std::string&) const;
-
-        long double getLongDouble(const std::string&) const;                            // C++ 11 specified.
-
-        std::vector<long double> getLongDoubleArray(const std::string&) const;
-
-        std::string getString(const std::string&) const;
-
-        std::vector<std::string> getStringArray(const std::string&) const;
+        std::string extractString() const;
 
     private:
+
+        std::string name;
+
+        std::string value;
 
         std::map<std::string, std::string> configurations;      // Store the configuration in the tags.
 
