@@ -13,6 +13,12 @@ namespace XMLUtilities
 {
 
     // enum class PropertyType{SINGLE, ARRAY};
+    /*
+     * START_TAG = "<TAG>"
+     * END_TAG = "</TAG>"
+     * SELF_END_TAG = "<TAG {properties}/>"
+     * enum class TagType{START_TAG, END_TAG, SELF_END_TAG};
+    */
 
     class XMLObject
     {
@@ -28,11 +34,11 @@ namespace XMLUtilities
 
         int putConfiguration(const std::string&, const std::string&);
 
-        std::string getConfiguration(const std::string&) const;
+        const std::string& getConfiguration(const std::string&);
 
-        int putProperty(const std::string&, std::shared_ptr<XMLObject*>);
+        int putProperty(const std::string&, std::shared_ptr<XMLObject>);
 
-        XMLObject* getProperty(const std::string&) const;
+        XMLObject* getProperty(const std::string&);
 
         // Extracting basic data type value functions.
 
@@ -68,13 +74,19 @@ namespace XMLUtilities
 
         std::map<std::string, std::string> configurations;      // Store the configuration in the tags.
 
-        std::map<std::string, std::shared_ptr<XMLObject*>> properties;           // Store the properties specified in XML objects.
+        std::map<std::string, std::shared_ptr<XMLObject>> properties;           // Store the properties specified in XML objects.
 
     };
 
     class XMLParser
     {
     public:
+
+        std::string parseRaw(std::ifstream&);
+
+        std::string getSingleTagString(std::ifstream&);
+
+        std::shared_ptr<XMLObject> parse(const std::ifstream&);
 
     private:
 
