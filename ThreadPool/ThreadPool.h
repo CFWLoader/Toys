@@ -5,10 +5,17 @@
 #ifndef THREADPOOL_THREADPOOL_H
 #define THREADPOOL_THREADPOOL_H
 
+#include <vector>
+
+#include "Thread.h"
+
 
 class ThreadPool
 {
+public:
+private:
 
+    std::vector<Thread> threads;
 };
 
 
