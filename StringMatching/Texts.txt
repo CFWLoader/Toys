@@ -1,0 +1,17 @@
+class {
+public:
+private:
+};
+
+class Finixclass
+{
+public:
+private:
+}
+
+class WrapperClass
+{
+public:
+private:
+    Finixclass fc;
+}
