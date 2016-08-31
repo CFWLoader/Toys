@@ -75,7 +75,8 @@ namespace XMLUtilities
         std::map<std::string, std::string> configurations;      // Store the configuration in the tags.
 
         std::map<std::string, std::shared_ptr<XMLObject>> properties;           // Store the properties specified in XML objects.
-
+	
+	// Is it a better way that using intelligent pointer?
     };
 
     class XMLParser
