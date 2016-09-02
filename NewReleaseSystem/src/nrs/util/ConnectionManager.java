@@ -25,7 +25,7 @@ public class ConnectionManager {
         Connection connection = null;
 
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/nrs", "root", "123456");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/nrs", "cfwloader", "123456");
         } catch (SQLException e) {
             e.printStackTrace();
         }

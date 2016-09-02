@@ -116,7 +116,7 @@ public class NewsDaoLightImpl implements NewsDao {
             e.printStackTrace();
         }
 
-        String query = "select * from nrs_news limits " + startIndex + "," + quantity + ";";
+        String query = "select * from nrs_news limit " + startIndex + "," + quantity + ";";
 
         try {
 
