@@ -35,7 +35,7 @@ public class NewsDaoLightImpl implements NewsDao {
             e.printStackTrace();
         }
 
-        String query = "insert into nrs_news(news_title, news_content) values ('" + news.getTitle() + "', ' " + news.getContent() + " ');";
+        String query = "insert into nrs_news(news_title, new_content) values ('" + news.getTitle() + "', ' " + news.getContent() + " ');";
 
         try {
             statement.execute(query);

@@ -36,9 +36,9 @@
         </div>
         <div class="col-md-3">
 
-            <a href="adminLogin.jsp">
+            <a href="homepage.jsp">
                 <button type="button" class="btn btn-primary btn-lg btn-block">
-                    管理员登录
+                    退出管理员
                 </button>
             </a>
         </div>
@@ -55,13 +55,18 @@
                     {
                 %>
                 <li>
-                    <a href="newsDetail.jsp?id=<%=news.getId()%>" target="_blank"><%=news.getTitle()%></a>
+                        <a href="newsDetail.jsp?id=<%=news.getId()%>" target="_blank"><%=news.getTitle()%></a>(<a href="deleteNews.jsp?id=<%=news.getId()%>">删除</a>)
                 </li>
                 <%
                     }
                 %>
             </ul>
         </div>
+        <a href="addNews.jsp">
+            <button type="button" class="btn btn-primary btn-lg btn-block">
+                添加新闻
+            </button>
+        </a>
     </div>
 </div>
 

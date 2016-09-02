@@ -26,14 +26,14 @@
 <div class="container-fluid">
   <div class="row" style="margin-top: 200px">
     <div class="col-md-12">
-      <form class="form-horizontal" role="form">
+      <form class="form-horizontal" role="form" action="loginResult.jsp">
         <div class="form-group">
 
           <label for="inputEmail3" class="col-sm-2 control-label">
             用户名
           </label>
           <div class="col-sm-10">
-            <input type="email" class="form-control" id="inputEmail3">
+            <input type="text" class="form-control" id="inputEmail3" name="inputEmail3">
           </div>
         </div>
         <div class="form-group">
@@ -42,7 +42,7 @@
             密码
           </label>
           <div class="col-sm-10">
-            <input type="password" class="form-control" id="inputPassword3">
+            <input type="password" class="form-control" id="inputPassword3" name="inputPassword3">
           </div>
         </div>
         <div class="form-group">
