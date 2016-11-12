@@ -1,0 +1,1 @@
+INSTALL(FILES "sample.conf" DESTINATION "${PROJECT_BINARY_DIR}/conf")
