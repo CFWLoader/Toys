@@ -5,6 +5,8 @@
 #include <string.h>
 #include <assert.h>
 
+// enum DFA_Static {KEY_WORD, KEY_VALUE, DESEPERATOR, TERMINATOR};
+
 static const char* KEY_WORD_TABLE[] = {"Key", "FunName", "LibPath", "FunEntry"};
 
 static const int KEY_WORD_TABLE_SIZE = 4;
