@@ -1,11 +1,13 @@
 KERNEL_VERSION = `uname -r`
 
-obj-m += hello.o
+obj-m:=ProcessTree.o
+
+# ProcessTreemodule-objs:=module
 
 build: kernel_modules test_run
 
 kernel_modules:
-	make -C /lib/module/${KERNEL_VERSION}/build/ M=${CURDIR} modules
+	make -C /lib/modules/${KERNEL_VERSION}/build/ M=${CURDIR} modules
 
 test_run:
 	gcc -o test_run test_run.c
