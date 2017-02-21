@@ -36,11 +36,11 @@ void process_tree(struct task_struct* _p, int _depth)
 {
 	struct list_head* l;
 
-	pro_info_array_kernel[counter].pid = _p->pid;
+	pro_info_array_kernel[process_counter].pid = _p->pid;
 
-	pro_info_array_kernel[counter].depth = _depth;
+	pro_info_array_kernel[process_counter].depth = _depth;
 
-	for(l = p->children.next; l != &(p->children); l = l->next)
+	for(l = _p->children.next; l != &(_p->children); l = l->next)
 	{
 		struct task_struct* t = list_entry(l, struct task_struct, sibling);
 
@@ -54,7 +54,8 @@ uint clr_and_ret_cr0(void)
 
 	uint ret;
 
-	asm("movl %%cr0, %%eax":"=a"(cr0));
+	//asm("movl %%cr0, %%eax":"=a"(cr0));
+	asm("movl %%cr0, %%eax"::"a"(cr0));
 
 	ret = cr0;
 

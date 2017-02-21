@@ -1,6 +1,7 @@
 KERNEL_VERSION = `uname -r`
 
 obj-m:=ProcessTree.o
+# EXTRA_CFLAGS=-m32	# Compiling 32-bit assembly language in 64-bit system.
 
 # ProcessTreemodule-objs:=module
 
