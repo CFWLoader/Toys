@@ -5,7 +5,7 @@
 #include <asm/uaccess.h>
 #include <linux/sched.h>
 
-#include <stdint.h>
+// #include <stdint.h>
 
 static const unsigned int __MY_SYS_CALL_NUM__ = 333;
 static const uint64_t __SYS_CALL_TABLE_ADDR__ = 0xcccc0000;
@@ -61,7 +61,7 @@ uint clr_and_ret_cr0(void)
 
 	cr0 &= 0xfffeffff;
 
-	asm("movl &&eax, &&cr0"::"a"(cr0));
+	asm("movl %%eax, %%cr0"::"a"(cr0));
 
 	return ret;
 }
