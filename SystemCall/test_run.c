@@ -4,6 +4,9 @@
 
 #include <stdio.h>
 
+#include <string.h>
+#include <errno.h>
+
 struct process_info_t
 {
 	uint pid;
@@ -14,9 +17,18 @@ struct process_info_t processes[512];
 
 int main(int argc, char* argv[])
 {
-	int i, j;
+	int i, j, err;
 
-	printf("Syscall result: %d.\n", syscall(333, &processes));
+	err = syscall(333);
+
+	printf("Syscall result: %d.\n", err);
+
+	if(err != 0)
+	{
+		printf("%s\n", strerror(errno));
+	}
+
+	// printf("Syscall result: %d.\n", syscall(333, &processes));
 
 	for(i = 0; i < 512; ++i)
 	{

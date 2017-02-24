@@ -14,4 +14,5 @@ test_run:
 	gcc -o test_run test_run.c
 
 clean:
-	make -C /lib/modules/${KERNEL_VERSION}/build M=${CURDIR} clean
+	make -C /lib/modules/${KERNEL_VERSION}/build M=${CURDIR} clean; \
+	rm -rf ${CURDIR}/test_run

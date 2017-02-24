@@ -7,8 +7,11 @@
 
 // #include <stdint.h>
 
-static const unsigned int __MY_SYS_CALL_NUM__ = 333;
-static const uint64_t __SYS_CALL_TABLE_ADDR__ = 0xcccc0000;
+// static const unsigned int __MY_SYS_CALL_NUM__ = 333;
+// static const uint64_t __SYS_CALL_TABLE_ADDR__ = 0xcccc0000;
+
+// extern void* sys_call_table[]
+#define sys_call_table 0xc16cc140			// Use command "sudo cat /proc/kallsyms | grep sys_call_table" to check out your system's call table address.
 
 static unsigned int process_counter = 0;
 
@@ -22,11 +25,13 @@ struct process_info_t pro_info_array_kernel[512];
 
 uint clr_and_ret_cr0(void);
 
-void setback_cr0(uint val);
+void setback_cr0(unsigned int val);
 
 asmlinkage long __my_syscall__(char __user* buf);
 
-unsigned orig_cr0;
+asmlinkage long __test_syscall__(void);
+
+int orig_cr0;
 
 unsigned long* __sys_call_table_ptr__ = 0;
 
@@ -48,14 +53,14 @@ void process_tree(struct task_struct* _p, int _depth)
 	}
 }
 
-uint clr_and_ret_cr0(void)
+unsigned int clr_and_ret_cr0(void)
 {
-	uint cr0 = 0;
+	unsigned int cr0 = 0;
 
-	uint ret;
+	unsigned int ret;
 
-	//asm("movl %%cr0, %%eax":"=a"(cr0));
-	asm("movl %%cr0, %%eax"::"a"(cr0));
+	asm("movl %%cr0, %%eax":"=a"(cr0));
+	// asm("movl %%cr0, %%eax"::"a"(cr0));
 
 	ret = cr0;
 
@@ -66,7 +71,7 @@ uint clr_and_ret_cr0(void)
 	return ret;
 }
 
-void setback_cr0(uint val)
+void setback_cr0(unsigned int val)
 {
 	asm volatile("movl %%eax, %%cr0"::"a"(val));
 }
@@ -75,7 +80,8 @@ static int __init __init_extra_syscall__(void)
 {
 	printk("Evan's System call successfully added.");
 
-	__sys_call_table_ptr__ = (unsigned long*)__SYS_CALL_TABLE_ADDR__;
+	// __sys_call_table_ptr__ = (unsigned long*)__SYS_CALL_TABLE_ADDR__;
+	__sys_call_table_ptr__ = (unsigned long*)sys_call_table;
 
 	printk("System call's address: %x\n", __sys_call_table_ptr__);
 
@@ -83,7 +89,10 @@ static int __init __init_extra_syscall__(void)
 
 	orig_cr0 = clr_and_ret_cr0();
 
-	__sys_call_table_ptr__[__MY_SYS_CALL_NUM__] = (unsigned long)&__my_syscall__;
+	// __sys_call_table_ptr__[__MY_SYS_CALL_NUM__] = (unsigned long)&__my_syscall__;
+	// __test_syscall__();			// Call it internally.
+	
+	__sys_call_table_ptr__[__MY_SYS_CALL_NUM__] = (unsigned long)&__test_syscall__;
 
 	setback_cr0(orig_cr0);
 
@@ -111,6 +120,13 @@ asmlinkage long __my_syscall__(char __user* buf)
 	{
 		return sizeof(pro_info_array_kernel);
 	}
+}
+
+asmlinkage long __test_syscall__(void)
+{
+	printk("Evan's system call executed.\n");
+
+	return 0;
 }
 
 static void __exit __exit_extra_syscall__(void)
