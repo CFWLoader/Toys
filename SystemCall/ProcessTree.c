@@ -11,6 +11,7 @@
 // static const uint64_t __SYS_CALL_TABLE_ADDR__ = 0xcccc0000;
 
 // extern void* sys_call_table[]
+#define __MY_SYS_CALL_NUM__ 245
 #define sys_call_table 0xc16cc140			// Use command "sudo cat /proc/kallsyms | grep sys_call_table" to check out your system's call table address.
 
 static unsigned int process_counter = 0;
@@ -23,7 +24,7 @@ struct process_info_t
 
 struct process_info_t pro_info_array_kernel[512];
 
-uint clr_and_ret_cr0(void);
+unsigned int clr_and_ret_cr0(void);
 
 void setback_cr0(unsigned int val);
 
@@ -92,7 +93,8 @@ static int __init __init_extra_syscall__(void)
 	// __sys_call_table_ptr__[__MY_SYS_CALL_NUM__] = (unsigned long)&__my_syscall__;
 	// __test_syscall__();			// Call it internally.
 	
-	__sys_call_table_ptr__[__MY_SYS_CALL_NUM__] = (unsigned long)&__test_syscall__;
+	//__sys_call_table_ptr__[__MY_SYS_CALL_NUM__] = (unsigned long)&__test_syscall__;
+	__sys_call_table_ptr__[__MY_SYS_CALL_NUM__] = (unsigned long)&__my_syscall__;
 
 	setback_cr0(orig_cr0);
 
@@ -106,11 +108,16 @@ asmlinkage long __my_syscall__(char __user* buf)
 	struct task_struct* p;
 
 	printk("Evan's system call is executing.\n");
+	
+	p = &init_task;
+	process_tree(p, depth);
 
+	/*
 	for(p = current; p != &init_task; p = p->parent)
 	{
 		process_tree(p, depth);
 	}
+	*/
 
 	if(copy_to_user((struct process_info_t*)buf, pro_info_array_kernel, 512 * sizeof(struct process_info_t)))
 	{
