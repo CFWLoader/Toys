@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 {
 	int i, j, err;
 
-	err = syscall(333);
+	err = syscall(333, &processes);
 
 	printf("Syscall result: %d.\n", err);
 

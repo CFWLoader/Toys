@@ -6,21 +6,24 @@
 #include <linux/sched.h>
 
 // #include <stdint.h>
+// #include <string.h>
 
-// static const unsigned int __MY_SYS_CALL_NUM__ = 333;
-// static const uint64_t __SYS_CALL_TABLE_ADDR__ = 0xcccc0000;
+static const unsigned int __MY_SYS_CALL_NUM__ = 333;
+static const uint64_t __SYS_CALL_TABLE_ADDR__ = 0xc16cc140;
 
 // extern void* sys_call_table[]
-#define __MY_SYS_CALL_NUM__ 245
-#define sys_call_table 0xc16cc140			// Use command "sudo cat /proc/kallsyms | grep sys_call_table" to check out your system's call table address.
+// #define __MY_SYS_CALL_NUM__ 245
+// #define sys_call_table 0xc16cc140			// Use command "sudo cat /proc/kallsyms | grep sys_call_table" to check out your system's call table address.
 
 static unsigned int process_counter = 0;
 
 struct process_info_t
 {
 	unsigned int pid;
+
 	unsigned int depth;
-	char* process_name[TASK_COMM_LEN];
+
+	char process_name[TASK_COMM_LEN];
 };
 
 struct process_info_t pro_info_array_kernel[512];
@@ -56,6 +59,20 @@ char* strncpy(char* dest, const char* src, size_t n)
 	return dest;
 }
 
+int reset_proc_info_t_arr_val(struct process_info_t* ptr, size_t n)
+{
+	size_t i;
+
+	for(i = 0; i < n; ++i)
+	{
+		ptr[i].pid = 0;
+		
+		ptr[i].depth = 0;
+	}
+
+	return 0;
+}
+
 void process_tree(struct task_struct* _p, int _depth)
 {
 	struct list_head* l;
@@ -64,7 +81,7 @@ void process_tree(struct task_struct* _p, int _depth)
 
 	pro_info_array_kernel[process_counter].depth = _depth;
 
-	strncpy(pro_info_array_kernel[process_counter], _p->comm, 16);
+	strncpy(pro_info_array_kernel[process_counter].process_name, _p->comm, TASK_COMM_LEN);
 
 	++process_counter;
 
@@ -101,10 +118,10 @@ void setback_cr0(unsigned int val)
 
 static int __init __init_extra_syscall__(void)
 {
-	printk("Evan's System call successfully added.");
+	printk("Evan's System call successfully added.\n");
 
-	// __sys_call_table_ptr__ = (unsigned long*)__SYS_CALL_TABLE_ADDR__;
-	__sys_call_table_ptr__ = (unsigned long*)sys_call_table;
+	__sys_call_table_ptr__ = (unsigned long*)__SYS_CALL_TABLE_ADDR__;
+	// __sys_call_table_ptr__ = (unsigned long*)sys_call_table;
 
 	printk("System call's address: %x. TASK_COMM_LEN's value: %d.\n", __sys_call_table_ptr__, TASK_COMM_LEN);
 
@@ -126,6 +143,10 @@ static int __init __init_extra_syscall__(void)
 asmlinkage long __my_syscall__(char __user* buf)
 {
 	int depth = 0;
+
+	process_counter = 0;
+
+	reset_proc_info_t_arr_val(pro_info_array_kernel, 512);
 
 	struct task_struct* p;
 
