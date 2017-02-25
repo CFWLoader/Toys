@@ -18,8 +18,9 @@ static unsigned int process_counter = 0;
 
 struct process_info_t
 {
-	uint pid;
-	uint depth;
+	unsigned int pid;
+	unsigned int depth;
+	char* process_name[TASK_COMM_LEN];
 };
 
 struct process_info_t pro_info_array_kernel[512];
@@ -38,6 +39,23 @@ unsigned long* __sys_call_table_ptr__ = 0;
 
 static int (*funptr)(void);
 
+char* strncpy(char* dest, const char* src, size_t n)
+{
+	size_t i;
+
+	for(i = 0; i < n && src[i] != '\0'; ++i)
+	{
+		dest[i] = src[i];
+	}
+
+	for(;i < n; ++i)
+	{
+		dest[i] = '\0';
+	}
+
+	return dest;
+}
+
 void process_tree(struct task_struct* _p, int _depth)
 {
 	struct list_head* l;
@@ -45,6 +63,10 @@ void process_tree(struct task_struct* _p, int _depth)
 	pro_info_array_kernel[process_counter].pid = _p->pid;
 
 	pro_info_array_kernel[process_counter].depth = _depth;
+
+	strncpy(pro_info_array_kernel[process_counter], _p->comm, 16);
+
+	++process_counter;
 
 	for(l = _p->children.next; l != &(_p->children); l = l->next)
 	{
@@ -84,7 +106,7 @@ static int __init __init_extra_syscall__(void)
 	// __sys_call_table_ptr__ = (unsigned long*)__SYS_CALL_TABLE_ADDR__;
 	__sys_call_table_ptr__ = (unsigned long*)sys_call_table;
 
-	printk("System call's address: %x\n", __sys_call_table_ptr__);
+	printk("System call's address: %x. TASK_COMM_LEN's value: %d.\n", __sys_call_table_ptr__, TASK_COMM_LEN);
 
 	funptr = (int(*)(void)) (__sys_call_table_ptr__[__MY_SYS_CALL_NUM__]);
 

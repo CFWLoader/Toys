@@ -9,8 +9,9 @@
 
 struct process_info_t
 {
-	uint pid;
-	uint depth;
+	unsigned int pid;
+	unsigned int depth;
+	char pname[16];
 };
 
 struct process_info_t processes[512];
@@ -37,7 +38,7 @@ int main(int argc, char* argv[])
 			printf("|-");
 		}
 
-		printf("%d\n", processes[i].pid);
+		printf("%d-%s\n", processes[i].pid, processes[i].pname);
 
 		if(processes[i + 1].pid == 0)
 		{
