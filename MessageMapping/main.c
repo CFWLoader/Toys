@@ -2,7 +2,7 @@
 #include <string.h>
 #include <dlfcn.h>
 
-#include "aux/ConfResolver.h"
+#include "assist/ConfResolver.h"
 
 typedef double(*FunctionType)(double, double);
 
