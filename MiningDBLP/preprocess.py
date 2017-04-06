@@ -48,4 +48,22 @@ class LoadHandler(handler.ContentHandler):
 
 def parseDblpXml(source, result):
 
-    temp_handler = LoadHandler()
+    temp_handler = LoadHandler(result)
+
+    parser = make_parser()
+
+    parser.setContentHandler(temp_handler)
+
+    parser.parse(source)
+
+if __name__ == '__main__':
+
+    source = codecs.open('dblp.xml', 'r', 'utf-8')
+
+    result = codecs.open('authors.txt', 'w', 'utf-8')
+
+    parseDblpXml(source, result)
+
+    result.close()
+
+    source.close()
