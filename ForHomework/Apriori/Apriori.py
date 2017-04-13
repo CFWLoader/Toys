@@ -21,7 +21,6 @@
 
 
 def translate_record(record):
-
     items = []
 
     if record[0] == 'republican':
@@ -34,7 +33,7 @@ def translate_record(record):
 
     if record[1] == 'y':
 
-        items.append('hci')                 # handicapped-infants
+        items.append('hci')  # handicapped-infants
 
     elif record[1] == 'n':
 
@@ -42,23 +41,21 @@ def translate_record(record):
 
     if record[2] == 'y':
 
-        items.append('wpcs')                      # water-project-cost-sharing
+        items.append('wpcs')  # water-project-cost-sharing
 
     elif record[2] == 'n':
 
         items.append('wpcs-n')
 
     if record[3] == 'y':
-
-        items.append('aotbr')                           # adoption-of-the-budget-resolution
+        items.append('aotbr')  # adoption-of-the-budget-resolution
 
     if record[3] == 'n':
-
         items.append('aotbr-n')
 
     if record[4] == 'y':
 
-        items.append('pff')                             # physician-fee-freeze
+        items.append('pff')  # physician-fee-freeze
 
     elif record[4] == 'n':
 
@@ -66,23 +63,21 @@ def translate_record(record):
 
     if record[5] == 'y':
 
-        items.append('esa')                               # el-salvador-aid
+        items.append('esa')  # el-salvador-aid
 
     elif record[5] == 'n':
 
         items.append('esa-n')
 
     if record[6] == 'y':
-
-        items.append('rgis')                                  # religious-groups-in-schools
+        items.append('rgis')  # religious-groups-in-schools
 
     if record[6] == 'n':
-
         items.append('rgis-n')
 
     if record[7] == 'y':
 
-        items.append('astb')                                   # anti-satellite-test-ban
+        items.append('astb')  # anti-satellite-test-ban
 
     elif record[7] == 'n':
 
@@ -90,7 +85,7 @@ def translate_record(record):
 
     if record[8] == 'y':
 
-        items.append('atnc')                                    # aid-to-nicaraguan-contras
+        items.append('atnc')  # aid-to-nicaraguan-contras
 
     elif record[8] == 'n':
 
@@ -98,7 +93,7 @@ def translate_record(record):
 
     if record[9] == 'y':
 
-        items.append('mxm')                                    # mx-missile
+        items.append('mxm')  # mx-missile
 
     elif record[9] == 'n':
 
@@ -106,7 +101,7 @@ def translate_record(record):
 
     if record[10] == 'y':
 
-        items.append('imm')                                   # immigration
+        items.append('imm')  # immigration
 
     elif record[10] == 'n':
 
@@ -114,7 +109,7 @@ def translate_record(record):
 
     if record[11] == 'y':
 
-        items.append('scc')                                   # synfuels-corporation-cutback
+        items.append('scc')  # synfuels-corporation-cutback
 
     elif record[11] == 'n':
 
@@ -122,7 +117,7 @@ def translate_record(record):
 
     if record[12] == 'y':
 
-        items.append('es')                                    # education-spending
+        items.append('es')  # education-spending
 
     elif record[12] == 'n':
 
@@ -130,7 +125,7 @@ def translate_record(record):
 
     if record[13] == 'y':
 
-        items.append('srts')                                  # superfund-right-to-sue
+        items.append('srts')  # superfund-right-to-sue
 
     elif record[13] == 'n':
 
@@ -138,33 +133,28 @@ def translate_record(record):
 
     if record[14] == 'y':
 
-        items.append('cri')                                   # crime
+        items.append('cri')  # crime
 
     elif record[14] == 'n':
 
         items.append('cri-n')
 
     if record[15] == 'y':
-
-        items.append('dfe')                                    # duty-free-exports
+        items.append('dfe')  # duty-free-exports
 
     if record[15] == 'n':
-
         items.append('dfe-n')
 
     if record[16] == 'y':
-
-        items.append('eaasa')                                    # export-administration-act-south-africa
+        items.append('eaasa')  # export-administration-act-south-africa
 
     if record[16] == 'n':
-
         items.append('eaasa-n')
 
     return items
 
 
 def load_data(file_path):
-
     src_data = open(file_path)
 
     votes_records = []
@@ -177,8 +167,7 @@ def load_data(file_path):
     return votes_records
 
 
-def find_frequent_1_itemsets(vote_records):
-
+def find_frequent_1_itemsets(vote_records, min_sup=0):
     itemsets = []
 
     for record in vote_records:
@@ -186,16 +175,15 @@ def find_frequent_1_itemsets(vote_records):
         for element in record:
 
             if [element] not in itemsets:
-
                 itemsets.append([element])
 
     itemsets = map(frozenset, itemsets)
 
     itemsets_with_count = {}
 
-    for record in vote_records:
+    for candidate in itemsets:
 
-        for candidate in itemsets:
+        for record in vote_records:
 
             if candidate.issubset(record):
 
@@ -207,44 +195,138 @@ def find_frequent_1_itemsets(vote_records):
 
                     itemsets_with_count[candidate] = 1
 
-    return itemsets_with_count
+    qualified_itemsets = {}
 
-'''
-def createC1(dataSet):
-      '创建候选集'
+    for key, val in itemsets_with_count.items():
 
-      C1 = []
-      for transaction in dataSet:
-          for item in transaction:
-              if not [item] in C1:
-                  C1.append([item])
+        if val >= min_sup:
 
-      C1.sort()
+            qualified_itemsets[key] = val
 
-      # 返回的集合元素都是frozenset类型 -> 因为以后要用来做键。
-      return map(frozenset, C1)
-'''
+    return qualified_itemsets
+
+
+def has_infrequent_set(un_set, frozen_set):
+
+    unfrozen_un = set(un_set)
+
+    for ele in unfrozen_un:
+
+        sub_k_1_set = unfrozen_un.copy()
+
+        sub_k_1_set.remove(ele)
+
+        sub_k_1_set = frozenset(sub_k_1_set)
+
+        if sub_k_1_set not in frozen_set:
+
+            return True
+
+    return False
 
 def apriori_gen(lk):
 
-    pass
+    frozen_set = lk.keys()
+
+    if len(frozen_set) <= 0:
+
+        return []
+
+    for ele in frozen_set: set_size = len(ele) + 1; break
+
+    gen_set = []
+
+    for ele1 in frozen_set:
+
+        for ele2 in frozen_set:
+
+            if not (ele1.issubset(ele2) and ele1.issuperset(ele2)):
+
+                un_set = ele1.union(ele2)
+
+                if len(un_set) == set_size and un_set not in gen_set and not has_infrequent_set(un_set, frozen_set):
+
+                    gen_set.append(un_set)
+
+    return gen_set
+
+
+def apriori(record_set, min_sup):
+
+    l1 = find_frequent_1_itemsets(record_set, min_sup)
+
+    # l2 = apriori_gen(l1)
+    #
+    # # print(l2)
+    #
+    # count_set = {}
+    #
+    # for ele in l2:
+    #
+    #     count_set[ele] = 0
+    #
+    #     for record in record_set:
+    #
+    #         if ele.issubset(record):
+    #
+    #             count_set[ele] += 1
+    #
+    # print(len(count_set))
+    #
+    # result_set = {}
+    #
+    # for ele in count_set:
+    #
+    #     if count_set[ele] >= min_sup:
+    #
+    #         result_set[ele] = count_set[ele]
+    #
+    # print(len(result_set))
+    L = [l1]
+
+    k = 1
+
+    while len(L[k - 1]) > 0:
+
+        ck = apriori_gen(L[k - 1])
+
+        count_set = {}
+
+        verified_count_set = {}
+
+        for candidate in ck:
+
+            count_set[candidate] = 0
+
+            for record in record_set:
+
+                if candidate.issubset(record):
+
+                    count_set[candidate] += 1
+
+        for key, val in count_set.items():
+
+            if val >= min_sup:
+
+                verified_count_set[key] = val
+
+        L.append(verified_count_set.copy())
+
+        count_set.clear()
+
+        verified_count_set.clear()
+
+        k += 1
+
+    return L
 
 
 if __name__ == '__main__':
 
     vote_records = load_data('./house-votes-84.data')
 
-    l1 = find_frequent_1_itemsets(vote_records)
+    result = apriori(vote_records, int(0.6 * len(vote_records)))
 
-    for key, val in l1.items():
+    for ele in result:
 
-        print(key, ':', val)
-
-    # print(l1)
-    # global_sets = [l1]
-    #
-    # k = 2
-    #
-    # while(global_sets[k - 2] != []) :
-    #
-    #     ck = apriori_gen(global_sets[k - 2])
+        print(ele)
