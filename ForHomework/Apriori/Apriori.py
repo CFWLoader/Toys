@@ -179,22 +179,51 @@ def load_data(file_path):
 
 def find_frequent_1_itemsets(vote_records):
 
-    itemsets = {}
+    itemsets = []
 
     for record in vote_records:
 
         for element in record:
 
-            if element not in itemsets:
+            if [element] not in itemsets:
 
-                itemsets[element] = 1
+                itemsets.append([element])
 
-            else:
+    itemsets = map(frozenset, itemsets)
 
-                itemsets[element] += 1
+    itemsets_with_count = {}
 
-    return itemsets
+    for record in vote_records:
 
+        for candidate in itemsets:
+
+            if candidate.issubset(record):
+
+                if candidate in itemsets_with_count:
+
+                    itemsets_with_count[candidate] += 1
+
+                else:
+
+                    itemsets_with_count[candidate] = 1
+
+    return itemsets_with_count
+
+'''
+def createC1(dataSet):
+      '创建候选集'
+
+      C1 = []
+      for transaction in dataSet:
+          for item in transaction:
+              if not [item] in C1:
+                  C1.append([item])
+
+      C1.sort()
+
+      # 返回的集合元素都是frozenset类型 -> 因为以后要用来做键。
+      return map(frozenset, C1)
+'''
 
 def apriori_gen(lk):
 
@@ -204,13 +233,18 @@ def apriori_gen(lk):
 if __name__ == '__main__':
 
     vote_records = load_data('./house-votes-84.data')
-    
+
     l1 = find_frequent_1_itemsets(vote_records)
 
-    global_sets = [l1]
+    for key, val in l1.items():
 
-    k = 2
+        print(key, ':', val)
 
-    while(global_sets[k - 2] != []) :
-
-        ck = apriori_gen(global_sets[k - 2])
+    # print(l1)
+    # global_sets = [l1]
+    #
+    # k = 2
+    #
+    # while(global_sets[k - 2] != []) :
+    #
+    #     ck = apriori_gen(global_sets[k - 2])
