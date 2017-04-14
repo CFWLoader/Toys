@@ -1,4 +1,4 @@
-from FpTreeNode import FpTreeNode
+from fptools import FpTree
 
 
 def translate_record(record):
@@ -156,10 +156,8 @@ def find_frequent_1_itemsets(vote_records, min_sup=0):
 
         for element in record:
 
-            if [element] not in itemsets:
-                itemsets.append([element])
-
-    itemsets = map(frozenset, itemsets)
+            if element not in itemsets:
+                itemsets.append(element)
 
     itemsets_with_count = {}
 
@@ -167,7 +165,7 @@ def find_frequent_1_itemsets(vote_records, min_sup=0):
 
         for record in vote_records:
 
-            if candidate.issubset(record):
+            if candidate in record:
 
                 if candidate in itemsets_with_count:
 
@@ -188,19 +186,39 @@ def find_frequent_1_itemsets(vote_records, min_sup=0):
     return qualified_itemsets
 
 
-def FP_Tree(dataset):
+def gen_fp_tree(dataset):
 
     frequent_list = find_frequent_1_itemsets(dataset)
 
     frequent_list = sorted(frequent_list.items(), key=lambda d: d[1], reverse=True)
 
-    for record in data_set:
+    print(frequent_list)
 
-        pass
+    rearranged_record = []
 
-    root_node = FpTreeNode(node_tag = 'null')
+    fp_tree = FpTree()
 
-    return root_node
+    # for record in data_set:
+    #
+    #     rearranged_record.clear()
+    #
+    #     for (key, val) in frequent_list:
+    #
+    #         if key in record:
+    #
+    #             rearranged_record.append(key)
+    #
+    #     fp_tree.absorb_pattern(rearranged_record)
+
+    for (key, val) in frequent_list:
+
+        if key in data_set[0]:
+
+            rearranged_record.append(key)
+
+    fp_tree.absorb_pattern(rearranged_record)
+
+    return fp_tree
 
 
 def FP_growth(fp_tree):
@@ -212,4 +230,6 @@ if __name__ == '__main__':
 
     data_set = load_data('./house-votes-84.data')
 
-    FP_Tree(data_set)
+    tree = gen_fp_tree(data_set)
+
+    tree.print_tree()
