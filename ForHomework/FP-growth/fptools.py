@@ -24,14 +24,30 @@ class FpTreeNode:
 
 
 class FpTree:
-    def __init__(self):
+    def __init__(self, fre_list):
         self.root = FpTreeNode(layer=0, node_tag='null')
+
+        self.fre_list = fre_list
+
+    def rearrange_ptn_as_fre_list(self, ptn):
+
+        rearranged_record = []
+
+        for (key, val) in self.fre_list:
+
+            if key in ptn:
+
+                rearranged_record.append(key)
+
+        return rearranged_record
 
     def absorb_pattern(self, ptn):
 
         tree_iter = self.root
 
         layer_count = 0
+
+        ptn = self.rearrange_ptn_as_fre_list(ptn)
 
         for ele in ptn:
 
@@ -70,6 +86,34 @@ class FpTree:
         #     else:
         #
         #         tree_iter = None
+
+    def gen_link_tbl(self):
+
+        link_tbl = {}
+
+        for (key, val) in self.fre_list:
+
+            link_tbl[key] = [val]
+
+        queue = []
+
+        for node in self.root.child_list:
+
+            queue.append(node)
+
+        while len(queue) > 0:
+
+            node = queue[0]
+
+            queue.pop(0)
+
+            for child_node in node.child_list:
+
+                queue.append(child_node)
+
+            link_tbl[node.node_tag].append(node)
+
+        return link_tbl
 
     def __str__(self):
 

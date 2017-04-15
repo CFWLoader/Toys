@@ -192,21 +192,11 @@ def gen_fp_tree(dataset):
 
     frequent_list = sorted(frequent_list.items(), key=lambda d: d[1], reverse=True)
 
-    rearranged_record = []
-
-    fp_tree = FpTree()
+    fp_tree = FpTree(frequent_list)
 
     for record in data_set:
 
-        rearranged_record.clear()
-
-        for (key, val) in frequent_list:
-
-            if key in record:
-
-                rearranged_record.append(key)
-
-        fp_tree.absorb_pattern(rearranged_record)
+        fp_tree.absorb_pattern(record)
 
     return fp_tree
 
@@ -221,3 +211,4 @@ if __name__ == '__main__':
     data_set = load_data('./house-votes-84.data')
 
     tree = gen_fp_tree(data_set)
+
