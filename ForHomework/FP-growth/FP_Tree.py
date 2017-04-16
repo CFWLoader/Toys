@@ -203,7 +203,9 @@ def gen_fp_tree(dataset):
 
 def FP_growth(fp_tree):
 
-    pass
+    frequent_1 = [k for k, v in sorted(fp_tree.fre_list, key=lambda p:p[1])]
+
+    print(frequent_1)
 
 
 if __name__ == '__main__':
@@ -212,3 +214,4 @@ if __name__ == '__main__':
 
     tree = gen_fp_tree(data_set)
 
+    result = FP_growth(tree)
