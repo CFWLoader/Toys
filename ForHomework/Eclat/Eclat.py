@@ -157,11 +157,11 @@ def transpose_dataset(dataset, min_sup = 0):
 
             if frozenset({ele}) in transed_dta:
 
-                transed_dta[frozenset({ele})].append(record_idx)
+                transed_dta[frozenset({ele})].add(record_idx)
 
             else:
 
-                transed_dta[frozenset({ele})] = []
+                transed_dta[frozenset({ele})] = {record_idx}
 
         record_idx += 1
 
@@ -180,11 +180,61 @@ def eclat(dataset, min_sup=0):
 
     tran_data = transpose_dataset(dataset, min_sup)
 
-    print(len(tran_data))
+    k_sets = [tran_data]
+
+    frequent_itemsets = []
+
+    frequent_item_list = []
+
+    for rec, val in tran_data.items():
+
+        frequent_item_list.append((rec, len(val)))
+
+    frequent_itemsets.append(frequent_item_list.copy())
+
+    k = 1
+
+    while len(k_sets[k - 1]) > 0:
+
+        k_1_set = k_sets[k - 1]
+
+        k_set = {}
+
+        for k1, v1 in k_1_set.items():
+
+            for k2, v2 in k_1_set.items():
+
+                new_key = k1.union(k2)
+
+                if len(new_key) == (k + 1) and new_key not in k_set:
+
+                    intersec = v1.intersection(v2)
+
+                    if len(intersec) >= min_sup:
+
+                        k_set[new_key] = intersec
+
+        frequent_item_list.clear()
+
+        for rec, val in k_set.items():
+
+            frequent_item_list.append((rec, len(val)))
+
+        frequent_itemsets.append(frequent_item_list.copy())
+
+        k_sets.append(k_set)
+
+        k += 1
+
+    return frequent_itemsets
 
 
 if __name__ == '__main__':
 
     dataset = load_data('./house-votes-84.data')
 
-    result = eclat(dataset, min_sup = 1)
+    result = eclat(dataset, min_sup = 100)
+
+    for k in result:
+
+        print(k)
