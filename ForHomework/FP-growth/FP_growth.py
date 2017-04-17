@@ -138,10 +138,10 @@ def translate_record(record):
 def load_data(file_path):
     src_data = open(file_path)
 
-    votes_records = []
+    votes_records = {}
 
     for line in src_data:
-        votes_records.append(translate_record(line.strip('\n').split(',')))
+        votes_records[frozenset(translate_record(line.strip('\n').split(',')))] = 1
 
     src_data.close()
 
@@ -152,7 +152,7 @@ def find_frequent_1_itemsets(vote_records, min_sup=0):
 
     itemsets = []
 
-    for record in vote_records:
+    for record, cnt in vote_records.items():
 
         for element in record:
 
@@ -163,17 +163,17 @@ def find_frequent_1_itemsets(vote_records, min_sup=0):
 
     for candidate in itemsets:
 
-        for record in vote_records:
+        for record, cnt in vote_records.items():
 
             if candidate in record:
 
                 if candidate in itemsets_with_count:
 
-                    itemsets_with_count[candidate] += 1
+                    itemsets_with_count[candidate] += cnt
 
                 else:
 
-                    itemsets_with_count[candidate] = 1
+                    itemsets_with_count[candidate] = cnt
 
     qualified_itemsets = {}
 
@@ -186,32 +186,36 @@ def find_frequent_1_itemsets(vote_records, min_sup=0):
     return qualified_itemsets
 
 
-def gen_fp_tree(dataset):
+def gen_fp_tree(dataset, min_sup=1):
 
-    frequent_list = find_frequent_1_itemsets(dataset)
+    frequent_list = find_frequent_1_itemsets(dataset, min_sup)
 
     frequent_list = sorted(frequent_list.items(), key=lambda d: d[1], reverse=True)
 
     fp_tree = FpTree(frequent_list)
 
-    for record in data_set:
+    for record, cnt in data_set.items():
 
-        fp_tree.absorb_pattern(record)
+        fp_tree.absorb_pattern(record, cnt)
 
     return fp_tree
 
 
-def FP_growth(fp_tree):
+def FP_growth(fp_tree, min_sup=1):
 
-    frequent_1 = [k for k, v in sorted(fp_tree.fre_list, key=lambda p:p[1])]
+    freq_item_list = []
 
-    print(frequent_1)
+    for base_ptn, val in fp_tree.fre_list:
+
+        cond_ptn_bases = fp_tree.gen_prefix_paths(base_ptn)
+
+        cond_fp_tree = gen_fp_tree(cond_ptn_bases, min_sup)
 
 
 if __name__ == '__main__':
 
     data_set = load_data('./house-votes-84.data')
 
-    tree = gen_fp_tree(data_set)
+    tree = gen_fp_tree(data_set, 50)
 
-    result = FP_growth(tree)
+    result = FP_growth(tree, 50)

@@ -41,7 +41,7 @@ class FpTree:
 
         return rearranged_record
 
-    def absorb_pattern(self, ptn):
+    def absorb_pattern(self, ptn, cnt):
 
         tree_iter = self.root
 
@@ -57,7 +57,7 @@ class FpTree:
 
                 if child_node.node_tag == ele:
 
-                    child_node.increase_val()
+                    child_node.increase_val(cnt)
 
                     next_node = child_node
 
@@ -65,7 +65,7 @@ class FpTree:
 
             if next_node is None:
 
-                next_node = FpTreeNode(layer=layer_count + 1, node_tag=ele, val=1, parent=tree_iter)
+                next_node = FpTreeNode(layer=layer_count + 1, node_tag=ele, val=cnt, parent=tree_iter)
 
                 tree_iter.add_child_node(next_node)
 
@@ -114,6 +114,30 @@ class FpTree:
             link_tbl[node.node_tag].append(node)
 
         return link_tbl
+
+    def gen_prefix_paths(self, key, update_lnk_tbl=False):
+
+        if self.lnk_tbl is None or update_lnk_tbl:
+
+            self.lnk_tbl = self.gen_link_tbl()
+
+        prefix_paths = {}
+
+        for node in self.lnk_tbl[key][1::]:
+
+            node_iter = node.parent
+
+            prefix_path = set()
+
+            while node_iter.node_tag != 'null':
+
+                prefix_path.add(node.node_tag)
+
+                node_iter = node_iter.parent
+
+            prefix_paths[frozenset(prefix_path)] = node.val
+
+        return prefix_paths
 
     def __str__(self):
 
