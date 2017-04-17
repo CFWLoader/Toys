@@ -156,7 +156,7 @@ def load_data(file_path):
     return votes_records
 
 
-def find_frequent_1_itemsets(vote_records, min_sup=1):
+def find_frequent_1_itemsets(vote_records, min_sup):
 
     itemsets = []
 
@@ -209,23 +209,43 @@ def gen_fp_tree(dataset, min_sup=1):
     return fp_tree
 
 
-def FP_growth(fp_tree, min_sup=1):
+def FP_growth(fp_tree, min_sup=1, prefix=None, fre_item_list=None):
 
-    freq_item_list = []
+    if fre_item_list is None:
 
-    total_size = 0
+        fre_item_list = {}
+
+    if prefix is None:
+
+        prefix = set()
 
     for base_ptn, val in fp_tree.fre_list:
+
+        new_fre_set = prefix.copy()
+
+        new_fre_set.add(base_ptn)
+
+        fre_item_list[frozenset(new_fre_set)] = val
 
         cond_ptn_bases = fp_tree.gen_prefix_paths(base_ptn)
 
         cond_fp_tree = gen_fp_tree(cond_ptn_bases, min_sup)
+
+        if not cond_fp_tree.is_empty():
+
+            FP_growth(cond_fp_tree, min_sup, new_fre_set, fre_item_list)
+
+    return fre_item_list
 
 
 if __name__ == '__main__':
 
     data_set = load_data('./house-votes-84.data')
 
-    tree = gen_fp_tree(data_set)
+    tree = gen_fp_tree(data_set, 150)
 
-    result = FP_growth(tree)
+    result = FP_growth(tree, 150)
+
+    for k, v in result.items():
+
+        print(k, v)

@@ -141,6 +141,10 @@ class FpTree:
 
         return prefix_paths
 
+    def is_empty(self):
+
+        return True if len(self.root.child_list) < 1 else False
+
     def __str__(self):
 
         layer_count = 0
