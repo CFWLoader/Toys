@@ -141,14 +141,22 @@ def load_data(file_path):
     votes_records = {}
 
     for line in src_data:
-        votes_records[frozenset(translate_record(line.strip('\n').split(',')))] = 1
+        tran_rec = frozenset(translate_record(line.strip('\n').split(',')))
+
+        if tran_rec not in votes_records:
+
+            votes_records[tran_rec] = 1
+
+        else:
+
+            votes_records[tran_rec] += 1
 
     src_data.close()
 
     return votes_records
 
 
-def find_frequent_1_itemsets(vote_records, min_sup=0):
+def find_frequent_1_itemsets(vote_records, min_sup=1):
 
     itemsets = []
 
@@ -216,6 +224,7 @@ if __name__ == '__main__':
 
     data_set = load_data('./house-votes-84.data')
 
-    tree = gen_fp_tree(data_set, 50)
+    tree = gen_fp_tree(data_set, 150)
 
-    result = FP_growth(tree, 50)
+    # print(tree)
+    # result = FP_growth(tree, 50)
