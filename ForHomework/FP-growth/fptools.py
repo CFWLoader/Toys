@@ -29,6 +29,8 @@ class FpTree:
 
         self.fre_list = fre_list
 
+        self.lnk_tbl = None
+
     def rearrange_ptn_as_fre_list(self, ptn):
 
         rearranged_record = []
@@ -131,11 +133,11 @@ class FpTree:
 
             while node_iter.node_tag != 'null':
 
-                prefix_path.add(node.node_tag)
+                prefix_path.add(node_iter.node_tag)
 
                 node_iter = node_iter.parent
 
-            prefix_paths[frozenset(prefix_path)] = node.val
+            if len(prefix_path) > 0: prefix_paths[frozenset(prefix_path)] = node.val
 
         return prefix_paths
 

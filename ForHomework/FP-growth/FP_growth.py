@@ -213,6 +213,8 @@ def FP_growth(fp_tree, min_sup=1):
 
     freq_item_list = []
 
+    total_size = 0
+
     for base_ptn, val in fp_tree.fre_list:
 
         cond_ptn_bases = fp_tree.gen_prefix_paths(base_ptn)
@@ -224,7 +226,6 @@ if __name__ == '__main__':
 
     data_set = load_data('./house-votes-84.data')
 
-    tree = gen_fp_tree(data_set, 150)
+    tree = gen_fp_tree(data_set)
 
-    # print(tree)
-    # result = FP_growth(tree, 50)
+    result = FP_growth(tree)
