@@ -1,7 +1,10 @@
-from fptools import FpTree
+__author__ = 'CFWLoader'
 
 
-def translate_record(record):
+def translate_record_84votes(line):
+
+    record = line.strip('\n').split(',')
+
     items = []
 
     if record[0] == 'republican':
@@ -135,117 +138,75 @@ def translate_record(record):
     return items
 
 
-def load_data(file_path):
+def translate_record_mushroom(mushroom):
+
+    rec = mushroom.strip('\n').split(' ')
+
+    itemset = set()
+
+    for ele in rec:
+
+        if len(ele) > 0:
+
+            itemset.add(int(ele))
+
+    return itemset
+
+
+def translate_record_retail(line):
+
+    rec = line.strip('\n').split(' ')
+
+    itemset = set()
+
+    for ele in rec:
+
+        if len(ele) > 0:
+
+            itemset.add(int(ele))
+
+    return itemset
+
+
+def load_data(file_path, trans_method, limit):
+
     src_data = open(file_path)
 
-    votes_records = {}
+    votes_records = []
 
-    for line in src_data:
-        tran_rec = frozenset(translate_record(line.strip('\n').split(',')))
+    if limit is None:
 
-        if tran_rec not in votes_records:
+        for line in src_data:
+            votes_records.append(trans_method(line))
 
-            votes_records[tran_rec] = 1
+    else:
 
-        else:
+        record_count = 0
 
-            votes_records[tran_rec] += 1
+        for line in src_data:
+
+            votes_records.append(trans_method(line))
+
+            record_count += 1
+
+            if record_count == limit: break
 
     src_data.close()
 
     return votes_records
 
 
-def find_frequent_1_itemsets(vote_records, min_sup):
-
-    itemsets = []
-
-    for record, cnt in vote_records.items():
-
-        for element in record:
-
-            if element not in itemsets:
-                itemsets.append(element)
-
-    itemsets_with_count = {}
-
-    for candidate in itemsets:
-
-        for record, cnt in vote_records.items():
-
-            if candidate in record:
-
-                if candidate in itemsets_with_count:
-
-                    itemsets_with_count[candidate] += cnt
-
-                else:
-
-                    itemsets_with_count[candidate] = cnt
-
-    qualified_itemsets = {}
-
-    for key, val in itemsets_with_count.items():
-
-        if val >= min_sup:
-
-            qualified_itemsets[key] = val
-
-    return qualified_itemsets
-
-
-def gen_fp_tree(dataset, min_sup=1):
-
-    frequent_list = find_frequent_1_itemsets(dataset, min_sup)
-
-    frequent_list = sorted(frequent_list.items(), key=lambda d: d[1], reverse=True)
-
-    fp_tree = FpTree(frequent_list)
-
-    for record, cnt in data_set.items():
-
-        fp_tree.absorb_pattern(record, cnt)
-
-    return fp_tree
-
-
-def FP_growth(fp_tree, min_sup=1, prefix=None, fre_item_list=None):
-
-    if fre_item_list is None:
-
-        fre_item_list = {}
-
-    if prefix is None:
-
-        prefix = set()
-
-    for base_ptn, val in fp_tree.fre_list:
-
-        new_fre_set = prefix.copy()
-
-        new_fre_set.add(base_ptn)
-
-        fre_item_list[frozenset(new_fre_set)] = val
-
-        cond_ptn_bases = fp_tree.gen_prefix_paths(base_ptn)
-
-        cond_fp_tree = gen_fp_tree(cond_ptn_bases, min_sup)
-
-        if not cond_fp_tree.is_empty():
-
-            FP_growth(cond_fp_tree, min_sup, new_fre_set, fre_item_list)
-
-    return fre_item_list
+DATASET_ENTRYS = \
+    [('house84votes', '/home/CFWLoader/Project/Toys/ForHomework/FrequentItemsetsMining/data_src/house-votes-84.data', translate_record_84votes, None),
+    ('mushroom', '/home/CFWLoader/Project/Toys/ForHomework/FrequentItemsetsMining/data_src/mushroom.dat', translate_record_mushroom, None),
+    ('retail', '/home/CFWLoader/Project/Toys/ForHomework/FrequentItemsetsMining/data_src/retail.dat', translate_record_retail, 12000)]
 
 
 if __name__ == '__main__':
 
-    data_set = load_data('./house-votes-84.data')
 
-    tree = gen_fp_tree(data_set, 150)
+    # dataset = load_data('./house-votes-84.data', translate_record_84votes)
+    # dataset = load_data('./mushroom.dat', translate_record_mushroom)
+    dataset = load_data('./retail.dat', translate_record_retail, 12000)
 
-    result = FP_growth(tree, 150)
-
-    for k, v in result.items():
-
-        print(k, v)
+    print(len(dataset))
