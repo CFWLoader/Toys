@@ -1,139 +1,77 @@
 __author__ = 'CFWLoader'
 
-import xml.sax
-import io, sys
+from xml.sax import handler, make_parser
+import codecs
 
 
-PAPER_TAGS = (
-    'article', 'inproceedings', 'proceedings', 'book', 'incollection', 'phdthesis', 'mastersthesis', 'www', 'person',
+PAPER_TAGS = ('article', 'inproceedings', 'proceedings', 'book', 'incollection', 'phdthesis', 'mastersthesis', 'www', 'person',
     'data')
 
-SUB_TAGS = ('publisher', 'journal', 'booktitle')
 
-ret = []
+class DBLPHandler(handler.ContentHandler):
+    def __init__(self, result):
 
+        super().__init__()
 
-class DBLPHandler(xml.sax.ContentHandler):
-    def __init__(self):
+        self.result = result
 
-        self.id = 1
+        self.flag = False
 
-        self.reset()
+    def startDocument(self):
 
-    def reset(self):
+        print('Document Start.')
 
-        self.dup_article = 0
+    def endDocument(self):
 
-        self.curtag = None
+        print('Document End.')
 
-        self.author = ''
+    def startElement(self, name, attrs):
 
-        self.title = ''
+        if name == 'author' or name == 'year':
 
-        self.pages = ''
+            self.flag = True
 
-        self.year = ''
+    def endElement(self, name):
 
-        self.volume = ''
+        if name == 'author' or name == 'year':
 
-        self.journal = ''
+            self.result.write(',')
 
-        self.number = ''
+            self.flag = False
 
-        self.url = ''
+        if name in PAPER_TAGS:
 
-        self.ee = ''
-
-    def write_to_file(self, filename):
-
-        file_obj = open(filename, 'w')
-
-        for line in ret:
-            file_obj.write(line.encode('utf8'))
-
-        file_obj.close()
-
-    def record_row(self):
-
-        ret.append(u''.join((self.author, self.title, self.year, self.pages, self.journal, self.ee, '\n')).replace(' ', ''))
-
-    def start_element(self, tag, attributes):
-
-        if tag != None and len(tag.strip()) > 0:
-
-            if tag == 'article':
-                self.dup_article += 1
-
-            self.curtag = tag
-
-    def end_element(self, tag):
-
-        if tag != None and len(tag.strip()) > 0:
-
-            if tag == 'article':
-                self.record_row()
-
-                self.reset()
+            self.result.write('\r\n')
 
     def characters(self, content):
 
-        if content != '\n':
+        if self.flag:
 
-            if self.curtag == "title":
+            self.result.write(content)
 
-                self.title = content.strip()
 
-            elif self.curtag == "author":
+def parserDblpXml(source, result):
 
-                self.author = content.strip()
+    handler = DBLPHandler(result)
 
-            elif self.curtag == "year":
+    parser = make_parser()
 
-                self.year = content.strip()
+    parser.setContentHandler(handler)
 
-            elif self.curtag == "ee":
+    parser.parse(source)
 
-                self.ee = content.strip()
 
-            elif self.curtag == "journal":
-
-                self.journal = content.strip()
-
-            elif self.curtag == "pages":
-
-                self.pages = content.strip()
-
-            elif self.url == "url":
-
-                self.url = content.strip()
-
-            elif self.number == "number":
-
-                self.number = content.strip()
-
-            elif self.number == "volume":
-
-                self.volume = content.strip()
 
 
 if __name__ == '__main__':
 
-    filename = 'sample.xml'
+   #source = codecs.open('sample.xml', 'r', 'utf-8')
+   source = codecs.open('dblp.xml', 'r', 'utf-8')
 
-    if sys.argv == 2:
+   result = codecs.open('proceeded.txt', 'w', 'utf-8')
 
-        filename = sys.argv[1]
+   parserDblpXml(source, result)
 
-    parser = xml.sax.make_parser()
+   result.close()
 
-    parser.setFeature(xml.sax.handler.feature_namespaces, 0)
-
-    handler = DBLPHandler()
-
-    parser.setContentHandler(handler)
-
-    parser.parse(filename)
-
-    print('Parsed.')
-
-    handler.write_to_file('proceeded.txt')
+   source.close()
