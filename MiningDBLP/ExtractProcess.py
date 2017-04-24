@@ -61,6 +61,19 @@ def parserDblpXml(source, result):
     parser.parse(source)
 
 
+def load_proceeded_dblp(filename):
+
+    src_file = codecs.open(filename, 'r', 'utf-8')
+
+    dataset = []
+
+    for line in src_file:
+
+        tupled = line.strip(',\r\n').split(',')
+
+        dataset.append(tupled)
+
+    return dataset
 
 
 if __name__ == '__main__':
