@@ -2,6 +2,17 @@ from fptools import FpTree
 from ExtractProcess import load_proceeded_dblp
 
 
+def convert_dataset(dataset):
+
+    transed_dataset = {}
+
+    for record in dataset:
+
+        transed_dataset[frozenset(record)] = 1
+
+    return transed_dataset
+
+
 def find_frequent_1_itemsets(vote_records, min_sup):
 
     itemsets = []
@@ -86,7 +97,7 @@ def FP_growth(fp_tree, min_sup=1, prefix=None, fre_item_list=None):
 
 if __name__ == '__main__':
 
-    data_set = load_proceeded_dblp('./proceeded.txt', False)
+    data_set = convert_dataset(load_proceeded_dblp('./proceeded.txt', False))
 
     tree = gen_fp_tree(data_set, 150)
 
