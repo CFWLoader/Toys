@@ -1,5 +1,5 @@
 from fptools import FpTree
-from ExtractProcess import load_proceeded_dblp
+from ExtractProcess import load_proceeded_digitized_dblp
 
 
 def convert_dataset(dataset):
@@ -97,7 +97,7 @@ def FP_growth(fp_tree, min_sup=1, prefix=None, fre_item_list=None):
 
 if __name__ == '__main__':
 
-    data_set = convert_dataset(load_proceeded_dblp('./proceeded.txt', False))
+    data_set = convert_dataset(load_proceeded_digitized_dblp('./proceeded_digit.txt', False))
 
     tree = gen_fp_tree(data_set, 150)
 
