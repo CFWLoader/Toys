@@ -61,17 +61,39 @@ def parserDblpXml(source, result):
     parser.parse(source)
 
 
-def load_proceeded_dblp(filename):
+def load_proceeded_dblp(filename, get_year=True, limit=None):
 
     src_file = codecs.open(filename, 'r', 'utf-8')
 
     dataset = []
 
-    for line in src_file:
+    if limit is None:
 
-        tupled = line.strip(',\r\n').split(',')
+        for line in src_file:
 
-        dataset.append(tupled)
+            tupled = line.strip(',\r\n').split(',')
+
+            if not get_year: tupled.pop()
+
+            dataset.append(tupled)
+
+    else:
+
+        counter = 0
+
+        for line in src_file:
+
+            tupled = line.strip(',\r\n').split(',')
+
+            if not get_year: tupled.pop()
+
+            dataset.append(tupled)
+
+            counter += 1
+
+            if counter == limit: break
+
+    src_file.close()
 
     return dataset
 

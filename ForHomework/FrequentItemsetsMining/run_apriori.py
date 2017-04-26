@@ -1,7 +1,7 @@
 __author__ = 'CFWLoader'
 
 from data_src.dataset_loaders import DATASET_ENTRYS, load_data
-from Apriori import Apriori
+from Apriori.Apriori import Apriori
 import datetime
 
 
@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
         performance_report.write('Operations on %s, Number of records: %d.\n\n' % (dta_ent[0], dataset_len))
 
-        for min_sup in range(5, 10):
+        for min_sup in range(3, 10):
 
             apri = Apriori(dataset, int(min_sup * dataset_len / 10), True)
 
@@ -40,7 +40,7 @@ if __name__ == '__main__':
             result_detail_file.close()
 
             performance_report.write('Minimum Support: %.2f, runtime: %d ms, generated candidates: %d, Find %d frequent itemsets.\n'
-                                     % (min_sup /10, (end_time - start_time).microseconds / 1000, apri.gen_candidate, result_counter))
+                                     % (min_sup /10, (end_time - start_time).microseconds, apri.gen_candidate, result_counter))
 
 
     performance_report.close()

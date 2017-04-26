@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
         performance_report.write('Operations on %s, Number of records: %d.\n\n' % (dta_ent[0], dataset_len))
 
-        for min_sup in range(5, 10):
+        for min_sup in range(3, 10):
 
             start_time = datetime.datetime.now()
 
@@ -38,7 +38,7 @@ if __name__ == '__main__':
             result_detail_file.close()
 
             performance_report.write('Minimum Support: %.2f, runtime: %d ms, transposed %d records, generated %d candidates, Find %d frequent itemsets.\n'
-                                     % (min_sup /10, (end_time - start_time).microseconds / 1000, transposed_data_len, gen_candidates, result_counter))
+                                     % (min_sup /10, (end_time - start_time).microseconds, transposed_data_len, gen_candidates, result_counter))
 
 
     performance_report.close()

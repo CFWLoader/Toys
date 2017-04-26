@@ -199,7 +199,7 @@ def load_data(file_path, trans_method, limit):
 DATASET_ENTRYS = \
     [('house84votes', '/home/CFWLoader/Project/Toys/ForHomework/FrequentItemsetsMining/data_src/house-votes-84.data', translate_record_84votes, None),
     ('mushroom', '/home/CFWLoader/Project/Toys/ForHomework/FrequentItemsetsMining/data_src/mushroom.dat', translate_record_mushroom, None),
-    ('retail', '/home/CFWLoader/Project/Toys/ForHomework/FrequentItemsetsMining/data_src/retail.dat', translate_record_retail, 12000)]
+    ('retail', '/home/CFWLoader/Project/Toys/ForHomework/FrequentItemsetsMining/data_src/retail.dat', translate_record_retail, None)]
 
 
 if __name__ == '__main__':

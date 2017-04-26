@@ -11,7 +11,7 @@ if __name__ == '__main__':
 
     for dta_ent in DATASET_ENTRYS:
 
-        if dta_ent[0] == 'retail': continue
+        if dta_ent[0] in {'house84votes', 'mushroom'}: continue
 
         dataset = load_data(dta_ent[1], dta_ent[2], dta_ent[3])
 
@@ -19,9 +19,9 @@ if __name__ == '__main__':
 
         performance_report.write('Operations on %s, Number of records: %d.\n\n' % (dta_ent[0], dataset_len))
 
-        for min_sup in range(5, 10):
+        for min_sup in range(5, 15):
 
-            tree = gen_fp_tree(dataset, int(min_sup * dataset_len / 10))
+            tree = gen_fp_tree(dataset, int(min_sup * dataset_len / 100))
 
             start_time = datetime.datetime.now()
 
@@ -37,12 +37,12 @@ if __name__ == '__main__':
 
                 print(ele, file=result_detail_file)
 
-                result_counter += len(ele)
+                result_counter += 1
 
             result_detail_file.close()
 
             performance_report.write('Minimum Support: %.2f, runtime: %d ms, generated conditional bases: %d, Find %d frequent itemsets.\n'
-                                     % (min_sup /10, (end_time - start_time).microseconds / 1000, gen_cond_bases, result_counter))
+                                     % (min_sup /10, (end_time - start_time).microseconds, gen_cond_bases, result_counter))
 
 
     performance_report.close()
