@@ -1,3 +1,51 @@
+def distance_sum cluster, centroid, dist_measure
+
+  sum = 0
+
+  cluster.each{|point|
+
+    sum += dist_measure.call centroid, point
+
+  }
+
+  sum
+
+end
+
+
+def reselect_centroid clusters, centroids, dist_measure
+
+  clusters.each_with_index {|cluster, idx|
+
+    centroid = centroids[idx]
+
+    dist_sum = distance_sum cluster, centroid, dist_measure
+
+    cluster.each { |val|
+
+      tmp_dist_sum = distance_sum cluster, val, dist_measure
+
+      if tmp_dist_sum < dist_sum
+
+        centroid = val
+
+        dist_sum = tmp_dist_sum
+
+      end
+
+    }
+
+    if centroid != centroids[idx]
+
+      centroids[idx] = centroid
+
+    end
+
+  }
+
+end
+
+
 def k_means points, medoids, dist_measure
 
   clusters = Array.new medoids.size
@@ -28,7 +76,9 @@ def k_means points, medoids, dist_measure
 
   }
 
-  clusters
+  reselect_centroid clusters, medoids, dist_measure
+
+  return clusters, medoids
 
 end
 
@@ -58,9 +108,9 @@ def item1
 
   center_points = [18, 45]
 
-  clusters = k_means points, center_points, lambda{|x, y| Math.sqrt((x - y) ** 2)}
+  clusters, centroids = k_means points, center_points, lambda{|x, y| Math.sqrt((x - y) ** 2)}
 
-  print clusters
+  print clusters, ' Centroids:', centroids
 
   puts
 
@@ -77,9 +127,9 @@ def item2
 
   center_points = [15, 40]
 
-  clusters = k_means points, center_points, lambda{|x, y| Math.sqrt((x - y) ** 2)}
+  clusters, centroids = k_means points, center_points, lambda{|x, y| Math.sqrt((x - y) ** 2)}
 
-  print clusters
+  print clusters, ' Centroids:', centroids
 
   puts
 
