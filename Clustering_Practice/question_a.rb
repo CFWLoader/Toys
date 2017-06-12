@@ -102,6 +102,27 @@ def sum_of_square_error clusters, medoids, dist_measure
 end
 
 
+def separation_squares_sum clusters, centroids
+
+  bss = 0
+
+  mean_of_centroids = 0
+
+  centroids.each {|val| mean_of_centroids += val}
+
+  mean_of_centroids /= centroids.size.to_f
+
+  clusters.each_with_index { |val, idx|
+
+    bss += val.size * (mean_of_centroids - centroids[idx]) ** 2
+
+  }
+
+  bss
+
+end
+
+
 def item1
 
   points = [6, 12, 18, 24, 30, 42, 48]
@@ -114,7 +135,7 @@ def item1
 
   puts
 
-  print sum_of_square_error clusters, center_points, lambda{|x, y| Math.sqrt((x - y) ** 2)}
+  print separation_squares_sum(clusters, centroids) + sum_of_square_error(clusters, center_points, lambda{|x, y| (x - y) ** 2})
 
   puts
 
@@ -133,7 +154,7 @@ def item2
 
   puts
 
-  print sum_of_square_error clusters, center_points, lambda{|x, y| Math.sqrt((x - y) ** 2)}
+  print separation_squares_sum(clusters, centroids) + sum_of_square_error(clusters, center_points, lambda{|x, y| (x - y) ** 2})
 
   puts
 
