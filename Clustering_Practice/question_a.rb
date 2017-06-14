@@ -15,6 +15,8 @@ end
 
 def reselect_centroid clusters, centroids, dist_measure
 
+  reselected_centroids = Array.new centroids.size
+
   clusters.each_with_index {|cluster, idx|
 
     centroid = centroids[idx]
@@ -35,13 +37,11 @@ def reselect_centroid clusters, centroids, dist_measure
 
     }
 
-    if centroid != centroids[idx]
-
-      centroids[idx] = centroid
-
-    end
+    reselected_centroids[idx] = centroid
 
   }
+
+  reselected_centroids
 
 end
 
@@ -76,9 +76,9 @@ def k_means points, medoids, dist_measure
 
   }
 
-  reselect_centroid clusters, medoids, dist_measure
+  new_centroids = reselect_centroid clusters, medoids, dist_measure
 
-  return clusters, medoids
+  return clusters, new_centroids
 
 end
 
@@ -108,9 +108,19 @@ def separation_squares_sum clusters, centroids
 
   mean_of_centroids = 0
 
-  centroids.each {|val| mean_of_centroids += val}
+  total_count = 0
 
-  mean_of_centroids /= centroids.size.to_f
+  clusters.each {|cluster|
+
+    cluster.each {
+        |val| mean_of_centroids += val
+    }
+
+  total_count += cluster.size
+
+  }
+
+  mean_of_centroids /= total_count.to_f
 
   clusters.each_with_index { |val, idx|
 
@@ -135,7 +145,11 @@ def item1
 
   puts
 
-  print separation_squares_sum(clusters, centroids) + sum_of_square_error(clusters, center_points, lambda{|x, y| (x - y) ** 2})
+  wss = sum_of_square_error(clusters, center_points, lambda{|x, y| (x - y) ** 2})
+
+  bss = separation_squares_sum(clusters, centroids)
+
+  print "BSS: #{bss}, WSS(SSE): #{wss}, TSS: #{bss + wss}"
 
   puts
 
@@ -154,7 +168,11 @@ def item2
 
   puts
 
-  print separation_squares_sum(clusters, centroids) + sum_of_square_error(clusters, center_points, lambda{|x, y| (x - y) ** 2})
+  wss = sum_of_square_error(clusters, center_points, lambda{|x, y| (x - y) ** 2})
+
+  bss = separation_squares_sum(clusters, center_points)
+
+  print "BSS: #{bss}, WSS(SSE): #{wss}, TSS: #{bss + wss}"
 
   puts
 
