@@ -26,8 +26,19 @@ def getImg(html):
 
         # http_pool(imgurl, '/home/CFWLoader/Pictures/crawled/%s.jpg' % x)
 
+        file = http_pool.urlopen('get', imgurl).read()
+
+        open('/home/CFWLoader/Pictures/crawled/%s.jpg' % x, 'wb').write(file)
+
         x += 1
 
 
-html = getHtml("http://weibo.com/p/1005051858002662/photos?from=page_100505&mod=TAB#place")
-print(getImg(html))
+ #html = getHtml("http://weibo.com/p/1005051858002662/photos?from=page_100505&mod=TAB#place")
+
+# print(html)
+
+# print(getImg(html))
+
+import requests
+
+req = requests.get('https://wx2.sinaimg.cn/thumb300/6ebedee6ly1fiwb9v5zbhj20q20vn0vr.jpg')
