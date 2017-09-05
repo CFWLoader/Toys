@@ -189,6 +189,16 @@ class Launcher:
 
 if __name__ == "__main__":
 
-    launcher = Launcher('549339907@qq.com', 'evan123456')
+    user_file = open('./user.info', 'r')
+
+    username = user_file.readline().strip('\n')
+
+    passwd = user_file.readline()
+
+    # print(username)
+    #
+    # print(passwd)
+
+    launcher = Launcher(username, passwd)
 
     launcher.login()
