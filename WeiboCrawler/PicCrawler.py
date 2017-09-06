@@ -44,8 +44,12 @@ if __name__ == '__main__':
 
     pic_crawler.login()
 
-    resp = pic_crawler.send_request('http://weibo.com/2030522687/follow?rightmod=1&wvr=6')
+    resp = pic_crawler.send_request('https://ww3.sinaimg.cn/thumb300/51c2f66dgw1fakdne7ljlj20go09dadt.jpg')
 
-    page = resp.read().decode('utf-8')
+    page = resp.read()
 
-    print(page)
+    file = open('./test.jpg', 'wb')
+
+    file.write(page)
+
+    # print(page)
