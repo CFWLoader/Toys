@@ -45,7 +45,7 @@ class Launcher:
 
         passwd = binascii.b2a_hex(pw_encrypted)
 
-        print(passwd)
+        # print(passwd)
 
         return passwd
 
@@ -160,7 +160,7 @@ class Launcher:
 
             login_url = p.search(html).group(1)
 
-            print(login_url)
+            # print(login_url)
 
             request = urllib.request.Request(login_url)
 
@@ -168,7 +168,7 @@ class Launcher:
 
             page = response.read().decode('utf-8')
 
-            print(page)
+            # print(page)
 
             login_url = 'http://weibo.com/' + p2.search(page).group(1)
 
@@ -176,7 +176,7 @@ class Launcher:
 
             response = urllib.request.urlopen(request)
 
-            final = response.read().decode('utf-8')
+            # final = response.read().decode('utf-8')
 
             print('Login success!')
 
