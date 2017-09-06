@@ -15,6 +15,8 @@ class PicCrawler(Launcher):
 
         post_data = self.build_post_data(data)
 
+        self.enable_cookies()
+
         headers = {
             "User-Agent": "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
         }
@@ -44,12 +46,18 @@ if __name__ == '__main__':
 
     pic_crawler.login()
 
-    resp = pic_crawler.send_request('https://ww3.sinaimg.cn/thumb300/51c2f66dgw1fakdne7ljlj20go09dadt.jpg')
+    resp = pic_crawler.send_request('http://weibo.com/p/aj/album/loading?ajwvr=6&type=photo&owner_uid=1858002662&viewer_uid=&since_id=4143571127131010_4138647487371903_20170831_-1&page_id=1005051858002662&page=2&ajax_call=1&__rnd=1504687781875')
 
     page = resp.read()
 
-    file = open('./test.jpg', 'wb')
+    print(page)
 
-    file.write(page)
+    # resp = pic_crawler.send_request('https://ww3.sinaimg.cn/thumb300/51c2f66dgw1fakdne7ljlj20go09dadt.jpg')
+    #
+    # page = resp.read()
+    #
+    # file = open('./test.jpg', 'wb')
+    #
+    # file.write(page)
 
     # print(page)

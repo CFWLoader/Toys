@@ -176,7 +176,9 @@ class Launcher:
 
             response = urllib.request.urlopen(request)
 
-            # final = response.read().decode('utf-8')
+            final = response.read().decode('utf-8')
+
+            # print(final)
 
             print('Login success!')
 
