@@ -15,7 +15,7 @@ class PicCrawler(Launcher):
 
         post_data = self.build_post_data(data)
 
-        self.enable_cookies()
+        # self.enable_cookies()
 
         headers = {
             "User-Agent": "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
@@ -46,9 +46,9 @@ if __name__ == '__main__':
 
     pic_crawler.login()
 
-    resp = pic_crawler.send_request('http://weibo.com/p/aj/album/loading?ajwvr=6&type=photo&owner_uid=1858002662&viewer_uid=&since_id=4143571127131010_4138647487371903_20170831_-1&page_id=1005051858002662&page=2&ajax_call=1&__rnd=1504687781875')
+    resp = pic_crawler.send_request('http://weibo.com/2030522687/follow?rightmod=1&wvr=6')
 
-    page = resp.read()
+    page = resp.read().decode('utf-8')
 
     print(page)
 
