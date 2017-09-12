@@ -292,3 +292,180 @@ class Nude(object):
 
         for index, region in enumerate(self.merge_regions):
 
+            for r_index  in region:
+
+                if r_index == _from:
+
+                    from_index = _from
+
+                if r_index == _to:
+
+                    to_index = index
+
+        # If this two region exist in self.merge_regions
+        if from_index != -1 and to_index != -1:
+
+            # And this two regions located in different list.
+            if from_index != to_index:
+
+                self.merge_regions[from_index].extend(self.merge_regions[to_index])
+
+                del(self.merge_regions[to_index])
+
+            return
+
+        # If this two regions do not exist.
+        if from_index == -1 and to_index == -1:
+
+            # Create the new region.
+            self.merge_regions.append([_from, _to])
+
+        # Only one of them exists.
+        if from_index != -1 and to_index == -1:
+
+            self.merge_regions[from_index].append(_to)
+
+        if from_index == -1 and to_index != -1:
+
+            self.merge_regions[_to].append(_from)
+
+        return
+
+    # Merge newly detected skin regions into skin regions.
+    def _merge(self, detected_regions, merge_regions):
+
+        new_detected_regions = []
+
+        for idx, region in enumerate(merge_regions):
+
+            try:
+
+                new_detected_regions[idx]
+
+            except IndexError:
+
+                new_detected_regions.append([])
+
+            for r_index in region:
+
+                new_detected_regions[idx].extend(detected_regions[r_index])
+
+                detected_regions[r_index] = []
+
+        # Append the left to new detected regions.
+        for region in detected_regions:
+
+            if len(region) > 0:
+
+                new_detected_regions.append(region)
+
+        self._clear_regions(new_detected_regions)
+
+    # Only save the region has the pixel quantity greater than specified index.
+    def _clear_regions(self, detected_regions):
+
+        for region in detected_regions:
+
+            if len(region) > 30:
+
+                self.skin_regions.append(region)
+
+    def _analyze_regions(self):
+
+        # if the number of skin regions less than 3 means not sexual.
+        if len(self.skin_regions) < 3:
+
+            self.message = "Less tha 3 skin regions ({_skin_regions_size})".format(
+                __skin_regions_size=len(self.skin_regions)
+            )
+
+            self.result = False
+
+            return self.result
+
+        # Sort skin regions.
+        self.skin_regions = sorted(self.skin_regions, key = lambda s: len(s), reverse= True)
+
+        # Count total number of skin pixels.
+        total_skin = float(sum([len(skin_region) for skin_region in self.skin_regions]))
+
+        # If the ratio of skin regions and the full image is less than 15% means not sexual.
+        if total_skin / self.total_pixels < 0.15:
+
+            self.message = 'Total skin percentage lower than 15 ({:.2f})'.format(
+                total_skin / self.total_pixels * 100
+            )
+
+            self.result = False
+
+            return self.result
+
+        # If ratio of the maximal skin region and the total skin regions less than 45%, not sexual.
+        if len(self.skin_regions[0]) / total_skin < 0.45:
+
+            self.message = 'The biggest region contains less than 45 ({:.2f})'.format(
+                len(self.skin_regions[0]) / total_skin * 100
+            )
+
+            self.result = True
+
+            return self.result
+
+        # If the number of skin regions is greater than 60 means not sexual.
+        if len(self.skin_regions) > 60:
+
+            self.message = 'More than 60 skin regions ({})'.format(len(self.skin_regions))
+
+            self.result = False
+
+            return self.result
+
+        # Else is sexual.
+        self.message = 'Nude!!'
+
+        self.result = True
+
+        return self.result
+
+    def inspect(self):
+
+        _image = '{} {} {}x{}'.format(self.image.filename, self.image.format, self.width, self.height)
+
+        return "{_image}: result={_result} message='{_message}'".format(
+            _image = _image,
+            _result = self.result,
+            _message = self.message
+        )
+
+    # 将在源文件目录生成图片文件，将皮肤区域可视化
+    def showSkinRegions(self):
+        # 未得出结果时方法返回
+        if self.result is None:
+            return
+        # 皮肤像素的 ID 的集合
+        skinIdSet = set()
+        # 将原图做一份拷贝
+        simage = self.image
+        # 加载数据
+        simageData = simage.load()
+
+        # 将皮肤像素的 id 存入 skinIdSet
+        for sr in self.skin_regions:
+            for pixel in sr:
+                skinIdSet.add(pixel.id)
+        # 将图像中的皮肤像素设为白色，其余设为黑色
+        for pixel in self.skin_map:
+            if pixel.id not in skinIdSet:
+                simageData[pixel.x, pixel.y] = 0, 0, 0
+            else:
+                simageData[pixel.x, pixel.y] = 255, 255, 255
+        # 源文件绝对路径
+        filePath = os.path.abspath(self.image.filename)
+        # 源文件所在目录
+        fileDirectory = os.path.dirname(filePath) + '/'
+        # 源文件的完整文件名
+        fileFullName = os.path.basename(filePath)
+        # 分离源文件的完整文件名得到文件名和扩展名
+        fileName, fileExtName = os.path.splitext(fileFullName)
+        # 保存图片
+        simage.save('{}{}_{}{}'.format(fileDirectory, fileName, 'Nude' if self.result else 'Normal', fileExtName))
