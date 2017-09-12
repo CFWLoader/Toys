@@ -296,7 +296,7 @@ class Nude(object):
 
                 if r_index == _from:
 
-                    from_index = _from
+                    from_index = index
 
                 if r_index == _to:
 
@@ -327,7 +327,7 @@ class Nude(object):
 
         if from_index == -1 and to_index != -1:
 
-            self.merge_regions[_to].append(_from)
+            self.merge_regions[to_index].append(_from)
 
         return
 
