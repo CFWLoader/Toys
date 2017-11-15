@@ -1,5 +1,6 @@
 import csv
 import matplotlib.pyplot as plt
+from windrose import WindroseAxes
 
 '''
 0 - date-time
@@ -234,30 +235,58 @@ def plot_weather_statics1(data_tuples):
     plt.show()
 
 
+def show_outliers(data_tuples, data_item_index):
+
+    data_len = len(data_tuples)
+
+    ave = average(data_tuples, data_item_index)
+
+    var = variance(data_tuples, data_item_index, ave)
+
+    for multiple_val in range(1, 10):
+
+        print('Threshold = ', var * multiple_val, ' Multiple = ', multiple_val, end='')
+
+        outliers_arr = outliers(data_tuples, data_item_index, var * multiple_val, ave)
+
+        print(', Outliers = ', len(outliers_arr), ' Percentage = ', len(outliers_arr) / data_len * 100, '%')
+
+
+def show_wind_rose(data_tuples):
+
+    ws = [(lambda x: x[3])(var) for var in data_tuples]
+
+    wd = [(lambda x: x[4])(var) for var in data_tuples]
+
+    ax = WindroseAxes.from_ax()
+
+    ax.bar(wd, ws, normed=True, opening=0.8, edgecolor='white')
+
+    ax.set_legend()
+
+    plt.show()
+
+
 if __name__ == '__main__':
 
     data = load_data('data/JCMB_2015.csv')
 
-    plot_weather_statics1(data)
+    # plot_weather_statics1(data)
 
     # ap = [(lambda x:x[1])(tup) for tup in data]
 
     # print(ap[1])
 
+    # for idx, tup in enumerate(data):
+    #
+    #     if tup[3] == 0 and tup[4] != 0 or tup[3] != 0 and tup[4] == 0:
+    #
+    #         print(idx, ' WS:', tup[3], ' WD:', tup[4])
+
     # data_len = len(data)
     #
-    # data_item_index = 5
-    #
+    # data_item_index = 3
+
     # plot_item(data, data_item_index, average(data, data_item_index), variance(data, data_item_index))
 
-    # ave = average(data, data_item_index)
-    #
-    # var = variance(data, data_item_index, ave)
-    #
-    # for multiple_val in range(1, 10):
-    #
-    #     print('Threshold = ', var * multiple_val, ' Multiple = ', multiple_val, end='')
-    #
-    #     outliers_arr = outliers(data, data_item_index, var * multiple_val, ave)
-    #
-    #     print(', Outliers = ', len(outliers_arr), ' Percentage = ', len(outliers_arr) / data_len * 100, '%')
+    show_wind_rose(data)
