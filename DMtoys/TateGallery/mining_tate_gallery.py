@@ -3,7 +3,7 @@ import csv
 
 def load_data(file_path, fields = None):
 
-    file = open(file_path, 'r')
+    file = open(file_path, 'r', encoding= 'utf_8_sig')
 
     # fileds = ['id',
     #           'accession_number',
@@ -45,6 +45,6 @@ if __name__ == '__main__':
 
     data_list = load_data('data/artwork_data.csv')
 
-    print(data_list[0]['\ufeffid'])
-    print(data_list[1]['\ufeffid'])
+    print(data_list[0]['id'])
+    print(data_list[1]['id'])
     print('Just for a commit.')
