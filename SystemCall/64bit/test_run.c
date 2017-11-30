@@ -20,7 +20,8 @@ int main(int argc, char* argv[])
 {
 	int i, j, err;
 
-	err = syscall(333, &processes);
+	err = syscall(332, &processes);
+	// err = syscall(333);
 
 	printf("Syscall result: %d.\n", err);
 
@@ -29,7 +30,7 @@ int main(int argc, char* argv[])
 		printf("%s\n", strerror(errno));
 	}
 
-	// printf("Syscall result: %d.\n", syscall(333, &processes));
+	printf("Syscall result: %d.\n", syscall(333, &processes));
 
 	for(i = 0; i < 512; ++i)
 	{

@@ -9,8 +9,8 @@
 // #include <stdint.h>
 // #include <string.h>
 
-static const unsigned int __MY_SYS_CALL_NUM__ = 333;
-static const uint64_t __SYS_CALL_TABLE_ADDR__ = 0xffffffff9ea00200;
+static const unsigned int __MY_SYS_CALL_NUM__ = 332;
+static const uint64_t __SYS_CALL_TABLE_ADDR__ = 0xffffffffa5a00200;
 
 // extern void* sys_call_table[]
 // #define __MY_SYS_CALL_NUM__ 245
@@ -130,20 +130,17 @@ static int __init __init_extra_syscall__(void)
 
 	funptr = (int(*)(void)) (__sys_call_table_ptr__[__MY_SYS_CALL_NUM__]);
 
-	printk("Target system call's address: %lx.\n", &__sys_call_table_ptr__[__MY_SYS_CALL_NUM__]);
-
-	printk("Setting CR0 Flags.\n");
-
 	orig_cr0 = clr_and_ret_cr0();
 
 	// __sys_call_table_ptr__[__MY_SYS_CALL_NUM__] = (unsigned long)&__my_syscall__;
 	// __test_syscall__();			// Call it internally.
 	
 	//__sys_call_table_ptr__[__MY_SYS_CALL_NUM__] = (unsigned long)&__test_syscall__;
-	printk("Updating table.\n");
+	// printk("Updating table.\n");
 	__sys_call_table_ptr__[__MY_SYS_CALL_NUM__] = (unsigned long)&__my_syscall__;
+	// __sys_call_table_ptr__[__MY_SYS_CALL_NUM__] = (unsigned long)&__test_syscall__;
 
-	printk("Resetting CR0 Flags.\n");
+	// printk("Resetting CR0 Flags.\n");
 
 	setback_cr0(orig_cr0);
 
