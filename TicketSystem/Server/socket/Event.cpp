@@ -14,12 +14,31 @@
 
 #include <json/json.h>
 
+/*************************************************
+Function:       Event
+Description:    Constructor of class Event.
+Calls:          None.
+Input:          int socketFD: the client identifier indicates the client will be served.
+				const HandleClose& callBack: a callback function be called when the client sent an error.
+Output:         None.
+Return:         None.
+Others:         None.
+*************************************************/
 clown::Event::Event(int socketFD, const HandleClose& callBack) :
 	clientFD(socketFD),
 	closeCallBack(callBack),
 	connection(new MongoConnection("evan", "123456", "clown", "tickets"))
 {}
 
+/*************************************************
+Function:       ~Event
+Description:    Destructor of class Event.
+Calls:          delete()
+Input:          None.
+Output:         None.
+Return:         None.
+Others:         None.
+*************************************************/
 clown::Event::~Event()
 {
 	delete connection;
@@ -27,6 +46,23 @@ clown::Event::~Event()
 	connection = nullptr;
 }
 
+/*************************************************
+Function:       serverFunction
+Description:    The logic codes for serving the client request.
+Calls:          read()
+				fprintf()
+				perror()
+				closeCallBack()
+				clown::Event::saveData()
+				std::string::append()
+				write()
+				std::string::clear()
+				std::string::c_str()
+Input:          None.
+Output:         None.
+Return:         void
+Others:         None.
+*************************************************/
 void clown::Event::serveFunction()
 {
 	char buffer[MAX_LINE];
@@ -69,6 +105,17 @@ void clown::Event::serveFunction()
 	delete this;
 }
 
+/*************************************************
+Function:       happen
+Description:    The function of class Event that take the Event::serveFunction to new thread and start the new thread.
+Calls:          std::bind()
+				clown::Event::start()
+Input:          None.
+Output:         None.
+Return:         An integer indicating the result of invocation.
+				0 is success and other non-zero means failed.
+Others:         None.
+*************************************************/
 int clown::Event::happen()
 {
 	clown::Thread::ThreadFunction registerFunction = std::bind(
@@ -83,6 +130,21 @@ int clown::Event::happen()
 	return 0;
 }
 
+/*************************************************
+Function:       saveData
+Description:    A function accept the raw string date from client and transit the json form to object.
+				Finally call MongoConnection to save the information.
+Calls:          std::vector::push_back()
+				std::make_pair()
+				Json::Reader::parse()
+				Json::Value::operator[]()
+				Json::Value::asString()
+Input:          const std::string& jsonObject: A string obeys the json form.
+Output:         None.
+Return:         An integer indicating the result of invocation.
+				0 is success and other non-zero means failed.
+Others:         None.
+*************************************************/
 int clown::Event::saveData(const std::string& jsonObject)
 {
 	Json::Reader reader;

@@ -1,3 +1,9 @@
+/*************************************************
+Copyright:      clown
+Author:         Evan
+Date:           2015-07-20
+Description:    Implement the UI of client and the reponse of client request.
+**************************************************/
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 

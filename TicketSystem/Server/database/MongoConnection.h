@@ -1,3 +1,9 @@
+/*************************************************
+Copyright:      clown
+Author:         Evan
+Date:           2015-07-20
+Description:    Encapsulate the mongo interface to a class.
+**************************************************/
 #ifndef MONGOCONNECTION_H_
 #define MONGOCONNECTION_H_
 

@@ -18,22 +18,60 @@
 #include <string>
 #include <iostream>
 
+/* Define the server port. */
 unsigned short SERVER_PORT = 4433;
 
+/* Limit the socket file descriptor connecting to server. */
 size_t MAX_LISTEN_QUEUE = 128;
 
+/* Limit the number of client registered in server. */
 size_t MAX_CLIENT_NUMBER = 256;
 
+/*************************************************
+Function:       TcpServer
+Description:    Default Constrctor of class TcpServer.
+Calls:          None.
+Input:          None.
+Output:         None.
+Return:         None.
+Others:         None.
+*************************************************/
 clown::TcpServer::TcpServer() : socketFileDescriptor(-1)
 {
 	bzero(&serverAddress, sizeof(serverAddress));
 }
 
+/*************************************************
+Function:       TcpServer
+Description:    Default destrctor of class TcpServer.
+Calls:          None.
+Input:          None.
+Output:         None.
+Return:         None.
+Others:         None.
+*************************************************/
 clown::TcpServer::~TcpServer()
 {
 	close(socketFileDescriptor);
 }
 
+/*************************************************
+Function:       initialize
+Description:    Initalizee the class TcpServer's member for preparing an application server.
+Calls:          socket()
+				htonl()
+				htons()
+				bind()
+				fprint()
+				perror()
+				close()
+				listen()
+Input:          None.
+Output:         None.
+Return:         An integer indicating the result of initialization.
+				0 is success and other non-zero means failed.
+Others:         None.
+*************************************************/
 int clown::TcpServer::initialize()
 {
 	socklen_t socketLength = sizeof(sockaddr);
@@ -82,15 +120,31 @@ int clown::TcpServer::initialize()
 	return 0;
 }
 
+/*************************************************
+Function:       serve
+Description:    Start the server to serve the incoming request.
+				A new request will be dispatched a new thread to serve it.
+Calls:          epoll_create()
+				fprintf()
+				perror()
+				epoll_ctl()
+				epoll_wait()
+				close()
+				accept()
+				clown::TcpServer::setNonBlocking()
+				std::bind()
+				clown::Event::happen()
+Input:          None.
+Output:         None.
+Return:         An integer indicating the result of initialization.
+				0 is success and other non-zero means failed.
+Others:         None.
+*************************************************/
 int clown::TcpServer::serve()
 {
 	int connectFD, epollFD;								//File Descriptors.
 
 	int result, nReady, i;
-
-	//int nRead;
-
-	//char buffer[MAX_LINE];
 
 	std::string echoMessage;
 
@@ -188,6 +242,16 @@ int clown::TcpServer::serve()
 	return 0;
 }
 
+/*************************************************
+Function:       setNonBlocking
+Description:    Setting the file descriptor non-blocking IO to improve the performance of TpcServer.
+Calls:          fcntl()
+Input:          An integer of file descriptor.
+Output:         None.
+Return:         An integer indicating the result of initialization.
+				0 is success and other non-zero means failed.
+Others:         None.
+*************************************************/
 int clown::TcpServer::setNonBlocking(int sockfd)
 {
     if (fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFD, 0)|O_NONBLOCK) == -1) {
@@ -196,11 +260,30 @@ int clown::TcpServer::setNonBlocking(int sockfd)
     return 0;
 }
 
+/*************************************************
+Function:       closeClientFD
+Description:    Close the socket file descriptor via system call -- close().
+Calls:          close()
+Input:          An integer of file descriptor.
+Output:         None.
+Return:         An integer indicating the result of initialization.
+				0 is success and other non-zero means failed.
+Others:         None.
+*************************************************/
 int clown::TcpServer::closeClientFD(int fd)
 {
 	return ::close(fd);
 }
 
+/*************************************************
+Function:       echoFromThread
+Description:    This is a callback function for other thread testing the tcpserver is alive.
+Calls:          None.
+Input:          None.
+Output:         None.
+Return:         void
+Others:         None.
+*************************************************/
 void clown::TcpServer::echoFromThread()
 {
 	std::cout << "The function is invoked by other thread." << std::endl;

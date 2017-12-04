@@ -4,6 +4,15 @@
 #include <cmath>
 #include <cstdio>
 
+/*************************************************
+Function:       MainWindow
+Description:    Constructor of class MainWindow.
+Calls:          Ui::MainWindow::setupUi()
+Input:          QWidget *parent: the window.
+Output:         None.
+Return:         None.
+Others:         None.
+*************************************************/
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -14,11 +23,30 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 }
 
+/*************************************************
+Function:       MainWindow
+Description:    destructor of class MainWindow.
+Calls:          None.
+Input:          None.
+Output:         None.
+Return:         None.
+Others:         None.
+*************************************************/
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+/*************************************************
+Function:       checkDestination()
+Description:    Check the validation of origin and destination.
+Calls:          QComboBox::currentText()
+                QComboBox::operator==()
+Input:          None.
+Output:         None.
+Return:         Integer value indicate the result.
+Others:         None.
+*************************************************/
 int MainWindow::checkDestination()
 {
     int equals = (ui->originBox->currentText() == ui->destinationBox->currentText());
@@ -26,6 +54,15 @@ int MainWindow::checkDestination()
     return equals;
 }
 
+/*************************************************
+Function:       getNumberOfStations
+Description:    Getting the number of stations between origin and destination.
+Calls:          QComboBox::currentText()
+Input:          None.
+Output:         None.
+Return:         Integer value indicate the result.
+Others:         None.
+*************************************************/
 int MainWindow::getNumberOfStations()
 {
     char origin =  ui->originBox->currentText()[0].toAscii();
@@ -37,22 +74,43 @@ int MainWindow::getNumberOfStations()
     return station;
 }
 
+/*************************************************
+Function:       validateMoneyEnough
+Description:    Checking whether the money is enough to pay the ticket.
+Calls:          QString::setNum()
+                QText::setText()
+Input:          double price: the ticket's price.
+Output:         None.
+Return:         Integer value indicate the result.
+Others:         None.
+*************************************************/
 int MainWindow::validateMoneyEnough(double price)
 {
     double paid = static_cast<double>(coins);
 
     if(paid >= price)
     {
-        double charge = paid - price;
+        double change = paid - price;
 
-        QString chargeValue;
+        QString changeValue;
 
-        chargeValue.setNum(charge);
+        changeValue.setNum(change);
 
-        ui->chargeTextEdit->setText(chargeValue);
+        ui->changeTextEdit->setText(changeValue);
     }
 }
 
+/*************************************************
+Function:       checkState
+Description:    A client want to confirm the ticket, the function will be invoked to validate all states.
+Calls:          MainWindow::checkDestination()
+                MainWindow::getNumberOfStations()
+                QText::setText()
+Input:          None.
+Output:         None.
+Return:         None.
+Others:         None.
+*************************************************/
 int MainWindow::checkState()
 {
     if(this->checkDestination())
@@ -78,6 +136,16 @@ int MainWindow::checkState()
     return 0;
 }
 
+/*************************************************
+Function:       clear
+Description:    A deal done or cancelled, this function will be invoked to clear the states.
+Calls:          QText::setText()
+                QText::setNum()
+Input:          None.
+Output:         None.
+Return:         None.
+Others:         None.
+*************************************************/
 void MainWindow::clear()
 {
     coins = 0;
@@ -92,14 +160,33 @@ void MainWindow::clear()
 
     ui->paidTextEdit->setText(numbers);
 
-    ui->chargeTextEdit->setText(numbers);
+    ui->changeTextEdit->setText(numbers);
 }
 
+/*************************************************
+Function:       on_originBox_activated
+Description:    After the selection of origin event, this function will be invoked to handle the logic and ui.
+Calls:          QText::setText()
+Input:          const QString &arg1.
+Output:         None.
+Return:         void
+Others:         None.
+*************************************************/
 void MainWindow::on_originBox_activated(const QString &arg1)
 {
     ui->hintTextEdit->setText("Origin selected.Please select destination.");
 }
 
+/*************************************************
+Function:       on_destinationBox_activated
+Description:    After the selection of destination event, this function will be invoked to handle the logic and ui.
+Calls:          QText::setText()
+                QText::setNum()
+Input:          const QString &arg1.
+Output:         None.
+Return:         void
+Others:         None.
+*************************************************/
 void MainWindow::on_destinationBox_activated(const QString &arg1)
 {
     if(this->checkDestination())
@@ -120,6 +207,18 @@ void MainWindow::on_destinationBox_activated(const QString &arg1)
     }
 }
 
+/*************************************************
+Function:       on_putCoinsButton_clicked
+Description:    After click of putCoinsButton event, this function will be invoked to handle the logic and ui.
+Calls:          QText::setText()
+                QText::setNum()
+                MainWindow::getNumberOfStations()
+                MainWindow::validateMoneyEnough()
+Input:          None.
+Output:         None.
+Return:         void
+Others:         None.
+*************************************************/
 void MainWindow::on_putCoinsButton_clicked()
 {
     ++coins;
@@ -135,6 +234,16 @@ void MainWindow::on_putCoinsButton_clicked()
     this->validateMoneyEnough(priceValue);
 }
 
+/*************************************************
+Function:       on_cancelButton_clicked
+Description:    After click of cancelButton event, this function will be invoked to handle the logic and ui.
+Calls:          QText::setText()
+                QText::setNum()
+Input:          None.
+Output:         None.
+Return:         void
+Others:         None.
+*************************************************/
 void MainWindow::on_cancelButton_clicked()
 {
     coins = 0;
@@ -149,9 +258,22 @@ void MainWindow::on_cancelButton_clicked()
 
     ui->paidTextEdit->setText(numbers);
 
-    ui->chargeTextEdit->setText(numbers);
+    ui->changeTextEdit->setText(numbers);
 }
 
+/*************************************************
+Function:       on_confirmButton_clicked
+Description:    After click of confirmButton event, this function will be invoked to handle the logic and ui.
+Calls:          MainWindow::checkState()
+                MainWindow::getNumberOfStations()
+                std::snprintf()
+                ClientSocket::sendString()
+                MainWindow::clear()
+Input:          None.
+Output:         None.
+Return:         void
+Others:         None.
+*************************************************/
 void MainWindow::on_confirmButton_clicked()
 {
     if(this->checkState() != 0)return;
@@ -162,15 +284,15 @@ void MainWindow::on_confirmButton_clicked()
 
     double paid = static_cast<double>(coins);
 
-    double charge = paid - priceValue;
+    double change = paid - priceValue;
 
     std::snprintf(rawData, 256,
-                  "{\"origin\":\"%s\", \"destination\":\"%s\", \"price\":\"%.2lf\", \"paid\":\"%.2lf\",\"charge\":\"%.2lf\"}",
+                  "{\"origin\":\"%s\", \"destination\":\"%s\", \"price\":\"%.2lf\", \"paid\":\"%.2lf\",\"change\":\"%.2lf\"}",
                   ui->originBox->currentText().toStdString().c_str(),
                   ui->destinationBox->currentText().toStdString().c_str(),
                   priceValue,
                   paid,
-                  charge
+                  change
                   );
 
     socket__.sendString(std::string(rawData));

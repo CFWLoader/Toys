@@ -1,3 +1,9 @@
+/*************************************************
+Copyright:      clown
+Author:         Evan
+Date:           2015-07-20
+Description:    Encapsulate the POSIX-thread to a class.
+**************************************************/
 #ifndef CLOWNTHREAD_H_
 #define CLOWNTHREAD_H_
 

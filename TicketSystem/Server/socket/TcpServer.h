@@ -1,3 +1,9 @@
+/*************************************************
+Copyright:      clown
+Author:         Evan
+Date:           2015-07-20
+Description:    Encapsulate the interface of linux socket and implement a server class.
+**************************************************/
 #ifndef TCPSERVER_H_
 #define TCPSERVER_H_
 

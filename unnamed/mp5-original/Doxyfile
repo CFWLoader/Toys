@@ -1,4 +1,0 @@
-@INCLUDE        = ../doxygen/doxygen.conf
-PROJECT_NAME    = "MP6"
-PROJECT_BRIEF   = "Photomosaic"
-EXTRACT_PRIVATE = YES

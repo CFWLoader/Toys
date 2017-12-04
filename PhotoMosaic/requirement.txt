@@ -1,5 +1,0 @@
-﻿https://courses.engr.illinois.edu/cs225/fa2017/mps/5/       这个是要求和指导，第一个function ：smallerDimVal已经通过测试了，
-
-这个是安装环境的指导：https://courses.engr.illinois.edu/cs225/fa2017/resources/own-machine/
-
-要求是在老师给的代码基础上完成function，所以其他的不能改动，文件自带test 文件，可以看有没有通过testcase. 

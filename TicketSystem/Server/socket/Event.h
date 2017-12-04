@@ -1,3 +1,9 @@
+/*************************************************
+Copyright:      clown
+Author:         Evan
+Date:           2015-07-20
+Description:    Abstract the the request to an event for promote the reuse of the TcpServer.
+**************************************************/
 #ifndef CLOWNEVENT_H_
 #define CLOWNEVENT_H_
 
