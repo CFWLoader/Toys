@@ -120,6 +120,81 @@ function transformUniform(data)
     return transformed.sort();
 }
 
+function transformTriangle(data)
+{
+    var a = b = c = data[0], mean = 0;
+
+    for(i = 0; i < data.length; ++i)
+    {
+        if(a > data[i])
+        {
+            a = data[i];
+        }
+
+        if(c < data[i])
+        {
+            c = data[i];
+        }
+
+        mean += data[i];
+    }
+
+    mean /= data.length;
+
+    // console.log(a);
+
+    // console.log(c);
+
+    // console.log(mean);
+
+    b = 3 * mean - a - c;           // From mean = (a + b + c) / 3
+
+    transformed = [];
+
+    len = c - a;
+
+    for(i = 0; i < data.length; ++i)
+    {
+        if(data[i] < b)
+        {
+            transformed.push((data[i] - a)**2 / (len * (b - a)));
+        }
+        else if(data[i] == b)
+        {
+            transformed.push((b - a) / len);
+        }
+        else
+        {
+            transformed.push(1 - (c - data[i])**2 / (len * (c - b)));
+        }
+    }
+
+    return transformed.sort();
+}
+
+function transformExponent(data)
+{
+    mean = 0;
+
+    for(i = 0; i < data.length; ++i)
+    {
+        mean += data[i];
+    }
+
+    // mean /= data.length;
+
+    lambda = data.length / mean;
+
+    transformed = [];
+
+    for(i = 0; i < data.length; ++i)
+    {
+        transformed.push(1 - Math.exp(- lambda * data[i]));
+    }
+
+    return transformed.sort();
+}
+
 function andersonDarlingTest(data)
 {
     n = data.length;
@@ -142,7 +217,7 @@ function pValueNormal(z, n)
 {
     zStar = z * (1 + 0.75 / n + 2.25 / (n**2));
 
-    var math = require('mathjs');
+    // var math = require('mathjs');
 
     // console.log(zStar);
 
@@ -152,7 +227,7 @@ function pValueNormal(z, n)
     }
     else if(zStar <= 0.34)
     {
-        return 1 - math.exp(-8.318 + 42.796 * zStar - 59.938 * (zStar**2));
+        return 1 - Math.exp(-8.318 + 42.796 * zStar - 59.938 * (zStar**2));
     }
     else if(zStar <= 0.6)
     {
@@ -194,9 +269,35 @@ function pValueUniform(z)
     return p;
 }
 
+function pValueExponent(adValue, n)
+{
+    zStar = adValue * (1 + 0.6 / n);
+
+    // console.log(zStar);
+
+    if(zStar <= 0.26)
+    {
+        return 1 - Math.exp(-12.2204 + 67.459 * zStar - 110.3 * (zStar**2));
+    }
+    else if(zStar <= 0.51)
+    {
+        return 1 - Math.exp(-6.1327 + 20.218 * zStar - 18.663 * zStar**2);
+    }
+    else if(zStar <= 0.95)
+    {
+        return Math.exp(0.9209 - 3.353 * zStar + 0.3 * zStar**2);
+    }
+    else if(zStar <= 10.03)
+    {
+        return Math.exp(0.731 - 3.008 * zStar + 0.15 * zStar**2);
+    }
+    
+    return 0;
+}
+
 var fs = require('fs');
 
-var file = ".\\unif_dist1.json";
+var file = ".\\exp_dist1.json";
 
 var dist_data = JSON.parse(fs.readFileSync(file));
 
@@ -205,13 +306,13 @@ var dist_data = JSON.parse(fs.readFileSync(file));
 // dist_data = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 // Calculating p value for normal dist.
-// transformed = transformNormality(dist_data);
+transformed = transformNormality(dist_data);
 
-// z = andersonDarlingTest(transformed);
+z = andersonDarlingTest(transformed);
 
-// console.log("AD-Value: " + z.toString());
+console.log("AD-Value: " + z.toString());
 
-// console.log(pValueNormal(z, transformed.length));
+console.log(pValueNormal(z, transformed.length));
 
 // Calculating p value for lognormal dist.
 // transformed = transformLognormality(dist_data);
@@ -221,16 +322,38 @@ var dist_data = JSON.parse(fs.readFileSync(file));
 // console.log(pValueNormal(z, transformed.length));
 
 // Calculating p value for uniform dist.
-transformed = transformUniform(dist_data);
+// transformed = transformUniform(dist_data);
 
-transformed.shift();
+// transformed.shift();
 
-transformed.pop();
+// transformed.pop();
 
 // console.log(transformed);
 
-z = andersonDarlingTest(transformed);
+// z = andersonDarlingTest(transformed);
 
-console.log(z);
+// console.log(z);
 
-console.log(pValueUniform(z));
+// console.log(pValueUniform(z));
+
+// Calculating ad value for trangular dist.
+// transformed = transformTriangle(dist_data);
+
+// transformed.shift();
+
+// transformed.pop();
+
+// console.log(transformed);
+
+// adValue = andersonDarlingTest(transformed);
+
+// console.log(adValue);
+
+// Calculating p value for exponent dist.
+transformed = transformExponent(dist_data);
+
+adValue = andersonDarlingTest(transformed);
+
+pValue = pValueExponent(adValue, transformed.length);
+
+console.log(pValue);
