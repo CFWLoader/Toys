@@ -93,11 +93,15 @@ function transformLognormality(data)
 
     std_var = Math.sqrt(variance);
 
+    log_mean = Math.log(mean / Math.sqrt(1 + variance / mean**2));
+
+    log_sd = Math.sqrt(Math.log(1 + variance / mean**2));
+
     for(i = 0; i < data.length; ++i)
     {
         // transformed.push(Math.exp(-(data[i] - mean)**2 / (2 * variance)) / (Math.sqrt(2 * Math.PI) * std_var))
 
-        transformed.push(0.5 + erf((Math.log(data[i]) - Math.log(mean)) / (Math.SQRT2 * std_var)) / 2);
+        transformed.push(0.5 + erf((Math.log(data[i]) - log_mean) / (Math.SQRT2 * log_sd)) / 2);
         
     }
 
@@ -444,11 +448,12 @@ var fs = require('fs');
 
 // var file = ".\\aqi_dist.json"
 // var file = ".\\lgnorm_dist1.json";
+var file = ".\\lgnorm_dist2.json";
 // var file = ".\\norm_dist1.json";
 // var file = ".\\pm25_dist.json"
 // var file = ".\\unif_dist1.json"
 // var file = ".\\tri_dist1.json"
-var file = ".\\exp_dist1.json"
+// var file = ".\\exp_dist1.json"
 
 var dist_data = JSON.parse(fs.readFileSync(file));
 
