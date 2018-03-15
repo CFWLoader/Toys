@@ -30,9 +30,19 @@
 # Backups
 *~
 
+# JSON Data
+*.json
+
+# CSV Data
+*.csv
+
+# PNG
+*.png
+
 # IDE files
 .idea
 
 # cmake
 */CMakeFiles/
 */CMakeCache.txt
+StatisticalTest/aqi.png

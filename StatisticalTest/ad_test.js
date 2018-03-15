@@ -72,6 +72,11 @@ function transformLognormality(data)
 
     for(i = 0; i < data.length; ++i)
     {
+        if(data[i] <= 0)
+        {
+            return 0;
+        }
+
         mean += data[i];
     }
 
@@ -104,9 +109,9 @@ function transformLognormality(data)
 
 function transformUniform(data)
 {
-    a = data.reduce(function(a,b){return a < b ? a : b;});
+    a = data.reduce(function(a,b){return a < b ? a : b;}) - 0.001;
 
-    b = data.reduce(function(a,b){return a > b ? a : b;});
+    b = data.reduce(function(a,b){return a > b ? a : b;}) + 0.001;
 
     len = b - a;
 
@@ -138,6 +143,10 @@ function transformTriangle(data)
 
         mean += data[i];
     }
+
+    a -= 0.001;
+
+    c += 0.001;
 
     mean /= data.length;
 
@@ -178,6 +187,11 @@ function transformExponent(data)
 
     for(i = 0; i < data.length; ++i)
     {
+        if(data[i] < 0)
+        {
+            return 0;
+        }
+
         mean += data[i];
     }
 
@@ -201,10 +215,10 @@ function andersonDarlingTest(data)
 
     s = 0;
 
-    // console.log("Start Looping.")
-
     for(i = 0; i < data.length; ++i)
     {
+        // console.log(data[i]);
+
         s += (2 * i + 1) * Math.log(data[i] * (1 - data[n - 1 - i]))      // Notice original is (2 * i - 1) and data[n + 1 - i]. Fix head offset.
     }
 
@@ -297,7 +311,9 @@ function pValueExponent(adValue, n)
 
 var fs = require('fs');
 
-var file = ".\\exp_dist1.json";
+var file = ".\\unif_dist1.json";
+// var file = ".\\norm_dist1.json";
+// var file = ".\\pm25_dist.json"
 
 var dist_data = JSON.parse(fs.readFileSync(file));
 
@@ -310,50 +326,78 @@ transformed = transformNormality(dist_data);
 
 z = andersonDarlingTest(transformed);
 
-console.log("AD-Value: " + z.toString());
+console.log('Nor:');
 
-console.log(pValueNormal(z, transformed.length));
+console.log("AD-Value: " + z.toString() + "    p-Value: " + pValueNormal(z, transformed.length).toString());
 
 // Calculating p value for lognormal dist.
-// transformed = transformLognormality(dist_data);
+transformed = transformLognormality(dist_data);
 
-// z = andersonDarlingTest(transformed);
+var z, pvalue;
 
-// console.log(pValueNormal(z, transformed.length));
+if(transformed == 0)
+{
+    z = 'N/A';
+
+    pvalue = 'N/A';
+}
+else
+{
+    console.log(transformed);
+    
+    z = andersonDarlingTest(transformed);
+
+    pvalue = pValueNormal(z, transformed.length)
+}
+
+console.log('Lognor:');
+
+console.log("AD-Value: " + z.toString() + "    p-Value: " + pvalue.toString());
 
 // Calculating p value for uniform dist.
-// transformed = transformUniform(dist_data);
+transformed = transformUniform(dist_data);
 
-// transformed.shift();
+transformed.shift();
 
-// transformed.pop();
+transformed.pop();
 
-// console.log(transformed);
+z = andersonDarlingTest(transformed);
 
-// z = andersonDarlingTest(transformed);
+console.log('Unif:');
 
-// console.log(z);
-
-// console.log(pValueUniform(z));
+console.log("AD-Value: " + z.toString() + "    p-Value: " + pValueUniform(z).toString());
 
 // Calculating ad value for trangular dist.
-// transformed = transformTriangle(dist_data);
+transformed = transformTriangle(dist_data);
 
-// transformed.shift();
+transformed.shift();
 
-// transformed.pop();
+transformed.pop();
 
-// console.log(transformed);
+z = andersonDarlingTest(transformed);
 
-// adValue = andersonDarlingTest(transformed);
+console.log('Tria:');
 
-// console.log(adValue);
+console.log("AD-Value: " + z.toString() + "    p-Value: N/A");
 
 // Calculating p value for exponent dist.
 transformed = transformExponent(dist_data);
 
-adValue = andersonDarlingTest(transformed);
+var pvalue, z;
 
-pValue = pValueExponent(adValue, transformed.length);
+if(transformed == 0)
+{
+    z = 'N/A';
 
-console.log(pValue);
+    pvalue = 'N/A';
+}
+else
+{
+    z = andersonDarlingTest(transformed);
+
+    pvalue = pValueExponent(z, transformed.length)
+}
+
+console.log('Exp:')
+
+console.log("AD-Value: " + z.toString() + "    p-Value: " + pvalue.toString());
