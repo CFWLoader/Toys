@@ -227,7 +227,7 @@ function andersonDarlingTest(data)
     return -n - s / n;
 }
 
-function pValueNormal(z, n)
+function adpValueNormal(z, n)
 {
     zStar = z * (1 + 0.75 / n + 2.25 / (n**2));
 
@@ -257,7 +257,7 @@ function pValueNormal(z, n)
     }
 }
 
-function pValueUniform(z)
+function adpValueUniform(z)
 {
     p = 0;
 
@@ -283,7 +283,7 @@ function pValueUniform(z)
     return p;
 }
 
-function pValueExponent(adValue, n)
+function adpValueExponent(adValue, n)
 {
     zStar = adValue * (1 + 0.6 / n);
 
@@ -309,11 +309,146 @@ function pValueExponent(adValue, n)
     return 0;
 }
 
+function kolmogorovSmirnovTest(data)
+{
+    len = wn = data.length;
+
+    wi = 1;
+
+    dplus = dminus = 0;
+
+    for(i = 0; i < len; ++i, ++wi)
+    {
+        dp = Math.abs(data[i] - wi / wn);
+
+        dm = Math.abs(data[i] - (wi - 1) / wn);
+
+        dplus = dplus > dp ? dplus : dp;
+
+        dminus = dminus > dm ? dminus : dm;
+    }
+
+    return Math.max(dplus, dminus);
+
+    // D = Math.sqrt(dn) * dn;
+
+    // k = 100;
+
+    // var ak;
+
+    // while(true)
+    // {
+    //     ak = 0;
+
+    //     for(i = -k; i <= k; ++i)
+    //     {
+    //         ak += Math.pow(-1, i) * Math.exp(-2 * (i * D)**2);
+    //     }
+
+    //     if((Math.pow(-1, k + 1) * Math.exp(-2 * ((k + 1) * D)**2)) < 0.00001)
+    //     {
+    //         break;
+    //     }
+    // }
+
+    // return 1 - ak;
+}
+
+function kspValueUniform(wn, dn)
+{
+    D = Math.sqrt(wn) * dn;
+
+    k = 100;
+
+    var ak;
+
+    while(true)
+    {
+        ak = 0;
+
+        for(i = -k; i <= k; ++i)
+        {
+            ak += Math.pow(-1, i) * Math.exp(-2 * (i * D)**2);
+        }
+
+        if((Math.pow(-1, k + 1) * Math.exp(-2 * ((k + 1) * D)**2)) < 0.00001)
+        {
+            break;
+        }
+    }
+
+    return 1 - ak;
+}
+
+function kspValueNormal(wn, dn)
+{
+    d = dn * (Math.sqrt(wn) - 0.01 + 0.85 / Math.sqrt(wn));
+
+    if(d < 0.775)
+    {
+        return "0.15+";
+    }
+    else if(d < 0.819)
+    {
+        return "0.1~0.15";
+    }
+    else if(d < 0.895)
+    {
+        return "0.05~0.1";
+    }
+    else if(d < 0.995)
+    {
+        return "0.025~0.05";
+    }
+    else if(d < 1.035)
+    {
+        return "0.01~0.025";
+    }
+    else
+    {
+        return "0.01-"
+    }
+}
+
+function kspValueExponent(wn, dn)
+{
+    d = (dn - 0.2 / wn) * (Math.sqrt(wn) + 0.25 + 0.5 / Math.sqrt(wn));
+
+    if(d < 0.926)
+    {
+        return "0.15+";
+    }
+    else if(d < 0.995)
+    {
+        return "0.1~0.15";
+    }
+    else if(d < 1.094)
+    {
+        return "0.05~0.1";
+    }
+    else if(d < 1.184)
+    {
+        return "0.025~0.05";
+    }
+    else if(d < 1.298)
+    {
+        return "0.01~0.025";
+    }
+    else
+    {
+        return "0.01-"
+    }
+}
+
 var fs = require('fs');
 
-var file = ".\\unif_dist1.json";
+// var file = ".\\aqi_dist.json"
+// var file = ".\\lgnorm_dist1.json";
 // var file = ".\\norm_dist1.json";
 // var file = ".\\pm25_dist.json"
+// var file = ".\\unif_dist1.json"
+// var file = ".\\tri_dist1.json"
+var file = ".\\exp_dist1.json"
 
 var dist_data = JSON.parse(fs.readFileSync(file));
 
@@ -326,46 +461,62 @@ transformed = transformNormality(dist_data);
 
 z = andersonDarlingTest(transformed);
 
-console.log('Nor:');
+dn = kolmogorovSmirnovTest(transformed);
 
-console.log("AD-Value: " + z.toString() + "    p-Value: " + pValueNormal(z, transformed.length).toString());
+console.log("|Normal|" + z.toFixed(5).toString() + "|" + adpValueNormal(z, transformed.length).toFixed(5).toString() + "|" + dn.toFixed(5).toString() + "|" + kspValueNormal(transformed.length, dn).toString() + "|");
+
+// console.log('Nor:');
+
+// console.log("AD-Value: " + z.toString() + "    p-Value(AD): " + adpValueNormal(z, transformed.length) + "    KS-Value: " + dn.toString() + "    p-Value(KS): " + kspValueNormal(transformed.length, dn).toString());
 
 // Calculating p value for lognormal dist.
 transformed = transformLognormality(dist_data);
 
-var z, pvalue;
+var z, pvalue, dn, ksp;
 
 if(transformed == 0)
 {
     z = 'N/A';
 
     pvalue = 'N/A';
+
+    dn = 'N/A'
+
+    ksp = 'N/A'
 }
 else
-{
-    console.log(transformed);
-    
-    z = andersonDarlingTest(transformed);
+{   
+    z = andersonDarlingTest(transformed).toFixed(5);
 
-    pvalue = pValueNormal(z, transformed.length)
+    pvalue = adpValueNormal(z, transformed.length).toFixed(5);
+
+    dn = kolmogorovSmirnovTest(transformed).toFixed(5);
+
+    ksp = kspValueNormal(transformed.length, dn);
 }
 
-console.log('Lognor:');
+console.log("|Log-Normal|" + z.toString() + "|" + pvalue.toString() + "|" + dn.toString() + "|" + ksp + "|");
 
-console.log("AD-Value: " + z.toString() + "    p-Value: " + pvalue.toString());
+// console.log('Lognor:');
+
+// console.log("AD-Value: " + z.toString() + "    p-Value(AD): " + pvalue.toString() + "    KS-Value: " + dn.toString() + "    p-Value(KS): " + ksp);
 
 // Calculating p value for uniform dist.
 transformed = transformUniform(dist_data);
 
-transformed.shift();
+// transformed.shift();
 
-transformed.pop();
+// transformed.pop();
 
 z = andersonDarlingTest(transformed);
 
-console.log('Unif:');
+dn = kolmogorovSmirnovTest(transformed);
 
-console.log("AD-Value: " + z.toString() + "    p-Value: " + pValueUniform(z).toString());
+console.log("|Uniform|" + z.toFixed(5).toString() + "|" + adpValueUniform(z).toFixed(5).toString() + "|" + dn.toFixed(5).toString() + "|" + kspValueUniform(transformed.length, dn).toString() + "|");
+
+// console.log('Unif:');
+
+// console.log("AD-Value: " + z.toString() + "    p-Value(AD): " + adpValueUniform(z).toString() + "    KS-Value: " + dn.toString() + "    p-Value(KS): " + kspValueUniform(transformed.length, dn).toString());
 
 // Calculating ad value for trangular dist.
 transformed = transformTriangle(dist_data);
@@ -376,9 +527,13 @@ transformed.pop();
 
 z = andersonDarlingTest(transformed);
 
-console.log('Tria:');
+dn = kolmogorovSmirnovTest(transformed);
 
-console.log("AD-Value: " + z.toString() + "    p-Value: N/A");
+console.log("|Triangular|" + z.toFixed(5).toString() + "|N/A" + "|" + dn.toFixed(5).toString() + "|N/A|");
+
+// console.log('Tria:');
+
+// console.log("AD-Value: " + z.toString() + "    p-Value(AD): N/A" + "    KS-Value: " + dn.toString() + "    p-Value(KS): N/A");
 
 // Calculating p value for exponent dist.
 transformed = transformExponent(dist_data);
@@ -390,14 +545,24 @@ if(transformed == 0)
     z = 'N/A';
 
     pvalue = 'N/A';
+
+    dn = 'N/A';
+
+    ksp = 'N/A';
 }
 else
 {
-    z = andersonDarlingTest(transformed);
+    z = andersonDarlingTest(transformed).toFixed(5);
 
-    pvalue = pValueExponent(z, transformed.length)
+    pvalue = adpValueExponent(z, transformed.length).toFixed(5);
+
+    dn = kolmogorovSmirnovTest(transformed).toFixed(5);
+
+    ksp = kspValueExponent(transformed.length, dn);
 }
 
-console.log('Exp:')
+console.log("|Exponential|" + z.toString() + "|" + pvalue.toString() + "|" + dn.toString() + "|" + ksp + "|");
 
-console.log("AD-Value: " + z.toString() + "    p-Value: " + pvalue.toString());
+// console.log('Exp:')
+
+// console.log("AD-Value: " + z.toString() + "    p-Value(AD): " + pvalue.toString() + "    KS-Value: " + dn.toString() + "    p-Value(KS): " + ksp);
