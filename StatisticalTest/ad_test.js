@@ -188,6 +188,33 @@ function transformExponent(data) {
     return transformed.sort();
 }
 
+function transformBeta(data)
+{
+    mean = 0;
+
+    for(i = 0; i < data.length; ++i)
+    {
+        mean += data[i];
+    }
+
+    mean /= data.length;
+
+    variance = 0;
+
+    for(i = 0; i < data.length; ++i)
+    {
+        variance += (mean - data[i])**2;
+    }
+
+    variance /= (data.length - 1);
+
+    alpha = mean**2 * ((1 - mean) / variance - 1 / mean);
+
+    beta = alpha * (1 / mean - 1);
+
+    transformed = [];
+}
+
 function andersonDarlingTest(data) {
     n = data.length;
 
