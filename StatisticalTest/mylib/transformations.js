@@ -115,11 +115,17 @@ function exponent(data) {
     
     mu = spMath.mean(data);
 
-    lambda = data.length / mu;
+    lambda = 1 / mu;
 
     transformed = [];
 
-    for (i = 0; i < data.length; ++i) {
+    for (i = 0; i < data.length; ++i)
+     {
+        if(data[i] <= 0)
+        {
+            return [];
+        }
+
         transformed.push(1 - Math.exp(- lambda * data[i]));
     }
 
@@ -155,7 +161,13 @@ function gamma(data)
 
     for(i = 0; i < data.length; ++i)
     {
-        transformed.push(spMath.regularizedLowerIncompleteGamma(alpha, beta * data[i]));
+        if(data[i] <= 0)
+        {
+            return [];
+        }
+
+        transformed.push(spMath.regularizedLowerIncompleteGamma(beta * data[i], alpha));
+
     }
 
     return transformed.sort();
