@@ -1,3 +1,5 @@
+transformations = require('./')
+
 function erf(x) {
     // constants
     a1 = 0.254829592;
@@ -22,6 +24,32 @@ function erf(x) {
     y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
 
     return sign * y;
+}
+
+function mean(data)
+{
+    mu = 0;
+
+    for(i = 0; i < data.length; ++i)
+    {
+        mu += data[i];
+    }
+
+    return mu /= data.length;
+}
+
+function variance(data)
+{
+    mu = mean(data);
+
+    varia = 0;
+
+    for(i = 0; i < data.length; ++i)
+    {
+        varia += (data[i] - mu)**2;
+    }
+
+    return varia /= (data.length - 1);
 }
 
 function transformNormality(data) {
@@ -188,31 +216,51 @@ function transformExponent(data) {
     return transformed.sort();
 }
 
-function transformBeta(data)
+// function transformBeta(data)
+// {
+//     mean = 0;
+
+//     for(i = 0; i < data.length; ++i)
+//     {
+//         mean += data[i];
+//     }
+
+//     mean /= data.length;
+
+//     variance = 0;
+
+//     for(i = 0; i < data.length; ++i)
+//     {
+//         variance += (mean - data[i])**2;
+//     }
+
+//     variance /= (data.length - 1);
+
+//     alpha = mean**2 * ((1 - mean) / variance - 1 / mean);
+
+//     beta = alpha * (1 / mean - 1);
+
+//     transformed = [];
+// }
+
+function transformGamma(data)
 {
-    mean = 0;
+    mu = mean(data);
 
-    for(i = 0; i < data.length; ++i)
-    {
-        mean += data[i];
-    }
+    sigmaSqr = variance(data);
 
-    mean /= data.length;
+    beta = mu / sigmaSqr;
 
-    variance = 0;
+    alpha = mu * beta;
 
-    for(i = 0; i < data.length; ++i)
-    {
-        variance += (mean - data[i])**2;
-    }
-
-    variance /= (data.length - 1);
-
-    alpha = mean**2 * ((1 - mean) / variance - 1 / mean);
-
-    beta = alpha * (1 / mean - 1);
+    // console.log("A: " + alpha.toString() + "   Beta: " + beta.toString());
 
     transformed = [];
+
+    for(i = 0; i < data.length; ++i)
+    {}
+
+    return transformed;
 }
 
 function andersonDarlingTest(data) {
@@ -519,37 +567,42 @@ function batchTest(dist_data) {
 
 var fs = require('fs');
 
-console.log("AQI:")
-var file = ".\\aqi_dist.json";
-var dist_data = JSON.parse(fs.readFileSync(file));
-batchTest(dist_data);
+// console.log("AQI:")
+// var file = ".\\aqi_dist.json";
+// var dist_data = JSON.parse(fs.readFileSync(file));
+// batchTest(dist_data);
 
-console.log("PM2.5:")
-var file = ".\\pm25_dist.json"
-var dist_data = JSON.parse(fs.readFileSync(file));
-batchTest(dist_data);
+// console.log("PM2.5:")
+// var file = ".\\pm25_dist.json"
+// var dist_data = JSON.parse(fs.readFileSync(file));
+// batchTest(dist_data);
 
-console.log("Norm:");
-var file = ".\\norm_dist1.json"
-var dist_data = JSON.parse(fs.readFileSync(file));
-batchTest(dist_data);
+// console.log("Norm:");
+// var file = ".\\norm_dist1.json"
+// var dist_data = JSON.parse(fs.readFileSync(file));
+// batchTest(dist_data);
 
-console.log("Log-Norm:");
-var file = ".\\lgnorm_dist1.json"
-var dist_data = JSON.parse(fs.readFileSync(file));
-batchTest(dist_data);
+// console.log("Log-Norm:");
+// var file = ".\\lgnorm_dist1.json"
+// var dist_data = JSON.parse(fs.readFileSync(file));
+// batchTest(dist_data);
 
-console.log("Uniform:");
-var file = ".\\unif_dist1.json"
-var dist_data = JSON.parse(fs.readFileSync(file));
-batchTest(dist_data);
+// console.log("Uniform:");
+// var file = ".\\unif_dist1.json"
+// var dist_data = JSON.parse(fs.readFileSync(file));
+// batchTest(dist_data);
 
-console.log("Triangle:");
-var file = ".\\tri_dist1.json"
-var dist_data = JSON.parse(fs.readFileSync(file));
-batchTest(dist_data);
+// console.log("Triangle:");
+// var file = ".\\tri_dist1.json"
+// var dist_data = JSON.parse(fs.readFileSync(file));
+// batchTest(dist_data);
 
-console.log("Exponent:");
-var file = ".\\exp_dist1.json"
+// console.log("Exponent:");
+// var file = ".\\exp_dist1.json"
+// var dist_data = JSON.parse(fs.readFileSync(file));
+// batchTest(dist_data);
+
+console.log("Gamma:")
+var file = ".\\gamma_dist1.json";
 var dist_data = JSON.parse(fs.readFileSync(file));
-batchTest(dist_data);
+transformGamma(dist_data);
