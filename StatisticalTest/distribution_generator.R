@@ -36,11 +36,11 @@ library(rjson)
 # hist(dist, main = "Triangle Distribution")
 # dev.off()
 
-alpha = 3
-beta = 0.5
-dist = rgamma(1000, alpha, rate = beta)
-jsoned <- toJSON(dist)
-write.table(jsoned, './gamma_dist1.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
-png(file = "./gamma_dist1.png")
-hist(dist, main = paste("Gamma Distribution(Alpha=", alpha, ", Beta=", beta, ")"))
-dev.off()
+# alpha = 3
+# beta = 0.5
+# dist = rgamma(1000, alpha, rate = beta)
+# jsoned <- toJSON(dist)
+# write.table(jsoned, './gamma_dist1.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
+# png(file = "./gamma_dist1.png")
+# hist(dist, main = paste("Gamma Distribution(Alpha=", alpha, ", Beta=", beta, ")"))
+# dev.off()
