@@ -175,7 +175,27 @@ function gamma(data)
 
 function weibull(data)
 {
-    thorw("Transfomation for Weibull distribution is unavailable now.");
+    var mu = spMath.mean(data);
+
+    var sigmaSqr = spMath.variance(data);
+
+    var k = Math.pow(Math.sqrt(sigmaSqr) / mu, -1.086);
+
+    var lambda = mu / spMath.gamma(1 + 1 / k);
+
+    var transformed = [];
+
+    for(i = 0; i < data.length; ++i)
+    {
+        if(data[i] <= 0)
+        {
+            return [];
+        }
+
+        transformed.push(1 - Math.exp(- Math.pow(data[i] / lambda, k)));
+    }
+
+    return transformed.sort();
 }
 
 module.exports = 
@@ -186,5 +206,6 @@ module.exports =
     "triangle" : triangle,
     "exponent" : exponent,
     "beta" : beta,
-    "gamma" : gamma
+    "gamma" : gamma,
+    "weibull" : weibull
 };

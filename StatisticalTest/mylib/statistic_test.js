@@ -243,6 +243,45 @@ class AndersonDarling
 
         return "0";
     }
+
+    static pValueWeibull(data)
+    {
+        var adValue = AndersonDarling.test(data, transformatioins.weibull);
+
+        var wn = data.length;
+
+        if(adValue == null)
+        {
+            return 'N/A';
+        }
+
+        var zStar = adValue * (1 + 0.2 / Math.sqrt(wn));
+
+        if(zStar <= 0.474)
+        {
+            return "0.25+";
+        }
+        else if(zStar <= 0.637)
+        {
+            return (zStar - 0.474) * (0.1 - 0.25) / (0.637 - 0.474) + 0.25;
+        }
+        else if(zStar <= 0.757)
+        {
+            return (zStar - 0.637) * (0.05 - 0.01) / (0.757 - 0.637) + 0.1;
+        }
+        else if(zStar <= 0.877)
+        {
+            return (zStar - 0.757) * (0.025 - 0.05) / (0.877 - 0.757) + 0.05;
+        }
+        else if(zStar <= 1.038)
+        {
+            return (zStar - 0.877) * (0.01 - 0.025) / (1.038 - 0.877) + 0.025;
+        }
+        else
+        {
+            return '0.01-';
+        }
+    }
 };
 
 class KolmogorovSmirnov
@@ -451,6 +490,41 @@ class KolmogorovSmirnov
         else 
         {
             return "0.005-";
+        }
+    }
+
+    static pValueWeibull(data)
+    {
+        var ksValue = KolmogorovSmirnov.test(data, transformations.weibull);
+
+        if(ksValue == null)
+        {
+            return 'N/A';
+        }
+
+        var wn = data.length;
+
+        var d = Math.sqrt(wn) * ksValue;
+
+        if(d <= 1.372)
+        {
+            return '0.1+';
+        }
+        else if(d <= 1.477)
+        {
+            return (d - 1.372) * (0.05 - 0.1) / (1.477 - 1.372) + 0.1;
+        }
+        else if(d <= 1.557)
+        {
+            return (d - 1.477) * (0.025 - 0.5) / (1.557 - 1.477) + 0.05;
+        }
+        else if(d <= 1.671)
+        {
+            return (d - 1.557) * (0.01 - 0.025) / (1.671 - 1.557) + 0.025;
+        }
+        else
+        {
+            return '0.01-';
         }
     }
 };

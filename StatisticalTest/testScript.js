@@ -18,6 +18,8 @@ function batchTest(dist_data) {
 
     console.log("|Gamma|" + statisticTest.AndersonDarling.pValueGamma(dist_data) + "|" + statisticTest.KolmogorovSmirnov.pValueGamma(dist_data) + "|");
 
+    console.log("|Weibull|" + statisticTest.AndersonDarling.pValueWeibull(dist_data) + "|" + statisticTest.KolmogorovSmirnov.pValueWeibull(dist_data) + "|");
+
 }
 
 var fs = require('fs');
@@ -52,12 +54,17 @@ var fs = require('fs');
 // var dist_data = JSON.parse(fs.readFileSync(file));
 // batchTest(dist_data);
 
-console.log("Exponent:");
-var file = ".\\exp_dist1.json"
-var dist_data = JSON.parse(fs.readFileSync(file));
-batchTest(dist_data);
+// console.log("Exponent:");
+// var file = ".\\exp_dist1.json"
+// var dist_data = JSON.parse(fs.readFileSync(file));
+// batchTest(dist_data);
 
 // console.log("Gamma:");
 // var file = ".\\gamma_dist1.json";
 // var dist_data = JSON.parse(fs.readFileSync(file));
 // batchTest(dist_data);
+
+console.log("Weibull:");
+var file = ".\\weib_dist1.json";
+var dist_data = JSON.parse(fs.readFileSync(file));
+batchTest(dist_data);
