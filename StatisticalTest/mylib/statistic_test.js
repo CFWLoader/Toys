@@ -155,23 +155,28 @@ class AndersonDarling
             }
             else if(adValue <= 0.657)
             {
-                return "0.10~0.25";
+                // return "0.10~0.25";
+                return (adValue - 0.486) * (0.1 - 0.25) / (0.657 - 0.486) + 0.25;
             }
             else if(adValue <= 0.786)
             {
-                return "0.05~0.10";
+                // return "0.05~0.10";
+                return (adValue - 0.657) * (0.05 - 0.1) / (0.786 - 0.657) + 0.1;
             }
             else if(adValue <= 0.917)
             {
-                return "0.025~0.05";
+                // return "0.025~0.05";
+                return (adValue - 0.786) * (0.025 - 0.05) / (0.917 - 0.786) + 0.05;
             }
             else if(adValue <= 1.092)
             {
-                return "0.01~0.025";
+                // return "0.01~0.025";
+                return (adValue - 0.917) * (0.01 - 0.025) / (1.092 - 0.917) + 0.025;
             }
             else if(adValue <= 1.227)
             {
-                return "0.005~0.01";
+                // return "0.005~0.01";
+                return (adValue - 1.092) * (0.005 - 0.01) / (1.227 - 1.092) + 0.01;
             }
             else
             {
@@ -186,26 +191,31 @@ class AndersonDarling
             }
             else if(adValue <= 0.637)
             {
-                return "0.10~0.25";
+                // return "0.10~0.25";
+                return (adValue - 0.473) * (0.1 - 0.25) / (0.637 - 0.473) + 0.25;
             }
             else if(adValue <= 0.759)
             {
-                return "0.05~0.10";
+                // return "0.05~0.10";
+                return (adValue - 0.637) * (0.05 - 0.1) / (0.759 - 0.637) + 0.1;
             }
             else if(adValue <= 0.883)
             {
-                return "0.025~0.05";
+                // return "0.025~0.05";
+                return (adValue - 0.759) * (0.025 - 0.05) / (0.883 - 0.759) + 0.05;
             }
             else if(adValue <= 1.048)
             {
-                return "0.01~0.025";
+                // return "0.01~0.025";
+                return (adValue - 0.883) * (0.01 - 0.025) / (1.048 - 0.883) + 0.025;
             }
             else if(adValue <= 1.173)
             {
-                return "0.005~0.01";
+                // return "0.005~0.01";
+                return (adValue - 1.048) * (0.005 - 0.01) / (1.173 - 1.038) + 0.01;
             }
             else
-            {
+            { 
                 return "0.005-";
             }
         }
@@ -217,23 +227,28 @@ class AndersonDarling
             }
             else if(adValue <= 0.631)
             {
-                return "0.10~0.25";
+                // return "0.10~0.25";
+                return (adValue - 0.47) * (0.1 - 0.25) / (0.631 - 0.47) + 0.25;
             }
             else if(adValue <= 0.752)
             {
-                return "0.05~0.10";
+                // return "0.05~0.10";
+                return (adValue - 0.631) * (0.05 - 0.1) / (0.752 - 0.631) + 0.1;
             }
             else if(adValue <= 0.873)
             {
-                return "0.025~0.05";
+                // return "0.025~0.05";
+                return (adValue - 0.752) * (0.025 - 0.05) / (0.873 - 0.752) + 0.05;
             }
             else if(adValue <= 1.035)
             {
-                return "0.01~0.025";
+                // return "0.01~0.025";
+                return (adValue - 0.873) * (0.01 - 0.025) / (1.035 - 0.873) + 0.025;
             }
             else if(adValue <= 1.159)
             {
-                return "0.005~0.01";
+                // return "0.005~0.01";
+                return (adValue - 1.035) * (0.005 - 0.01) / (1.159 - 1.035) + 0.01;
             }
             else
             {
@@ -332,19 +347,23 @@ class KolmogorovSmirnov
             return "0.15+";
         }
         else if (d < 0.819) {
-            return "0.1~0.15";
+            // return "0.1~0.15";
+            return (d - 0.775) * (0.1 - 0.15) / (0.819 - 0.775) + 0.15;
         }
         else if (d < 0.895) {
-            return "0.05~0.1";
+            // return "0.05~0.1";
+            return (d - 0.819) * (0.05 - 0.1) / (0.895 - 0.819) + 0.1;
         }
         else if (d < 0.995) {
-            return "0.025~0.05";
+            // return "0.025~0.05";
+            return (d - 0.895) * (0.025 - 0.05) / (0.995 - 0.895) + 0.05;
         }
         else if (d < 1.035) {
-            return "0.01~0.025";
+            // return "0.01~0.025";
+            return (d - 0.995) * (0.01 - 0.025) / (1.035 - 0.995) + 0.025;
         }
         else {
-            return "0.01-"
+            return "0.01-";
         }
     }
 
@@ -365,19 +384,23 @@ class KolmogorovSmirnov
             return "0.15+";
         }
         else if (d < 0.819) {
-            return "0.1~0.15";
+            // return "0.1~0.15";
+            return (d - 0.775) * (0.1 - 0.15) / (0.819 - 0.775) + 0.15;
         }
         else if (d < 0.895) {
-            return "0.05~0.1";
+            // return "0.05~0.1";
+            return (d - 0.819) * (0.05 - 0.1) / (0.895 - 0.819) + 0.1;
         }
         else if (d < 0.995) {
-            return "0.025~0.05";
+            // return "0.025~0.05";
+            return (d - 0.895) * (0.025 - 0.05) / (0.995 - 0.895) + 0.05;
         }
         else if (d < 1.035) {
-            return "0.01~0.025";
+            // return "0.01~0.025";
+            return (d - 0.995) * (0.01 - 0.025) / (1.035 - 0.995) + 0.025;
         }
         else {
-            return "0.01-"
+            return "0.01-";
         }
     }
 
@@ -422,20 +445,24 @@ class KolmogorovSmirnov
         
         var d = (ksValue - 0.2 / wn) * (Math.sqrt(wn) + 0.25 + 0.5 / Math.sqrt(wn));
 
-        if (d < 0.926) {
+        if (d <= 0.926) {
             return "0.15+";
         }
-        else if (d < 0.995) {
-            return "0.1~0.15";
+        else if (d <= 0.995) {
+            // return "0.1~0.15";
+            return (d - 0.926) * (0.1 - 0.15) / (0.995 - 0.926) + 0.15;
         }
-        else if (d < 1.094) {
-            return "0.05~0.1";
+        else if (d <= 1.094) {
+            // return "0.05~0.1";
+            return (d - 0.995) * (0.05 - 0.1) / (1.094 - 0.995) + 0.1;
         }
-        else if (d < 1.184) {
-            return "0.025~0.05";
+        else if (d <= 1.184) {
+            // return "0.025~0.05";
+            return (d - 1.094) * (0.025 - 0.05) / (1.184 - 1.094) + 0.05;
         }
-        else if (d < 1.298) {
-            return "0.01~0.025";
+        else if (d <= 1.298) {
+            // return "0.01~0.025";
+            return (d - 1.184) * (0.01 - 0.025) / (1.298 - 1.184) + 0.025;
         }
         else {
             return "0.01-"
@@ -461,31 +488,38 @@ class KolmogorovSmirnov
         }
         else if(d <= 0.78)
         {
-            return "0.2~0.25";
+            // return "0.2~0.25";
+            return (d - 0.74) * (0.2 - 0.25) / (0.78 - 0.74) + 0.25;
         }
         else if(d <= 0.8)
         {
-            return "0.15~0.2";
+            // return "0.15~0.2";
+            return (d - 0.78) * (0.15 - 0.2) / (0.8 - 0.78) + 0.2;
         }
         else if(d <= 0.858)
         {
-            return "0.1~0.15";
+            // return "0.1~0.15";
+            return (d - 0.8) * (0.1 - 0.15) / (0.858 - 0.8) + 0.15;
         }
         else if(d <= 0.928)
         {
-            return "0.05~0.1";
+            // return "0.05~0.1";
+            return (d - 0.858) * (0.05 - 0.1) / (0.928 - 0.858) + 0.1;
         }
         else if(d <= 0.99)
         {
-            return "0.025~0.05";
+            // return "0.025~0.05";
+            return (d - 0.928) * (0.025 - 0.05) / (0.99 - 0.928) + 0.05;
         }
         else if(d <= 1.069)
         {
-            return "0.01~0.025";
+            // return "0.01~0.025";
+            return (d - 0.99) * (0.01 - 0.025) / (1.069 - 0.99) + 0.025;
         }
         else if(d <= 1.13)
         {
-            return "0.005~0.01";
+            // return "0.005~0.01";
+            return (d - 1.069) * (0.005 - 0.01) / (1.13 - 1.069) + 0.01;
         }
         else 
         {

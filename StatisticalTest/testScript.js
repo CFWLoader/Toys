@@ -4,21 +4,37 @@ spMath = require('./mylib/sp_math.js');
 
 statisticTest = require('./mylib/statistic_test.js');
 
+var adTest = statisticTest.AndersonDarling, ksTest = statisticTest.KolmogorovSmirnov;
+
+function formatDisplay(val)
+{
+    if(typeof(val) == 'number')
+    {
+        return val.toFixed(5).toString();
+    }
+    else
+    {
+        return val;
+    }
+}
+
 function batchTest(dist_data) {
 
-    console.log("|Normal|" + statisticTest.AndersonDarling.pValueNormal(dist_data).toFixed(5).toString() + "|" + statisticTest.KolmogorovSmirnov.pValueNormal(dist_data) + "|");    
+    console.log("|Normal|" + formatDisplay(adTest.pValueNormal(dist_data)) + "|" + formatDisplay(ksTest.pValueNormal(dist_data)) + "|");    
     
-    console.log("|Log-Normal|" + statisticTest.AndersonDarling.pValueLogNormal(dist_data) + "|" + statisticTest.KolmogorovSmirnov.pValueLogNormal(dist_data) + "|");
+    console.log("|Log-Normal|" + formatDisplay(adTest.pValueLogNormal(dist_data)) + "|" + formatDisplay(ksTest.pValueLogNormal(dist_data)) + "|");
 
-    console.log("|Uniform|" + statisticTest.AndersonDarling.pValueUniform(dist_data).toFixed(5).toString() + "|" + statisticTest.KolmogorovSmirnov.pValueUniform(dist_data).toFixed(5).toString() + "|");
+    console.log("|Uniform|" + formatDisplay(adTest.pValueUniform(dist_data)) + "|" + formatDisplay(ksTest.pValueUniform(dist_data)) + "|");
 
     console.log("|Triangular|N/A|N/A|");
 
-    console.log("|Exponential|" + statisticTest.AndersonDarling.pValueExponential(dist_data) + "|" + statisticTest.KolmogorovSmirnov.pValueExponential(dist_data) + "|");
+    console.log("|Exponential|" + formatDisplay(adTest.pValueExponential(dist_data)) + "|" + formatDisplay(ksTest.pValueExponential(dist_data)) + "|");
 
-    console.log("|Gamma|" + statisticTest.AndersonDarling.pValueGamma(dist_data) + "|" + statisticTest.KolmogorovSmirnov.pValueGamma(dist_data) + "|");
+    console.log("|Beta|N/A|N/A|");
 
-    console.log("|Weibull|" + statisticTest.AndersonDarling.pValueWeibull(dist_data) + "|" + statisticTest.KolmogorovSmirnov.pValueWeibull(dist_data) + "|");
+    console.log("|Gamma|" + formatDisplay(adTest.pValueGamma(dist_data)) + "|" + formatDisplay(ksTest.pValueGamma(dist_data)) + "|");
+
+    console.log("|Weibull|" + formatDisplay(adTest.pValueWeibull(dist_data)) + "|" + formatDisplay(ksTest.pValueWeibull(dist_data)) + "|");
 
 }
 
