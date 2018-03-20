@@ -143,9 +143,9 @@ class AndersonDarling
             return 'N/A';
         }
 
-        var mu = spMath.mean(data), sigmaSqr = spMath.variance(data);
+        var parameters = spMath.gammaParameters(data);
 
-        var alpha = mu**2 / sigmaSqr;
+        var alpha = parameters["alpha"];
 
         if(alpha <= 1)
         {
@@ -609,16 +609,16 @@ class OneKeyTestReport
 
     static gamma(data)
     {
-        var mu = spMath.mean(data), sigmaSqr = spMath.variance(data);
+        var parameters = spMath.gammaParameters(data);
 
-        var beta = mu / sigmaSqr, alpha = mu * beta;
+        var alpha = parameters["alpha"], beta = parameters["beta"];
 
         var transformed = transformations.gamma(data);
 
         var result = {
             "type" : "gamma",
             "mu" : mu,
-            "sigma" : Math.sqrt(sigmaSqr),
+            // "sigma" : Math.sqrt(sigmaSqr),
             "shape1" : alpha,
             "shape2" : beta,
             "adValue" : AndersonDarling.test(transformed),

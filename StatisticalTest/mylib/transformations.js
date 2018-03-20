@@ -172,25 +172,15 @@ function beta(data)
 
 function gamma(data)
 {
-    mu = spMath.mean(data);
+    var parameters = spMath.gammaParameters(data);
 
-    sigmaSqr = spMath.variance(data);
-
-    beta = mu / sigmaSqr;
-
-    alpha = mu * beta;
+    var alpha = parameters["alpha"], beta = parameters["beta"];
 
     transformed = [];
 
     for(i = 0; i < data.length; ++i)
     {
-        if(data[i] <= 0)
-        {
-            return [];
-        }
-
         transformed.push(spMath.regularizedLowerIncompleteGamma(beta * data[i], alpha));
-
     }
 
     return mathjs.sort(transformed);

@@ -1,34 +1,36 @@
 library(rjson)
 
-input_data = read.csv('./aqipm25.csv', head = FALSE)
+input_data = read.csv('./aqipm25.csv', fileEncoding = "UTF-8-BOM")
 
-print(paste("AQI's Minimal Value: ", min(as.numeric(input_data$V1))))
+print(head(input_data))
 
-print(paste("AQI's Maximal Value: ", max(as.numeric(input_data$V1))))
+# print(paste("AQI's Minimal Value: ", min(as.numeric(input_data$AQI))))
 
-print(paste("AQI's Mean: ", mean(as.numeric(input_data$V1))))
+# print(paste("AQI's Maximal Value: ", max(as.numeric(input_data$AQI))))
 
-print(paste("AQI's Standard Variance: ", sqrt(var(as.numeric(input_data$V1)))))
+# print(paste("AQI's Mean: ", mean(as.numeric(input_data$AQI))))
 
-print(paste("PM2.5's Mean: ", mean(as.numeric(input_data$V2))))
+# print(paste("AQI's Standard Variance: ", sqrt(var(as.numeric(input_data$AQI)))))
 
-print(paste("PM2.5's Standard Variance: ", sqrt(var(as.numeric(input_data$V2)))))
+# print(paste("PM2.5's Mean: ", mean(as.numeric(input_data$V2))))
 
-# png(file = './aqi.png')
+# print(paste("PM2.5's Standard Variance: ", sqrt(var(as.numeric(input_data$V2)))))
 
-# write.table(toJSON(as.numeric(input_data$V1)), './aqi_dist.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
+png(file = './aqi.png')
 
-# hist(as.numeric(as.numeric(input_data$V1)), main = 'AQI Dist', xlab = 'AQI Values')
+write.table(toJSON(as.numeric(input_data$AQI)), './aqi_dist.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
 
-# dev.off()
+hist(as.numeric(as.numeric(input_data$AQI)), main = 'AQI Dist', xlab = 'AQI Values')
 
-# png(file = './pm25.png')
+dev.off()
 
-# write.table(toJSON(as.numeric(input_data$V2)), './pm25_dist.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
+png(file = './pm25.png')
 
-# hist(as.numeric(input_data$V2), main = 'PM2.5 Dist', xlab = 'PM2.5 Values')
+write.table(toJSON(as.numeric(input_data$PM2.5)), './pm25_dist.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
 
-# dev.off()
+hist(as.numeric(input_data$PM2.5), main = 'PM2.5 Dist', xlab = 'PM2.5 Values')
+
+dev.off()
 
 # library(ggplot2)
 
