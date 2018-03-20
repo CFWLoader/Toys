@@ -47,9 +47,24 @@ function logNormality(data) {
 
 function uniform(data) {
 
-    a = data.reduce(function (a, b) { return a < b ? a : b; }) - 0.001;
+    // var minVal = data.reduce(function (a, b) { return a < b ? a : b; });
 
-    b = data.reduce(function (a, b) { return a > b ? a : b; }) + 0.001;
+    // var maxVal = data.reduce(function (a, b) { return a > b ? a : b; });
+
+    var mu = spMath.mean(data), sigma = Math.sqrt(spMath.variance(data));
+
+    var a1 = Math.sqrt(3) * sigma + mu, a2 = - Math.sqrt(3) * sigma + mu;
+
+    var a, b;
+
+    if(a1 < a2)
+    {
+        a = a1, b = a2;
+    }
+    else
+    {
+        a = a2, b = a1;
+    }
 
     len = b - a;
 

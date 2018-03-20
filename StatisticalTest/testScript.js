@@ -170,10 +170,10 @@ function batchTestDetailedReport(dist_data) {
 
 var fs = require('fs');
 
-console.log("AQI:")
-var file = ".\\aqi_dist.json";
-var dist_data = JSON.parse(fs.readFileSync(file));
-batchTestDetailedReport(dist_data);
+// console.log("AQI:")
+// var file = ".\\aqi_dist.json";
+// var dist_data = JSON.parse(fs.readFileSync(file));
+// batchTestDetailedReport(dist_data);
 
 // console.log("PM2.5:")
 // var file = ".\\pm25_dist.json"
@@ -185,10 +185,10 @@ batchTestDetailedReport(dist_data);
 // var dist_data = JSON.parse(fs.readFileSync(file));
 // batchTest(dist_data);
 
-// console.log("Log-Norm:");
-// var file = ".\\lgnorm_dist1.json"
-// var dist_data = JSON.parse(fs.readFileSync(file));
-// batchTest(dist_data);
+console.log("Log-Norm:");
+var file = ".\\lgnorm_dist1.json"
+var dist_data = JSON.parse(fs.readFileSync(file));
+batchTestDetailedReport(dist_data);
 
 // console.log("Uniform:");
 // var file = ".\\unif_dist1.json"

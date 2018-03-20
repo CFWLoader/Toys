@@ -2,23 +2,29 @@ library(rjson)
 
 input_data = read.csv('./aqipm25.csv', head = FALSE)
 
-# print(str(input_data$V1))
+print(paste("AQI's Mean: ", mean(as.numeric(input_data$V1))))
 
-png(file = './aqi.png')
+print(paste("AQI's Standard Variance: ", sqrt(var(as.numeric(input_data$V1)))))
 
-write.table(toJSON(as.numeric(input_data$V1)), './aqi_dist.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
+print(paste("PM2.5's Mean: ", mean(as.numeric(input_data$V2))))
 
-hist(as.numeric(as.numeric(input_data$V1)), main = 'AQI Dist', xlab = 'AQI Values')
+print(paste("PM2.5's Standard Variance: ", sqrt(var(as.numeric(input_data$V2)))))
 
-dev.off()
+# png(file = './aqi.png')
 
-png(file = './pm25.png')
+# write.table(toJSON(as.numeric(input_data$V1)), './aqi_dist.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
 
-write.table(toJSON(as.numeric(input_data$V2)), './pm25_dist.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
+# hist(as.numeric(as.numeric(input_data$V1)), main = 'AQI Dist', xlab = 'AQI Values')
 
-hist(as.numeric(input_data$V2), main = 'PM2.5 Dist', xlab = 'PM2.5 Values')
+# dev.off()
 
-dev.off()
+# png(file = './pm25.png')
+
+# write.table(toJSON(as.numeric(input_data$V2)), './pm25_dist.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+# hist(as.numeric(input_data$V2), main = 'PM2.5 Dist', xlab = 'PM2.5 Values')
+
+# dev.off()
 
 # library(ggplot2)
 
