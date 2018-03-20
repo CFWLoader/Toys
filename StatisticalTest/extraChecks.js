@@ -1,5 +1,7 @@
 var transformations = require('./mylib/transformations.js');
 
+var oneKey = require('./mylib/statistic_test.js').OneKeyTestReport;
+
 var fs = require('fs');
 
 console.log("Uniform:")

@@ -1,5 +1,7 @@
 spMath = require('./sp_math.js')
 
+mathjs = require('mathjs')
+
 function normality(data) 
 {
     transformed = [];
@@ -14,7 +16,7 @@ function normality(data)
         transformed.push(0.5 + spMath.erf((data[i] - mu) / (Math.SQRT2 * sigma)) / 2);
     }
 
-    return transformed.sort();
+    return mathjs.sort(transformed);
 
 }
 
@@ -42,39 +44,45 @@ function logNormality(data) {
         transformed.push(0.5 + spMath.erf((Math.log(data[i]) - log_mean) / (Math.SQRT2 * log_sd)) / 2);
     }
 
-    return transformed.sort();
+    return mathjs.sort(transformed);
 }
 
 function uniform(data) {
 
-    // var minVal = data.reduce(function (a, b) { return a < b ? a : b; });
+    var minVal = data.reduce(function (a, b) { return a < b ? a : b; }) - 4 * Number.EPSILON;
 
-    // var maxVal = data.reduce(function (a, b) { return a > b ? a : b; });
+    var maxVal = data.reduce(function (a, b) { return a > b ? a : b; }) + 4 * Number.EPSILON;
 
-    var mu = spMath.mean(data), sigma = Math.sqrt(spMath.variance(data));
+    // var mu = spMath.mean(data), sigma = Math.sqrt(spMath.variance(data));
 
-    var a1 = Math.sqrt(3) * sigma + mu, a2 = - Math.sqrt(3) * sigma + mu;
+    // var a1 = Math.sqrt(3) * sigma + mu, a2 = - Math.sqrt(3) * sigma + mu;
 
-    var a, b;
+    // var a, b;
 
-    if(a1 < a2)
-    {
-        a = a1, b = a2;
-    }
-    else
-    {
-        a = a2, b = a1;
-    }
+    // if(a1 < a2)
+    // {
+    //     a = a1, b = a2;
+    // }
+    // else
+    // {
+    //     a = a2, b = a1;
+    // }
 
-    len = b - a;
+    // len = b - a;
+
+    // console.log(maxVal - minVal);
+
+    // console.log(len);
+
+    var len = maxVal - minVal;
 
     transformed = [];
 
     for (i = 0; i < data.length; ++i) {
-        transformed.push((data[i] - a) / len);
+        transformed.push((data[i] - minVal) / len);
     }
 
-    return transformed.sort();
+    return mathjs.sort(transformed);
 }
 
 function triangle(data) 
@@ -123,7 +131,7 @@ function triangle(data)
         }
     }
 
-    return transformed.sort();
+    return mathjs.sort(transformed);
 }
 
 function exponent(data) {
@@ -144,7 +152,7 @@ function exponent(data) {
         transformed.push(1 - Math.exp(- lambda * data[i]));
     }
 
-    return transformed.sort();
+    return mathjs.sort(transformed);
 }
 
 function beta(data)
@@ -185,7 +193,7 @@ function gamma(data)
 
     }
 
-    return transformed.sort();
+    return mathjs.sort(transformed);
 }
 
 function weibull(data)
@@ -210,7 +218,7 @@ function weibull(data)
         transformed.push(1 - Math.exp(- Math.pow(data[i] / lambda, k)));
     }
 
-    return transformed.sort();
+    return mathjs.sort(transformed);
 }
 
 module.exports = 

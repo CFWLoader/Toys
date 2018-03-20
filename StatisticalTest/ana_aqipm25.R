@@ -2,6 +2,10 @@ library(rjson)
 
 input_data = read.csv('./aqipm25.csv', head = FALSE)
 
+print(paste("AQI's Minimal Value: ", min(as.numeric(input_data$V1))))
+
+print(paste("AQI's Maximal Value: ", max(as.numeric(input_data$V1))))
+
 print(paste("AQI's Mean: ", mean(as.numeric(input_data$V1))))
 
 print(paste("AQI's Standard Variance: ", sqrt(var(as.numeric(input_data$V1)))))
