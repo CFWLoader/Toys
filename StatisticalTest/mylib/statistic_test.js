@@ -563,8 +563,17 @@ class KolmogorovSmirnov
     }
 };
 
+class OneKeyTestReport
+{
+    static normal()
+    {
+        
+    }
+};
+
 module.exports = 
 {
     "AndersonDarling" : AndersonDarling,
-    "KolmogorovSmirnov" : KolmogorovSmirnov
+    "KolmogorovSmirnov" : KolmogorovSmirnov,
+    "OneKeyTestReport" : OneKeyTestReport
 };
