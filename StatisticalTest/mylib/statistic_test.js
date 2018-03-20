@@ -1,6 +1,6 @@
 spMath = require('./sp_math.js');
 
-transformatioins = require('./transformations.js');
+transformations = require('./transformations.js');
 
 class AndersonDarling
 {
@@ -28,7 +28,7 @@ class AndersonDarling
 
     static pValueNormal(data)
     {
-        var adValue = AndersonDarling.test(data, transformatioins.normality);
+        var adValue = AndersonDarling.test(data, transformations.normality);
 
         var n = data.length;
 
@@ -53,7 +53,7 @@ class AndersonDarling
 
     static pValueLogNormal(data)
     {
-        var adValue = AndersonDarling.test(data, transformatioins.logNormality);
+        var adValue = AndersonDarling.test(data, transformations.logNormality);
 
         if(adValue == null)
         {
@@ -83,7 +83,7 @@ class AndersonDarling
 
     static pValueUniform(data)
     {
-        var adValue = AndersonDarling.test(data, transformatioins.uniform);
+        var adValue = AndersonDarling.test(data, transformations.uniform);
 
         var p = 0;
 
@@ -107,7 +107,7 @@ class AndersonDarling
 
     static pValueExponential(data)
     {
-        var adValue = AndersonDarling.test(data, transformatioins.exponent);
+        var adValue = AndersonDarling.test(data, transformations.exponent);
 
         if(adValue == null)
         {
@@ -136,7 +136,7 @@ class AndersonDarling
 
     static pValueGamma(data)
     {
-        var adValue = AndersonDarling.test(data, transformatioins.gamma);
+        var adValue = AndersonDarling.test(data, transformations.gamma);
 
         if(adValue == null)
         {
@@ -261,7 +261,7 @@ class AndersonDarling
 
     static pValueWeibull(data)
     {
-        var adValue = AndersonDarling.test(data, transformatioins.weibull);
+        var adValue = AndersonDarling.test(data, transformations.weibull);
 
         var wn = data.length;
 
@@ -337,7 +337,7 @@ class KolmogorovSmirnov
 
     static pValueNormal(data)
     {
-        var ksValue = KolmogorovSmirnov.test(data, transformatioins.normality);
+        var ksValue = KolmogorovSmirnov.test(data, transformations.normality);
 
         var n = data.length;
 
@@ -369,7 +369,7 @@ class KolmogorovSmirnov
 
     static pValueLogNormal(data)
     {
-        var ksValue = KolmogorovSmirnov.test(data, transformatioins.logNormality);
+        var ksValue = KolmogorovSmirnov.test(data, transformations.logNormality);
 
         if(ksValue == null)
         {
@@ -406,7 +406,7 @@ class KolmogorovSmirnov
 
     static pValueUniform(data)
     {
-        var ksValue = KolmogorovSmirnov.test(data, transformatioins.uniform);
+        var ksValue = KolmogorovSmirnov.test(data, transformations.uniform);
 
         var wn = data.length;
 
@@ -434,7 +434,7 @@ class KolmogorovSmirnov
 
     static pValueExponential(data)
     {
-        var ksValue = KolmogorovSmirnov.test(data, transformatioins.exponent);
+        var ksValue = KolmogorovSmirnov.test(data, transformations.exponent);
 
         if(ksValue == null)
         {
@@ -471,7 +471,7 @@ class KolmogorovSmirnov
 
     static pValueGamma(data)
     {
-        var ksValue = KolmogorovSmirnov.test(data, transformatioins.gamma);
+        var ksValue = KolmogorovSmirnov.test(data, transformations.gamma);
 
         if(ksValue == null)
         {
@@ -565,9 +565,190 @@ class KolmogorovSmirnov
 
 class OneKeyTestReport
 {
-    static normal()
+    static normality(data)
     {
-        
+        var transformed = transformations.normality(data);
+
+        var result = {
+            "type" : "normality",
+            "mu" : spMath.mean(data),
+            "sigma" : Math.sqrt(spMath.variance(data)),
+            "adValue" : AndersonDarling.test(transformed),
+            "adPvalue" : AndersonDarling.pValueNormal(data),
+            "ksValue" : KolmogorovSmirnov.test(transformed),
+            "ksPvalue" : KolmogorovSmirnov.pValueNormal(data)
+        };
+
+        return result;
+    }
+
+    static logNormality(data)
+    {
+        var transformed = transformations.logNormality(data);
+
+        var mu = spMath.mean(data), sigmaSqr = spMath.variance(data);
+
+        var log_mean = Math.log(mu / Math.sqrt(1 + sigmaSqr / mu ** 2));
+
+        var log_sd = Math.sqrt(Math.log(1 + sigmaSqr / mu ** 2));
+
+        var result = {
+            "type" : "lognormality",
+            "mu" : mu,
+            "sigma" : sigma,
+            "logMu" : log_mean,
+            "logSigma" : log_sd,
+            "adValue" : AndersonDarling.test(transformed),
+            "adPvalue" : AndersonDarling.pValueLogNormal(data),
+            "ksValue" : KolmogorovSmirnov.test(transformed),
+            "ksPvalue" : KolmogorovSmirnov.pValueLogNormal(data)
+        };
+
+        return result;
+    }
+
+    static gamma(data)
+    {
+        var mu = spMath.mean(data), sigmaSqr = spMath.variance(data);
+
+        var beta = mu / sigmaSqr, alpha = mu * beta;
+
+        var transformed = transformations.gamma(data);
+
+        var result = {
+            "type" : "gamma",
+            "mu" : mu,
+            "sigma" : Math.sqrt(sigmaSqr),
+            "shape1" : alpha,
+            "shape2" : beta,
+            "adValue" : AndersonDarling.test(transformed),
+            "adPvalue" : AndersonDarling.pValueNormal(data),
+            "ksValue" : KolmogorovSmirnov.test(transformed),
+            "ksPvalue" : KolmogorovSmirnov.pValueNormal(data)
+        };
+
+        return result;
+    }
+
+    static exponent(data)
+    {
+        var mu = spMath.mean(data), sigma = Math.sqrt(spMath.variance(data));
+
+        var transformed = transformations.exponent(data);
+
+        var result = {
+            "type" : "exponent",
+            "mu" : mu,
+            "shape" : 1 / mu,
+            "sigma" : sigma,
+            "adValue" : AndersonDarling.test(transformed),
+            "adPvalue" : AndersonDarling.pValueExponential(data),
+            "ksValue" : KolmogorovSmirnov.test(transformed),
+            "ksPvalue" : KolmogorovSmirnov.pValueExponential(data)
+        };
+
+        return result;
+    }
+
+    static triangle(data)
+    {
+        var mu = spMath.mean(data), sigma = Math.sqrt(spMath.variance(data));
+
+        var transformed = transformations.triangle(data);
+
+        var result = {
+            "type" : "triangle",
+            "mu" : mu,
+            "sigma" : sigma,
+            "adValue" : AndersonDarling.test(transformed),
+            "adPvalue" : "N/A",
+            "ksValue" : KolmogorovSmirnov.test(transformed),
+            "ksPvalue" : "N/A"
+        };
+
+        return result;
+    }
+
+    static uniform(data)
+    {
+        var minVal = data.reduce(function (a, b) { return a < b ? a : b; }) - 0.001, maxVal = data.reduce(function (a, b) { return a > b ? a : b; }) + 0.001;
+
+        var transformed = transformations.uniform(data);        
+
+        var result = {
+            "type" : "uniform",
+            "min" : minVal,
+            "max" : maxVal,
+            "adValue" : AndersonDarling.test(transformed),
+            "adPvalue" : AndersonDarling.pValueUniform(data),
+            "ksValue" : KolmogorovSmirnov.test(transformed),
+            "ksPvalue" : KolmogorovSmirnov.pValueUniform(data)
+        };
+
+        return result;
+    }
+
+    static weibull(data)
+    {
+        var mu = spMath.mean(data);
+
+        var sigmaSqr = spMath.variance(data);
+
+        var k = Math.pow(Math.sqrt(sigmaSqr) / mu, -1.086);
+
+        var lambda = mu / spMath.gamma(1 + 1 / k);
+
+        var transformed = transformations.weibull(data);        
+
+        var result = {
+            "type" : "weibull",
+            "shape1" : lambda,
+            "shape2" : k,
+            "mu" : mu,
+            "sigma" : Math.sqrt(sigmaSqr),
+            "adValue" : AndersonDarling.test(transformed),
+            "adPvalue" : AndersonDarling.pValueWeibull(data),
+            "ksValue" : KolmogorovSmirnov.test(transformed),
+            "ksPvalue" : KolmogorovSmirnov.pValueWeibull(data)
+        };
+
+        return result;
+    }
+
+    static formatReportString(data)
+    {
+        var header;
+
+        if(data["type"] == "normality")
+        {
+            header = "Normality[mean=" + data["mu"].toString() + ", std_dev=" + data["sigma"].toString() + "]:";
+        }
+        else if(data["type"] == "lognormality")
+        {
+            header = "Log-Normality[log-mean=" + data["logMu"].toString() + ", log-std_dev=" + data["logSigma"].toString() + "]:";
+        }
+        else if(data["type"] == "exponent")
+        {
+            header = "Exponent[shape=" + data["shape"].toString() + "]:";
+        }
+        else if(data["type"] == "gamma")
+        {
+            header = "Gamma[shape1=" + data["shape1"].toString() + ", shape2=" + data["shape2"].toString() + "]:";
+        }
+        else if(data["type"] == "triangle")
+        {
+            header = "Triangle[Not-Available now]:";
+        }
+        else if(data["type"] == "uniform")
+        {
+            header = "Uniform[min=" + data["min"].toString() + ", max=" + data["max"].toString() + "]:";
+        }
+        else if(data["type"] == "weibull")
+        {
+            header = "Weibull[shape1=" + data["shape1"].toString() + ", shape2=" + data["shape2"].toString() + "]:";
+        }
+
+        return header + "\nAD: " + data["adValue"].toString() + ", ADP: " + data["adPvalue"].toString() + ", KS: " + data["ksValue"].toString() + ", KSP: " + data["ksPvalue"].toString();
     }
 };
 

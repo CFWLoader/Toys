@@ -4,7 +4,7 @@ spMath = require('./mylib/sp_math.js');
 
 statisticTest = require('./mylib/statistic_test.js');
 
-var adTest = statisticTest.AndersonDarling, ksTest = statisticTest.KolmogorovSmirnov;
+var adTest = statisticTest.AndersonDarling, ksTest = statisticTest.KolmogorovSmirnov, oneKey = statisticTest.OneKeyTestReport;
 
 function formatDisplay(val)
 {
@@ -37,6 +37,7 @@ function batchTest(dist_data) {
     console.log("|Weibull|" + formatDisplay(adTest.pValueWeibull(dist_data)) + "|" + formatDisplay(ksTest.pValueWeibull(dist_data)) + "|");
 
 }
+
 function batchTestReport(dist_data) {
 
     var adValue, adPvalue, ksValue, ksPvalue;
@@ -129,12 +130,50 @@ function batchTestReport(dist_data) {
 
 }
 
+function batchTestDetailedReport(dist_data) {
+
+    var report;
+
+    console.log("Beta:");
+
+    console.log("AD: N/A, ADP: N/A, KS: N/A, KSP: N/A");
+
+    report = oneKey.exponent(dist_data);
+
+    console.log(oneKey.formatReportString(report));
+
+    report = oneKey.gamma(dist_data);
+
+    console.log(oneKey.formatReportString(report));
+       
+    report = oneKey.normality(dist_data);
+
+    console.log(oneKey.formatReportString(report));
+
+    report = oneKey.logNormality(dist_data);
+
+    console.log(oneKey.formatReportString(report));
+
+    report = oneKey.triangle(dist_data);
+
+    console.log(oneKey.formatReportString(report));
+
+    report = oneKey.uniform(dist_data);
+
+    console.log(oneKey.formatReportString(report));
+
+    report = oneKey.weibull(dist_data);
+
+    console.log(oneKey.formatReportString(report));
+
+}
+
 var fs = require('fs');
 
 console.log("AQI:")
 var file = ".\\aqi_dist.json";
 var dist_data = JSON.parse(fs.readFileSync(file));
-batchTestReport(dist_data);
+batchTestDetailedReport(dist_data);
 
 // console.log("PM2.5:")
 // var file = ".\\pm25_dist.json"
