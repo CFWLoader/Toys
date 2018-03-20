@@ -8,9 +8,12 @@ function normality(data)
 
     mu = spMath.mean(data);
 
-    sigmaSqr = spMath.variance(data);
+    sigma = mathjs.sqrt(spMath.variance(data));
 
-    sigma = Math.sqrt(sigmaSqr);
+    // sigmaSqr = spMath.variance(data);
+    // deviantSum = spMath.variance(data);
+
+    // sigma = Math.sqrt((data.length - 1) * deviantSum / data.length);
 
     for (i = 0; i < data.length; ++i) {
         transformed.push(0.5 + spMath.erf((data[i] - mu) / (Math.SQRT2 * sigma)) / 2);
@@ -22,25 +25,33 @@ function normality(data)
 
 function logNormality(data) {
 
-    transformed = [];
+    var mu = 0, sigmaSqr = 0;
 
-    mu = spMath.mean(data);
-
-    sigmaSqr = spMath.variance(data);
-
-    sigma = Math.sqrt(sigmaSqr);
-
-    log_mean = Math.log(mu / Math.sqrt(1 + sigmaSqr / mu ** 2));
-
-    log_sd = Math.sqrt(Math.log(1 + sigmaSqr / mu ** 2));
-
-    for (i = 0; i < data.length; ++i) 
+    for(i = 0; i < data.length; ++i)
     {
         if(data[i] <= 0)
         {
             return [];
         }
-        
+
+        mu += mathjs.log(data[i]);
+    }
+
+    mu /= data.length;
+
+    for(i = 0; i < data.length; ++i)
+    {
+        sigmaSqr += (mathjs.log(data[i]) - mu) ** 2;
+    }
+
+    sigmaSqr /= data.length;
+
+    var log_mean = mu, log_sd = mathjs.sqrt(sigmaSqr);
+
+    transformed = [];
+
+    for (i = 0; i < data.length; ++i) 
+    {    
         transformed.push(0.5 + spMath.erf((Math.log(data[i]) - log_mean) / (Math.SQRT2 * log_sd)) / 2);
     }
 
@@ -49,9 +60,9 @@ function logNormality(data) {
 
 function uniform(data) {
 
-    var minVal = data.reduce(function (a, b) { return a < b ? a : b; }) - 4 * Number.EPSILON;
+    var minVal = data.reduce(function (a, b) { return a < b ? a : b; });
 
-    var maxVal = data.reduce(function (a, b) { return a > b ? a : b; }) + 4 * Number.EPSILON;
+    var maxVal = data.reduce(function (a, b) { return a > b ? a : b; });
 
     // var mu = spMath.mean(data), sigma = Math.sqrt(spMath.variance(data));
 
@@ -87,9 +98,10 @@ function uniform(data) {
 
 function triangle(data) 
 {
-    var a = b = c = data[0], mean = 0;
+    var a = b = c = data[0], z = 0;
 
-    for (i = 0; i < data.length; ++i) {
+    for (i = 0; i < data.length; ++i)
+    {
         if (a > data[i]) {
             a = data[i];
         }
@@ -97,29 +109,34 @@ function triangle(data)
         if (c < data[i]) {
             c = data[i];
         }
-
-        mean += data[i];
     }
 
-    a -= 0.001;
+    for(var i = 0; i < data.length; ++i)
+    {
+        z += (data[i] - a) / (c - a);
+    }
 
-    c += 0.001;
+    z /= data.length;
 
-    mean /= data.length;
+    var transformed = [];
 
-    // console.log(a);
+    var len = c - a;
 
-    // console.log(c);
+    b = a + len * (3 * z - 1);
 
-    // console.log(mean);
-
-    b = 3 * mean - a - c;           // From mean = (a + b + c) / 3
+    if(b < a)
+    {
+        b = a;
+    }
+    else if(b > c)
+    {
+        b = c;
+    }
 
     transformed = [];
 
-    len = c - a;
-
-    for (i = 0; i < data.length; ++i) {
+    for (i = 0; i < data.length; ++i) 
+    {
         if (data[i] < b) {
             transformed.push((data[i] - a) ** 2 / (len * (b - a)));
         }

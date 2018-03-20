@@ -6,6 +6,8 @@ var digamma = require('math-digamma');
 
 var spMath = require('./mylib/sp_math.js');
 
+var mathjs = require('mathjs');
+
 var fs = require('fs');
 
 // console.log("Uniform:")
@@ -26,4 +28,6 @@ var file = ".\\aqi_dist.json";
 var dist_data = JSON.parse(fs.readFileSync(file));
 console.log("AQI:")
 
-console.log(oneKey.formatReportString(oneKey.logNormality(dist_data)));
+// console.log(mathjs.log(0));
+
+console.log(oneKey.formatReportString(oneKey.normality(dist_data)));

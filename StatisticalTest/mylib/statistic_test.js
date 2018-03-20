@@ -16,11 +16,18 @@ class AndersonDarling
             return null;
         }
 
-        var n = data.length, s = 0;
+        var n = data.length, s = 0, iVal;
     
-        for (i = 0; i < data.length; ++i)
+        for (var i = 0; i < data.length; ++i)
         {
-            s += (2 * i + 1) * Math.log(data[i] * (1 - data[n - 1 - i]))      // Notice original is (2 * i - 1) and data[n + 1 - i]. Fix head offset.
+            iVal = mathjs.log(data[i] * (1 - data[n - 1 - i]));
+
+            if(iVal == -Infinity || iVal == Infinity)
+            {
+                continue;
+            }
+
+            s += (2 * i + 1) * iVal;      // Notice original is (2 * i - 1) and data[n + 1 - i]. Fix head offset.
         }
     
         return -n - s / n;
@@ -321,7 +328,7 @@ class KolmogorovSmirnov
 
         var dplus = 0,  dminus = 0, dp, dm;
 
-        for (i = 0; i < len; ++i, ++wi) 
+        for (var i = 0; i < len; ++i, ++wi) 
         {
             dp = Math.abs(data[i] - wi / wn);
 
@@ -569,10 +576,15 @@ class OneKeyTestReport
     {
         var transformed = transformations.normality(data);
 
+        var sigmaSqr = spMath.variance(data);
+        // var deviantSum = spMath.variance(data);
+
+        // var sigma = Math.sqrt((data.length - 1) * deviantSum / data.length);
+
         var result = {
             "type" : "normality",
             "mu" : spMath.mean(data),
-            "sigma" : Math.sqrt(spMath.variance(data)),
+            "sigma" : mathjs.sqrt(sigmaSqr),
             "adValue" : AndersonDarling.test(transformed),
             "adPvalue" : AndersonDarling.pValueNormal(data),
             "ksValue" : KolmogorovSmirnov.test(transformed),
@@ -586,16 +598,33 @@ class OneKeyTestReport
     {
         var transformed = transformations.logNormality(data);
 
-        var mu = spMath.mean(data), sigmaSqr = spMath.variance(data);
+        var mu = 0, sigmaSqr = 0;
 
-        var log_mean = Math.log(mu / Math.sqrt(1 + sigmaSqr / mu ** 2));
+        for(i = 0; i < data.length; ++i)
+        {
+            if(data[i] <= 0)
+            {
+                return [];
+            }
 
-        var log_sd = Math.sqrt(Math.log(1 + sigmaSqr / mu ** 2));
+            mu += mathjs.log(data[i]);
+        }
 
+        mu /= data.length;
+
+        for(i = 0; i < data.length; ++i)
+        {
+            sigmaSqr += (mathjs.log(data[i]) - mu) ** 2;
+        }
+
+        sigmaSqr /= data.length;
+
+        var log_mean = mu, log_sd = mathjs.sqrt(sigmaSqr);
+        
         var result = {
             "type" : "lognormality",
             "mu" : mu,
-            "sigma" : sigma,
+            "sigma" : mathjs.sqrt(sigmaSqr),
             "logMu" : log_mean,
             "logSigma" : log_sd,
             "adValue" : AndersonDarling.test(transformed),
@@ -652,14 +681,48 @@ class OneKeyTestReport
 
     static triangle(data)
     {
-        var mu = spMath.mean(data), sigma = Math.sqrt(spMath.variance(data));
+        var a = data[0], b = data[0], c = data[0], z = 0;
+
+        for (var i = 0; i < data.length; ++i)
+        {
+            if (a > data[i]) {
+                a = data[i];
+            }
+
+            if (c < data[i]) {
+                c = data[i];
+            }
+        }
+
+        for(var i = 0; i < data.length; ++i)
+        {
+            z += (data[i] - a) / (c - a);
+        }
+
+        z /= data.length;
+
+        var transformed = [];
+
+        var len = c - a;
+
+        b = a + len * (3 * z - 1);
+
+        if(b < a)
+        {
+            b = a;
+        }
+        else if(b > c)
+        {
+            b = c;
+        }
 
         var transformed = transformations.triangle(data);
 
         var result = {
             "type" : "triangle",
-            "mu" : mu,
-            "sigma" : sigma,
+            "min" : a,
+            "max" : c,
+            "mode" : b,
             "adValue" : AndersonDarling.test(transformed),
             "adPvalue" : "N/A",
             "ksValue" : KolmogorovSmirnov.test(transformed),
@@ -671,9 +734,9 @@ class OneKeyTestReport
 
     static uniform(data)
     {
-        var minVal = data.reduce(function (a, b) { return a < b ? a : b; }) - 0.001, maxVal = data.reduce(function (a, b) { return a > b ? a : b; }) + 0.001;
+        var minVal = data.reduce(function (a, b) { return a < b ? a : b; }), maxVal = data.reduce(function (a, b) { return a > b ? a : b; });
 
-        var transformed = transformations.uniform(data);        
+        var transformed = transformations.uniform(data);
 
         var result = {
             "type" : "uniform",
@@ -737,7 +800,7 @@ class OneKeyTestReport
         }
         else if(data["type"] == "triangle")
         {
-            header = "Triangle[Not-Available now]:";
+            header = "Triangle[mode=" + data["mode"].toString() + ", min=" + data["min"].toString() + ", max=" + data["max"].toString() + "]:";
         }
         else if(data["type"] == "uniform")
         {
