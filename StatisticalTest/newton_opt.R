@@ -1,55 +1,107 @@
 library(MASS)
 
-newtonMO2V = function(f1, f2, f11, f12, f21, f22, initialVal, epsilon = 1e-13)
+# newtonMO2V = function(f1, f2, f11, f12, f21, f22, initialVal, epsilon = 1e-13)
+# {
+# 	x = matrix(initialVal, nrow = 2, byrow = TRUE)
+
+# 	hessian = matrix(c(f11(x[1], x[2]), f12(x[1], x[2]), f21(x[1], x[2]), f22(x[1], x[2])),
+#         nrow = 2, byrow = TRUE)
+
+# 	hessianInv = ginv(hessian)
+
+#     jaccob = c(f1(x[1], x[2]), f2(x[1], x[2]))
+
+#     deltax = hessianInv %*% jaccob
+
+#     print(x)
+
+#     print(hessian)
+
+#     print(hessianInv)
+
+#     print(jaccob)
+
+#     print("DeltaX:")
+
+#     print(deltax)
+
+# 	# iterations = 0
+
+# 	# while(mathjs.abs(deltax[0]) > epsilon || mathjs.abs(deltax[1] > epsilon))
+# 	# {
+# 	# 	++iterations
+
+# 	# 	x[0] = x[0] - deltax[0];
+
+# 	# 	x[1] = x[1] - deltax[0];
+
+# 	# 	hessian = [
+# 	# 		[secondDrv[0][0](x[0], x[1]), secondDrv[0][1](x[0], x[1])],
+# 	# 		[secondDrv[1][0](x[0], x[1]), secondDrv[1][1](x[0], x[1])]
+# 	# 	]
+	
+# 	# 	hessianInv = mathjs.inv(hessian)
+	
+# 	# 	jaccob = [firstDrv[0](x[0], x[1]), firstDrv[1](x[0], x[1])]
+	
+# 	# 	deltax = mathjs.multiply(hessianInv, jaccob)
+# 	# }
+
+# 	# print(paste("Newton iterated ", iterations))
+
+# 	# return([x[0] - deltax[0], x[1] - deltax[1]])
+# }
+
+newtonMO2V = function(firstDrv, secondDrv, initialVal, epsilon = 1e-13)
 {
 	x = matrix(initialVal, nrow = 2, byrow = TRUE)
 
-	hessian = matrix(c(f11(x[1], x[2]), f12(x[1], x[2]), f21(x[1], x[2]), f22(x[1], x[2])),
+	hessian = matrix(c(secondDrv[[1, 1]](x[1], x[2]), secondDrv[[1, 2]](x[1], x[2]), secondDrv[[2, 1]](x[1], x[2]), secondDrv[[2, 2]](x[1], x[2])),
         nrow = 2, byrow = TRUE)
 
 	hessianInv = ginv(hessian)
 
-    jaccob = c(f1(x[1], x[2]), f2(x[1], x[2]))
+    jaccob = c(firstDrv[[1]](x[1], x[2]), firstDrv[[2]](x[1], x[2]))
 
     deltax = hessianInv %*% jaccob
 
-    print(x)
+    # print(x)
 
-    print(hessian)
+    # print(hessian)
 
-    print(hessianInv)
+    # print(hessianInv)
 
-    print(jaccob)
+    # print(jaccob)
 
-    print("DeltaX:")
+    # print("DeltaX:")
 
-    print(deltax)
+	xn = c(x[1] - deltax[1], x[2] - deltax[2])
 
-	# iterations = 0
+    # print(deltax)
 
-	# while(mathjs.abs(deltax[0]) > epsilon || mathjs.abs(deltax[1] > epsilon))
-	# {
-	# 	++iterations
+	iterations = 0
 
-	# 	x[0] = x[0] - deltax[0];
+	while(abs(xn[1] - x[1]) > epsilon || abs(xn[2] - x[2]) > epsilon)
+	{
+		iterations = iterations + 1
 
-	# 	x[1] = x[1] - deltax[0];
+		x = xn
 
-	# 	hessian = [
-	# 		[secondDrv[0][0](x[0], x[1]), secondDrv[0][1](x[0], x[1])],
-	# 		[secondDrv[1][0](x[0], x[1]), secondDrv[1][1](x[0], x[1])]
-	# 	]
-	
-	# 	hessianInv = mathjs.inv(hessian)
-	
-	# 	jaccob = [firstDrv[0](x[0], x[1]), firstDrv[1](x[0], x[1])]
-	
-	# 	deltax = mathjs.multiply(hessianInv, jaccob)
-	# }
+		hessian = matrix(c(secondDrv[[1, 1]](x[1], x[2]), secondDrv[[1, 2]](x[1], x[2]), secondDrv[[2, 1]](x[1], x[2]), secondDrv[[2, 2]](x[1], x[2])),
+        nrow = 2, byrow = TRUE)
 
-	# print(paste("Newton iterated ", iterations))
+		hessianInv = ginv(hessian)
 
-	# return([x[0] - deltax[0], x[1] - deltax[1]])
+		jaccob = c(firstDrv[[1]](x[1], x[2]), firstDrv[[2]](x[1], x[2]))
+
+		deltax = hessianInv %*% jaccob
+
+		xn = c(x[1] - deltax[1], x[2] - deltax[2])
+	}
+
+	print(paste("Newton iterated ", iterations))
+
+	return(c(x[1] - deltax[1], x[2] - deltax[2]))
 }
 
 gammaParameters = function(data)
@@ -127,8 +179,8 @@ gammaParameters = function(data)
 
 	# var beta = alpha / mu;
 
-	# return(newtonMO2V(c(f1, f2), matrix(c(f11, f12, f21, f22), nrow = 2, byrow = TRUE), c(alpha, beta)))
-	return(newtonMO2V(f1, f2, f11, f12, f21, f22, c(alpha, beta)))
+	return(newtonMO2V(c(f1, f2), matrix(c(f11, f12, f21, f22), nrow = 2, byrow = TRUE), c(alpha, beta)))
+	# return(newtonMO2V(f1, f2, f11, f12, f21, f22, c(alpha, beta)))
     
 }
 
@@ -138,4 +190,4 @@ input_data = read.csv('./aqipm25.csv', fileEncoding = "UTF-8-BOM")
 
 result = gammaParameters(as.numeric(input_data$AQI))
 
-# print(result)
+print(result)
