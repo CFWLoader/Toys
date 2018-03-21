@@ -76,24 +76,73 @@ function variance(data)
     return varia /= data.length;
 }
 
-function newtonMethodOpt(fun, firstDrv, secondDrv, initialVal, epsilon = 1e-13)
+function newtonMethodOpt2Var(firstDrv, secondDrv, initialVal, epsilon = 1e-13)
 {
 	var x = [initialVal[0], initialVal[1]];
 
-	var xn = [firstDrv[0](x[0], x[1]), firstDrv[1](x[0], x[1])];
+	var hessian = [
+		[secondDrv[0][0](x[0], x[1]), secondDrv[0][1](x[0], x[1])],
+		[secondDrv[1][0](x[0], x[1]), secondDrv[1][1](x[0], x[1])]
+	];
 
-	while(mathjs.abs(xn[0] - x[0]) > epsilon && mathjs.abs(xn[1] - x[0]))
+	var hessianInv = mathjs.inv(hessian);
+
+	var jaccob = [firstDrv[0](x[0], x[1]), firstDrv[1](x[0], x[1])];
+
+	var deltax = mathjs.multiply(hessianInv, jaccob);
+
+	console.log("Delta: " + deltax.toString());
+
+	var iterations = 0;
+
+	while(mathjs.abs(deltax[0]) > epsilon || mathjs.abs(deltax[1] > epsilon))
 	{
-		x[0] = xn[0], x[1] = xn[1];
+		++iterations;
+
+		console.log("Iteration: " + iterations.toString());
+
+		console.log("X:" + x.toString());
+
+		x[0] = x[0] - deltax[0];
+
+		x[1] = x[1] - deltax[0];
+
+		hessian = [
+			[secondDrv[0][0](x[0], x[1]), secondDrv[0][1](x[0], x[1])],
+			[secondDrv[1][0](x[0], x[1]), secondDrv[1][1](x[0], x[1])]
+		];
+	
+		hessianInv = mathjs.inv(hessian);
+	
+		jaccob = [firstDrv[0](x[0], x[1]), firstDrv[1](x[0], x[1])];
+	
+		deltax = mathjs.multiply(hessianInv, jaccob);
+	
+		// console.log(hessianInv[0]);
+
+		// console.log(hessianInv[1]);
+
+		console.log(jaccob);
+
+		console.log("Delta: " + deltax.toString());
 	}
+
+	console.log("Newton iterated " + iterations.toString());
+
+	return {"alpha" : x[0] - deltax[0], "beta" : x[1] - deltax[1]};
+
+	// while(mathjs.abs(xn[0] - x[0]) > epsilon && mathjs.abs(xn[1] - x[0]))
+	// {
+	// 	x[0] = xn[0], x[1] = xn[1];
+	// }
 }
 
 // Using maximum likehood. https://en.wikipedia.org/wiki/Gamma_distribution#Maximum_likelihood_estimation
 function gammaParameters(data)
 {
-	var mu = spMath.mean(data);
+	var mu = spMath.mean(data), sigma = mathjs.sqrt(spMath.variance(data));
 
-    var logMu = 0;
+    var logMu = 0, len = data.length, logSumVal = 0, sumVal = 0;
 
     for(i = 0; i < data.length; ++i)
     {
@@ -102,29 +151,70 @@ function gammaParameters(data)
             return [];
         }
 
-        logMu += mathjs.log(data[i]);
-    }
+		logMu += mathjs.log(data[i]);
+		
+		sumVal += data[i];
+	}
+	
+	logSumVal = logMu;
 
-    logMu /= data.length;
+	logMu /= data.length;
+
+	// console.log("gp: len=" + len + ", log sum=" + logSumVal.toString() + ", sum=" + sumVal);
+	
+	var f1 = function(a, b)
+	{
+		// console.log("Len(f1): " + len.toString() + "   Log sum: " + logSumVal.toString());
+
+		return len * mathjs.log(b) - len * digamma(a) + logSumVal;
+	}
+
+	var f2 = function(a, b)
+	{
+		// console.log("Len(f2): " + len.toString() + "   Sum: " + sumVal.toString());
+
+		return len * a / b - sumVal;
+	}
+
+	var f11 = function(a, b)
+	{
+		return -len * trigamma(a);
+	}
+
+	var f12 = function(a, b)
+	{
+		return len / b;
+	}
+
+	var f21 = f12;
+
+	var f22 = function(a, b)
+	{
+		return - len * a / b**2;
+	}
+
+	var alpha = (mu / sigma)**2, beta = mu / sigma**2;
+
+	// var s = mathjs.log(mu) - logMu;
+
+	// var alpha = (3 - s + mathjs.sqrt((s - 3)**2 + 24 * s)) / (12 * s);
+
+	// var beta = alpha / mu;
+
+	return newtonMethodOpt2Var([f1, f2], [[f11, f12], [f21, f22]], [alpha, beta]);
 
     // var s = mathjs.log(mu) - logMu;
 
 	// var alpha = (3 - s + mathjs.sqrt((s - 3)**2 + 24 * s)) / (12 * s);
 	
-	var nextAlpha = alpha - (mathjs.log(alpha) - digamma(alpha) - s) / (1 / alpha - spMath.trigamma(alpha));
+	// var nextAlpha = alpha - (mathjs.log(alpha) - digamma(alpha) - s) / (1 / alpha - spMath.trigamma(alpha));
 
-	while(nextAlpha - alpha > 1e-12)
-	{
-		alpha = nextAlpha;
+	// while(nextAlpha - alpha > 1e-12)
+	// {
+	// 	alpha = nextAlpha;
 
-		nextAlpha = alpha - (mathjs.log(alpha) - digamma(alpha) - s) / (1 / alpha - spMath.trigamma(alpha));
-	}
-
-	alpha = nextAlpha;
-
-	var beta = alpha / mu;
-	
-	return {"alpha" : alpha, "beta" : beta};
+	// 	nextAlpha = alpha - (mathjs.log(alpha) - digamma(alpha) - s) / (1 / alpha - spMath.trigamma(alpha));
+	// }
 }
 
 function weibullParameters(data)

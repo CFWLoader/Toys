@@ -33,3 +33,4 @@ console.log("AQI:");
 console.log(spMath.gammaParameters(dist_data));
 
 // console.log(spMath.weibullParameters(data));
+
