@@ -76,6 +76,18 @@ function variance(data)
     return varia /= data.length;
 }
 
+function newtonMethodOpt(fun, firstDrv, secondDrv, initialVal, epsilon = 1e-13)
+{
+	var x = [initialVal[0], initialVal[1]];
+
+	var xn = [firstDrv[0](x[0], x[1]), firstDrv[1](x[0], x[1])];
+
+	while(mathjs.abs(xn[0] - x[0]) > epsilon && mathjs.abs(xn[1] - x[0]))
+	{
+		x[0] = xn[0], x[1] = xn[1];
+	}
+}
+
 // Using maximum likehood. https://en.wikipedia.org/wiki/Gamma_distribution#Maximum_likelihood_estimation
 function gammaParameters(data)
 {
@@ -95,15 +107,29 @@ function gammaParameters(data)
 
     logMu /= data.length;
 
-    var s = mathjs.log(mu) - logMu;
+    // var s = mathjs.log(mu) - logMu;
 
-	var alpha = (3 - s + mathjs.sqrt((s - 3)**2 + 24 * s)) / (12 * s);
+	// var alpha = (3 - s + mathjs.sqrt((s - 3)**2 + 24 * s)) / (12 * s);
 	
-	alpha = alpha - (mathjs.log(alpha) - digamma(alpha) - s) / (1 / alpha - spMath.trigamma(alpha));
+	var nextAlpha = alpha - (mathjs.log(alpha) - digamma(alpha) - s) / (1 / alpha - spMath.trigamma(alpha));
+
+	while(nextAlpha - alpha > 1e-12)
+	{
+		alpha = nextAlpha;
+
+		nextAlpha = alpha - (mathjs.log(alpha) - digamma(alpha) - s) / (1 / alpha - spMath.trigamma(alpha));
+	}
+
+	alpha = nextAlpha;
 
 	var beta = alpha / mu;
 	
 	return {"alpha" : alpha, "beta" : beta};
+}
+
+function weibullParameters(data)
+{
+	return {"lambda" : 0, "k" : 0};
 }
 
 // MODULES //
@@ -447,5 +473,6 @@ module.exports =
     "regularizedLowerIncompleteGamma" : gammainc_l,
 	"regularizedupperIncompleteGamme" : gammainc_u,
 	"gammaParameters" : gammaParameters,
+	"weibullParameters" : weibullParameters,
 	"trigamma" : trigamma
 };
