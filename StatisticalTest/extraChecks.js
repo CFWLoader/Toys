@@ -28,11 +28,13 @@ var file = ".\\aqi_dist.json";
 var dist_data = JSON.parse(fs.readFileSync(file));
 console.log("AQI:");
 
-console.log(oneKey.formatReportString(oneKey.gamma(dist_data)));
+console.log(oneKey.formatReportString(oneKey.weibull(dist_data)));
+
+// console.log(oneKey.formatReportString(oneKey.gamma(dist_data)));
 
 // console.log(mathjs.log(0));
 
 // console.log(spMath.gammaParameters(dist_data));
 
-// console.log(spMath.weibullParameters(data));
+// console.log(spMath.weibullParameters(dist_data));
 

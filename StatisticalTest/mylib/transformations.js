@@ -205,13 +205,9 @@ function gamma(data)
 
 function weibull(data)
 {
-    var mu = spMath.mean(data);
+    var parameters = spMath.weibullParameters(data);
 
-    var sigmaSqr = spMath.variance(data);
-
-    var k = Math.pow(Math.sqrt(sigmaSqr) / mu, -1.086);
-
-    var lambda = mu / spMath.gamma(1 + 1 / k);
+    var lambda = parameters["shape1"], k = parameters["shape2"];
 
     var transformed = [];
 

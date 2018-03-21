@@ -76,18 +76,18 @@ function variance(data)
     return varia /= data.length;
 }
 
-function newtonMethodOpt2Var(firstDrv, secondDrv, initialVal, epsilon = 1e-13)
+function newtonMethodOpt2Var(firstDrv, secondDrv, xArray, initialVal, epsilon = 1e-13)
 {
 	var x = [initialVal[0], initialVal[1]];
 
 	var hessian = [
-		[secondDrv[0][0](x[0], x[1]), secondDrv[0][1](x[0], x[1])],
-		[secondDrv[1][0](x[0], x[1]), secondDrv[1][1](x[0], x[1])]
+		[secondDrv[0][0](x[0], x[1], xArray), secondDrv[0][1](x[0], x[1], xArray)],
+		[secondDrv[1][0](x[0], x[1], xArray), secondDrv[1][1](x[0], x[1], xArray)]
 	];
 
 	var hessianInv = mathjs.inv(hessian);
 
-	var jaccob = [firstDrv[0](x[0], x[1]), firstDrv[1](x[0], x[1])];
+	var jaccob = [firstDrv[0](x[0], x[1], xArray), firstDrv[1](x[0], x[1], xArray)];
 
 	// console.log(firstDrv[0](x[0], x[1]));
 
@@ -99,12 +99,12 @@ function newtonMethodOpt2Var(firstDrv, secondDrv, initialVal, epsilon = 1e-13)
 
 	// return {"alpha" : 0, "beta" : 0};
 
-	var iterations = 0;
+	// var iterations = 0;
 
 	// while(iterations < 2000)
 	while(mathjs.abs(xn[0] - x[0]) > epsilon || mathjs.abs(xn[1] - x[1]) > epsilon)
 	{
-		++iterations;
+		// ++iterations;
 
 		// console.log("[" + iterations.toString() + "]:" + mathjs.abs(xn[0] - x[0]).toString() + "   " + mathjs.abs(xn[1] - x[1]).toString());
 
@@ -117,13 +117,13 @@ function newtonMethodOpt2Var(firstDrv, secondDrv, initialVal, epsilon = 1e-13)
 		x[1] = xn[1];
 
 		hessian = [
-			[secondDrv[0][0](x[0], x[1]), secondDrv[0][1](x[0], x[1])],
-			[secondDrv[1][0](x[0], x[1]), secondDrv[1][1](x[0], x[1])]
+			[secondDrv[0][0](x[0], x[1], xArray), secondDrv[0][1](x[0], x[1], xArray)],
+			[secondDrv[1][0](x[0], x[1], xArray), secondDrv[1][1](x[0], x[1], xArray)]
 		];
 	
 		hessianInv = mathjs.inv(hessian);
 	
-		jaccob = [firstDrv[0](x[0], x[1]), firstDrv[1](x[0], x[1])];
+		jaccob = [firstDrv[0](x[0], x[1], xArray), firstDrv[1](x[0], x[1], xArray)];
 	
 		deltax = mathjs.multiply(hessianInv, jaccob);
 
@@ -138,9 +138,9 @@ function newtonMethodOpt2Var(firstDrv, secondDrv, initialVal, epsilon = 1e-13)
 		// console.log("Delta: " + deltax.toString());
 	}
 
-	console.log("Newton iterated " + iterations.toString());
+	// console.log("Newton iterated " + iterations.toString());
 
-	return {"alpha" : x[0] - deltax[0], "beta" : x[1] - deltax[1]};
+	return {"shape1" : x[0] - deltax[0], "shape2" : x[1] - deltax[1]};
 
 	// while(mathjs.abs(xn[0] - x[0]) > epsilon && mathjs.abs(xn[1] - x[0]))
 	// {
@@ -173,33 +173,33 @@ function gammaParameters(data)
 
 	// console.log("gp: len=" + len + ", log sum=" + logSumVal.toString() + ", sum=" + sumVal);
 	
-	var f1 = function(a, b)
+	var f1 = function(a, b, xArr)
 	{
 		// console.log("Len(f1): " + len.toString() + "   Log sum: " + logSumVal.toString());
 
 		return len * mathjs.log(b) - len * digamma(a) + logSumVal;
 	}
 
-	var f2 = function(a, b)
+	var f2 = function(a, b, xArr)
 	{
 		// console.log("Len(f2): " + len.toString() + "   Sum: " + sumVal.toString());
 
 		return len * a / b - sumVal;
 	}
 
-	var f11 = function(a, b)
+	var f11 = function(a, b, xArr)
 	{
 		return -len * trigamma(a);
 	}
 
-	var f12 = function(a, b)
+	var f12 = function(a, b, xArr)
 	{
 		return len / b;
 	}
 
 	var f21 = f12;
 
-	var f22 = function(a, b)
+	var f22 = function(a, b, xArr)
 	{
 		return - len * a / b**2;
 	}
@@ -212,7 +212,7 @@ function gammaParameters(data)
 
 	// var beta = alpha / mu;
 
-	return newtonMethodOpt2Var([f1, f2], [[f11, f12], [f21, f22]], [alpha, beta]);
+	return newtonMethodOpt2Var([f1, f2], [[f11, f12], [f21, f22]], data, [alpha, beta]);
 
     // var s = mathjs.log(mu) - logMu;
 
@@ -230,7 +230,73 @@ function gammaParameters(data)
 
 function weibullParameters(data)
 {
-	return {"lambda" : 0, "k" : 0};
+	var f1 = function(a, b, xArr)
+	{
+		var arraySum = 0;
+
+		for(var i = 0; i < xArr.length; ++i)
+		{
+			arraySum += mathjs.pow(xArr[i] / a, b);
+		}
+
+		return - xArr.length * b / a + b * arraySum / a;
+	}
+
+	var f2 = function(a, b, xArr)
+	{
+		var lnSum = 0, arraySum = 0;
+
+		for(var i = 0; i < xArr.length; ++i)
+		{
+			lnSum += mathjs.log(xArr[i]);
+
+			arraySum += (mathjs.pow(xArr[i] / a, b) * mathjs.log(xArr[i] / a));
+		}
+
+		return xArr.length / b - xArr.length * mathjs.log(a) + lnSum - arraySum;
+	}
+
+	var f11 = function(a, b, xArr)
+	{
+		var arraySum = 0;
+
+		for(var i = 0; i < xArr.length; ++i)
+		{
+			arraySum += mathjs.pow(xArr[i] / a, b);
+		}
+
+		return b * (xArr.length - (b + 1) * arraySum) / a**2;
+	}
+
+	var f12 = function(a, b, xArr)
+	{
+		var sum1 = 0, arraySum = 0;
+
+		for(var i = 0; i < xArr.length; ++i)
+		{
+			sum1 += mathjs.pow(xArr[i] / a, b);
+
+			arraySum += (mathjs.pow(xArr[i] / a, b) * mathjs.log(xArr[i] / a));
+		}
+
+		return -(xArr.length - sum1 - b * arraySum) / a;
+	}
+
+	var f21 = f12;
+
+	var f22 = function(a, b, xArr)
+	{
+		var arraySum = 0;
+
+		for(var i = 0; i < xArr.length; ++i)
+		{
+			arraySum += (mathjs.pow(xArr[i] / a, b) * mathjs.log(xArr[i] / a))**2;
+		}
+
+		return -xArr.length / b**2 - arraySum;
+	}
+
+	return newtonMethodOpt2Var([f1, f2], [[f11, f12], [f21, f22]], data, [1, 1]);
 }
 
 // MODULES //
