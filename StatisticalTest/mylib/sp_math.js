@@ -89,23 +89,32 @@ function newtonMethodOpt2Var(firstDrv, secondDrv, initialVal, epsilon = 1e-13)
 
 	var jaccob = [firstDrv[0](x[0], x[1]), firstDrv[1](x[0], x[1])];
 
+	// console.log(firstDrv[0](x[0], x[1]));
+
 	var deltax = mathjs.multiply(hessianInv, jaccob);
 
-	console.log("Delta: " + deltax.toString());
+	var xn = [x[0] - deltax[0], x[1] - deltax[1]];
+
+	// console.log("Delta: " + deltax.toString());
+
+	// return {"alpha" : 0, "beta" : 0};
 
 	var iterations = 0;
 
-	while(mathjs.abs(deltax[0]) > epsilon || mathjs.abs(deltax[1] > epsilon))
+	// while(iterations < 2000)
+	while(mathjs.abs(xn[0] - x[0]) > epsilon || mathjs.abs(xn[1] - x[1]) > epsilon)
 	{
 		++iterations;
 
-		console.log("Iteration: " + iterations.toString());
+		// console.log("[" + iterations.toString() + "]:" + mathjs.abs(xn[0] - x[0]).toString() + "   " + mathjs.abs(xn[1] - x[1]).toString());
 
-		console.log("X:" + x.toString());
+		// console.log("Iteration: " + iterations.toString());
 
-		x[0] = x[0] - deltax[0];
+		// console.log("X:" + x.toString());
 
-		x[1] = x[1] - deltax[0];
+		x[0] = xn[0];
+
+		x[1] = xn[1];
 
 		hessian = [
 			[secondDrv[0][0](x[0], x[1]), secondDrv[0][1](x[0], x[1])],
@@ -117,14 +126,16 @@ function newtonMethodOpt2Var(firstDrv, secondDrv, initialVal, epsilon = 1e-13)
 		jaccob = [firstDrv[0](x[0], x[1]), firstDrv[1](x[0], x[1])];
 	
 		deltax = mathjs.multiply(hessianInv, jaccob);
+
+		xn = [x[0] - deltax[0], x[1] - deltax[1]];
 	
 		// console.log(hessianInv[0]);
 
 		// console.log(hessianInv[1]);
 
-		console.log(jaccob);
+		// console.log(jaccob);
 
-		console.log("Delta: " + deltax.toString());
+		// console.log("Delta: " + deltax.toString());
 	}
 
 	console.log("Newton iterated " + iterations.toString());
