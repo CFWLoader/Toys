@@ -621,7 +621,7 @@ function trigamma( x ) {
 
 // EXPORTS //
 
-module.exports = trigamma;
+// module.exports = trigamma;
 
 // EXPORTS
 
