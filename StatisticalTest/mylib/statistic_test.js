@@ -640,7 +640,7 @@ class OneKeyTestReport
     {
         var parameters = spMath.gammaParameters(data);
 
-        var alpha = parameters["alpha"], beta = parameters["beta"];
+        var alpha = parameters["shape1"], beta = parameters["shape2"];
 
         var transformed = transformations.gamma(data);
 
