@@ -30,12 +30,6 @@
 # Backups
 *~
 
-# JSON Data
-*.json
-
-# CSV Data
-*.csv
-
 # PNG
 *.png
 
@@ -45,5 +39,3 @@
 # cmake
 */CMakeFiles/
 */CMakeCache.txt
-StatisticalTest/aqi.png
-StatisticalTest/*.pdf
