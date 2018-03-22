@@ -1,11 +1,25 @@
-// var csv = require("fast-csv");
-// csv
-//  .fromPath("./aqipm25.csv", {headers : false})
-//  .on("data", function(data){
-//     //  console.log(data)
-//     aqi_data.push(parseInt(data[0]));
-//     pm25_data.push(parseInt(data[1]));
-//  })
+'use strict'
+
+const fs = require('fs');
+
+function readCSVsync(filePath, encoding = 'UTF-8', delimiter = ',')
+{
+    var lines = fs.readFileSync(filePath, encoding).split('\r\n');
+
+    var result = [];
+
+    for(var i = 0; i < lines.length; ++i)
+    {
+        result.push(lines[i].split(delimiter));
+    }
+
+    return result;
+}
+
+var dataset = readCSVsync('./dataset/AirQualityUCI.csv', 'UTF-8', ';');
+
+console.log(dataset[1]);
+
 //  .on("end", function(){
 
 //     aqi_data.shift();
@@ -35,7 +49,3 @@
 
 //     return transformed.sort();
 // }
-
-var file = ".\\norm_dist1.json";
-
-var dist_data = JSON.parse(fs.readFileSync(file));
