@@ -1,4 +1,6 @@
-mathjs = require('mathjs');
+'use strict';
+
+var mathjs = require('mathjs');
 
 var digamma = require('math-digamma');
 
@@ -52,7 +54,7 @@ function erf(x) {
 
 function mean(data)
 {
-    mu = 0;
+    var mu = 0;
 
     for(i = 0; i < data.length; ++i)
     {
@@ -60,6 +62,36 @@ function mean(data)
     }
 
     return mu /= data.length;
+}
+
+function means(dataset)
+{
+	var mus = [], tupleLen = dataset[0].length;
+
+	for(var col = 0; col < tupleLen; ++col)
+	{
+		mus.push(0);
+	}
+
+	for(var row = 0; row < dataset.length; ++row)
+	{
+		for(var col = 0; col < tupleLen; ++col)
+		{
+			if(dataset[row][col] == null)
+			{
+				continue;
+			}
+
+			mus[col] += dataset[row][col];
+		}
+	}
+
+	for(var col = 0; col < tupleLen; ++col)
+	{
+		mus[col] /= dataset.length;
+	}
+
+    return mus;
 }
 
 function variance(data)
@@ -401,8 +433,6 @@ function gammainc_l( x, s, regularized ) {
 	return pws*ft/s;
 }
 
-'use strict';
-
 /*
 * NOTE: the original C++ code and copyright notice is from the [Boost library]{http://www.boost.org/doc/libs/1_55_0/boost/math/special_functions/trigamma.hpp}.
 *
@@ -635,7 +665,8 @@ module.exports =
 {
     "gamma" : gamma,
     "erf" : erf,
-    "mean" : mean,
+	"mean" : mean,
+	"means" : means,
     "variance" : variance,
     "regularizedLowerIncompleteGamma" : gammainc_l,
 	"regularizedupperIncompleteGamme" : gammainc_u,
