@@ -80,18 +80,16 @@ function deriveMultivariateLinearParameters(dataset, yCol)
 
     // console.log(xt);
 
-    var mul = mathjs.multiply(x, xt);
-
-    console.log(mathjs.inv(mul));
+    var mul = mathjs.multiply(xt, x);
 
     for(var row = 0; row < x.length; ++row)
     {
         x[row].push(1);
     }
 
-    return 'Unavailable';
+    // return 'Unavailable';
 
-    // return mathjs.multiply(mathjs.multiply(mathjs.inv(mathjs.multiply(xt, x)), xt), y);
+    return mathjs.multiply(mathjs.multiply(mathjs.inv(mul), xt), y);
 }
 
 module.exports = {
