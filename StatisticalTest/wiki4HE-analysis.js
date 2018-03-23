@@ -35,15 +35,19 @@ for(var row = 0; row < dataset.length; ++row)
     // console.log();
 }
 
-console.log(reformedData[0]);
+// console.log(reformedData[0]);
 
 var cleaned1 = dataPreprocessor.removeMissings(reformedData);
 
-// console.log(cleaned1);
+console.log(cleaned1[0]);
 
 var x = multiRegress.excludeColumn(cleaned1, 2);
 
 console.log(x[0]);
+
+var y = multiRegress.extractColumn(cleaned1, 2);
+
+console.log(y[0]);
 
 // const tupleLen = reformedData[0].length;
 

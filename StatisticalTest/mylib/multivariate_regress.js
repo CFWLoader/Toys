@@ -1,8 +1,13 @@
 'use strict';
 
+// function getData(dataset)
+// {
+//     console.log(dataset[0][0]);
+// }
+
 function extractColumn(dataset, targetColumn)
 {
-    if(dataset.length = 0)
+    if(dataset.length == 0)
     {
         return [];
     }
@@ -23,28 +28,18 @@ function extractColumn(dataset, targetColumn)
 }
 
 function excludeColumn(dataset, targetColumn)
-{
-    console.log(dataset);
-    
-    if(dataset.length = 0)
+{   
+    if(dataset.length == 0)
     {
         return [];
     }
 
-    // if(Object.prototype.toString.call(dataset[0]) != '[object Array]')
-    // {
-    //     console.log(Object.prototype.toString.call(dataset[0]));
-
-    //     console.log(Object.prototype.toString.call(dataset[0]) != '[object Array]');
-
-    //     return [];
-    // }
-
-    console.log(dataset);
+    if(Object.prototype.toString.call(dataset[0]) != '[object Array]')
+    {
+        return [];
+    }
 
     var result = [], tupleLen = dataset[0].length, col, rwVal;
-
-    // console.log('Start transform.');
     
     for(var row = 0; row < dataset.length; ++row)
     {
@@ -64,8 +59,6 @@ function excludeColumn(dataset, targetColumn)
         
         result.push(rwVal);
     }
-
-    // console.log(result);
 
     return result;  
 }
