@@ -1,9 +1,6 @@
 'use strict';
 
-// function getData(dataset)
-// {
-//     console.log(dataset[0][0]);
-// }
+const mathjs = require('mathjs');
 
 function extractColumn(dataset, targetColumn)
 {
@@ -34,7 +31,7 @@ function excludeColumn(dataset, targetColumn)
         return [];
     }
 
-    if(Object.prototype.toString.call(dataset[0]) != '[object Array]')
+    if(Object.prototype.toString.call(dataset[0]) != '[object Array]' || dataset[0].length <= targetColumn)
     {
         return [];
     }
@@ -63,7 +60,42 @@ function excludeColumn(dataset, targetColumn)
     return result;  
 }
 
+function deriveMultivariateLinearParameters(dataset, yCol)
+{
+    if(dataset.length == 0)
+    {
+        return [];
+    }
+
+    if(Object.prototype.toString.call(dataset[0]) != '[object Array]' || dataset[0].length <= yCol)
+    {
+        return [];
+    }
+
+    var x = excludeColumn(dataset, yCol), y = mathjs.transpose(extractColumn(dataset, yCol));
+
+    var xt = mathjs.transpose(x);
+
+    // console.log(x);
+
+    // console.log(xt);
+
+    var mul = mathjs.multiply(x, xt);
+
+    console.log(mathjs.inv(mul));
+
+    for(var row = 0; row < x.length; ++row)
+    {
+        x[row].push(1);
+    }
+
+    return 'Unavailable';
+
+    // return mathjs.multiply(mathjs.multiply(mathjs.inv(mathjs.multiply(xt, x)), xt), y);
+}
+
 module.exports = {
     "extractColumn" : extractColumn,
-    "excludeColumn" : excludeColumn
+    "excludeColumn" : excludeColumn,
+    "deriveMultivariateLinearParameters" : deriveMultivariateLinearParameters
 };

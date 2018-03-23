@@ -12,7 +12,7 @@ var dataset = auxLib.readCSVsync('./dataset/wiki4HE.csv', 'UTF-8', ';', false);
 
 dataset.pop();
 
-var reformedData = [], rwVal, tupleLen = 16;
+var reformedData = [], rwVal, tupleLen = 15;
 
 for(var row = 0; row < dataset.length; ++row)
 {
@@ -39,15 +39,9 @@ for(var row = 0; row < dataset.length; ++row)
 
 var cleaned1 = dataPreprocessor.removeMissings(reformedData);
 
-console.log(cleaned1[0]);
+var w = multiRegress.deriveMultivariateLinearParameters(cleaned1, 0);
 
-var x = multiRegress.excludeColumn(cleaned1, 2);
-
-console.log(x[0]);
-
-var y = multiRegress.extractColumn(cleaned1, 2);
-
-console.log(y[0]);
+console.log(w);
 
 // const tupleLen = reformedData[0].length;
 
