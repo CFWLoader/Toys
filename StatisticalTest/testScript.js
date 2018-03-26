@@ -1,10 +1,12 @@
-transformations = require('./mylib/transformations.js');
+const transformations = require('./mylib/transformations.js');
 
-spMath = require('./mylib/sp_math.js');
+const spMath = require('./mylib/sp_math.js');
 
-statisticTest = require('./mylib/statistic_test.js');
+const statisticTest = require('./mylib/statistic_test.js');
 
-var adTest = statisticTest.AndersonDarling, ksTest = statisticTest.KolmogorovSmirnov, oneKey = statisticTest.OneKeyTestReport;
+const adTest = statisticTest.AndersonDarling, ksTest = statisticTest.KolmogorovSmirnov, oneKey = statisticTest.OneKeyTestReport;
+
+const fs = require('fs');
 
 function formatDisplay(val)
 {
@@ -168,17 +170,15 @@ function batchTestDetailedReport(dist_data) {
 
 }
 
-var fs = require('fs');
-
-console.log("AQI:")
-var file = ".\\aqi_dist.json";
-var dist_data = JSON.parse(fs.readFileSync(file));
-batchTestDetailedReport(dist_data);
+// console.log("AQI:")
+// var file = ".\\dataset\\aqi_dist.json";
+// var dist_data = JSON.parse(fs.readFileSync(file));
+// batchTest(dist_data)
 
 // console.log("PM2.5:")
-// var file = ".\\pm25_dist.json"
-// var dist_data = JSON.parse(fs.readFileSync(file));
-// batchTest(dist_data);
+var file = ".\\dataset\\pm25_dist.json"
+var dist_data = JSON.parse(fs.readFileSync(file));
+batchTest(dist_data);
 
 // console.log("Norm:");
 // var file = ".\\norm_dist1.json"
@@ -211,6 +211,6 @@ batchTestDetailedReport(dist_data);
 // batchTest(dist_data);
 
 // console.log("Weibull:");
-// var file = ".\\weib_dist1.json";
+// var file = ".\\dataset\\weib_dist1.json";
 // var dist_data = JSON.parse(fs.readFileSync(file));
 // batchTest(dist_data);

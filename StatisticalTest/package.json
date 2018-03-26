@@ -1,0 +1,11 @@
+{
+  "requires": true,
+  "dependencies": {
+    "gamma": "^1.0.0",
+    "math-digamma": "^1.0.2",
+    "math-power": "^1.0.0",
+    "math-sinpi": "^1.0.1",
+    "mathfn": "^1.0.1",
+    "mathjs": "^4.0.1"
+  }
+}
