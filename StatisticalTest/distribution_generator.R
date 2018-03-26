@@ -45,11 +45,20 @@ library(rjson)
 # hist(dist, main = paste("Gamma Distribution(Alpha=", alpha, ", Beta=", beta, ")"))
 # dev.off()
 
-shape = 5
-scale = 1
-dist = rweibull(1000, shape, scale)
+alpha = 3
+beta = 2
+dist = rbeta(1000, alpha, beta)
 jsoned <- toJSON(dist)
-write.table(jsoned, './weib_dist1.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
-png(file = "./weib_dist1.png")
-hist(dist, main = paste("Weibull Distribution(Shape=", shape, ", Scale=", scale, ")"))
+write.table(jsoned, './dataset/beta_dist1.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
+png(file = "./dataset/beta_dist1.png")
+hist(dist, main = paste("Beta Distribution(Alpha=", alpha, ", Beta=", beta, ")"))
 dev.off()
+
+# shape = 5
+# scale = 1
+# dist = rweibull(1000, shape, scale)
+# jsoned <- toJSON(dist)
+# write.table(jsoned, './weib_dist1.json', row.names = FALSE, col.names = FALSE, quote = FALSE)
+# png(file = "./weib_dist1.png")
+# hist(dist, main = paste("Weibull Distribution(Shape=", shape, ", Scale=", scale, ")"))
+# dev.off()

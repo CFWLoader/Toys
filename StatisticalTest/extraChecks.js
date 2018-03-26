@@ -24,17 +24,7 @@ var fs = require('fs');
 //     }
 // }
 
-var file = ".\\aqi_dist.json";
-var dist_data = JSON.parse(fs.readFileSync(file));
-console.log("AQI:");
+var file = '.\\dataset\\beta_dist1.json';
+var distData = JSON.parse(fs.readFileSync(file));
 
-console.log(oneKey.formatReportString(oneKey.weibull(dist_data)));
-
-// console.log(oneKey.formatReportString(oneKey.gamma(dist_data)));
-
-// console.log(mathjs.log(0));
-
-// console.log(spMath.gammaParameters(dist_data));
-
-// console.log(spMath.weibullParameters(dist_data));
-
+console.log(spMath.betaParameters(distData));

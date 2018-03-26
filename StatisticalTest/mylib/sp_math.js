@@ -255,6 +255,58 @@ function gammaParameters(data)
 	// }
 }
 
+function betaParameters(data)
+{
+	var obsX = mean(data);
+
+	var obsVar = variance(data);
+
+	var f1 = function(a, b, xArr)
+	{
+		var lnSum = 0, len = xArr.length;
+
+		for(var i = 0; i < len; ++i)
+		{
+			lnSum += mathjs.log(xArr[i]);
+		}
+
+		return len * digamma(a + b) - len * digamma(a) + lnSum;
+	}
+
+	var f2 = function(a, b, xArr)
+	{
+		var lnSum = 0, len = xArr.length;
+
+		for(var i = 0; i < len; ++i)
+		{
+			lnSum += mathjs.log(1 - xArr[i]);
+		}
+
+		return len * digamma(a + b) - len * digamma(b) + lnSum;
+	}
+
+	var f11 = function(a, b, xArr)
+	{
+		return xArr.length * (trigamma(a + b) - trigamma(a));
+	}
+
+	var f12 = function(a, b, xArr)
+	{
+		return xArr.length * trigamma(a + b);
+	}
+
+	var f21 = f12;
+
+	var f22 = function(a, b, xArr)
+	{
+		return xArr.length * (trigamma(a + b) - trigamma(b));
+	}
+
+	var alpha = obsX * (obsX * (1 - obsX) / obsVar - 1), beta = (1 - obsX) * (obsX * (1 - obsX) / obsVar - 1);
+
+	return newtonMethodOpt2Var([f1, f2], [[f11, f12], [f21, f22]], data, [alpha, beta]);
+}
+
 function weibullParameters(data)
 {
 	var f1 = function(a, b, xArr)
@@ -666,6 +718,7 @@ module.exports =
     "regularizedLowerIncompleteGamma" : gammainc_l,
 	"regularizedupperIncompleteGamme" : gammainc_u,
 	"gammaParameters" : gammaParameters,
+	"betaParameters" : betaParameters,
 	"weibullParameters" : weibullParameters,
 	"trigamma" : trigamma
 };

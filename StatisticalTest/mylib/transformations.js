@@ -174,17 +174,26 @@ function exponent(data) {
 
 function beta(data)
 {
-    thorw("Transfomation for Beta distribution is unavailable now.");
+    for(var i = 0; i < data.length; ++i)
+    {
+        if(data[i] <= 0 || data[i] >= 1)
+        {
+            return [];
+        }
+    }
 
-    mu = spMath.mean(data);
+    var parameters = spMath.betaParameters(data);
 
-    sigmaSqr = spMath.variance(data);
+    var alpha = parameters['shape1'], beta = parameters['shape2'];
 
-    alpha = mu**2 * ((1 - mu) / sigmaSqr - 1 / mu);
+    var betaFunVal = spMath.gamma(alpha) * spMath.gamma(beta) / spMath.gamma(alpha + beta);
 
-    beta = alpha * (1 / mu - 1);
+    var transformed = [];
 
-    transformed = [];
+    for(var i = 0; i < data.length; ++i)
+    {
+        
+    }
 }
 
 function gamma(data)
