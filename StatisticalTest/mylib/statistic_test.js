@@ -1,8 +1,8 @@
-spMath = require('./sp_math.js');
+const spMath = require('./sp_math.js');
 
-mathjs = require('mathjs');
+const mathjs = require('mathjs');
 
-transformations = require('./transformations.js');
+const transformations = require('./transformations.js');
 
 class AndersonDarling
 {
@@ -265,7 +265,7 @@ class AndersonDarling
             }
         }
 
-        return "0";
+        // return "0";
     }
 
     static pValueWeibull(data)
@@ -429,7 +429,7 @@ class KolmogorovSmirnov
         {
             ak = 0;
 
-            for (i = -k; i <= k; ++i) {
+            for (var i = -k; i <= k; ++i) {
                 ak += Math.pow(-1, i) * Math.exp(-2 * (i * D) ** 2);
             }
 
@@ -602,7 +602,7 @@ class OneKeyTestReport
 
         var mu = 0, sigmaSqr = 0;
 
-        for(i = 0; i < data.length; ++i)
+        for(var i = 0; i < data.length; ++i)
         {
             if(data[i] <= 0)
             {
@@ -648,7 +648,7 @@ class OneKeyTestReport
 
         var result = {
             "type" : "gamma",
-            "mu" : mu,
+            // "mu" : mu,
             // "sigma" : Math.sqrt(sigmaSqr),
             "shape1" : alpha,
             "shape2" : beta,
@@ -696,7 +696,7 @@ class OneKeyTestReport
             }
         }
 
-        for(var i = 0; i < data.length; ++i)
+        for(i = 0; i < data.length; ++i)
         {
             z += (data[i] - a) / (c - a);
         }
@@ -718,7 +718,7 @@ class OneKeyTestReport
             b = c;
         }
 
-        var transformed = transformations.triangle(data);
+        transformed = transformations.triangle(data);
 
         var result = {
             "type" : "triangle",

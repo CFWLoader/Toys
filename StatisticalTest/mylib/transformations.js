@@ -6,18 +6,19 @@ const mathfn = require('mathfn');
 
 function normality(data) 
 {
-    transformed = [];
+    var transformed = [];
 
-    mu = spMath.mean(data);
+    var mu = spMath.mean(data);
 
-    sigma = mathjs.sqrt(spMath.variance(data));
+    var sigma = mathjs.sqrt(spMath.variance(data));
 
     // sigmaSqr = spMath.variance(data);
     // deviantSum = spMath.variance(data);
 
     // sigma = Math.sqrt((data.length - 1) * deviantSum / data.length);
 
-    for (i = 0; i < data.length; ++i) {
+    for(var i = 0; i < data.length; ++i) 
+    {
         transformed.push(0.5 + spMath.erf((data[i] - mu) / (Math.SQRT2 * sigma)) / 2);
     }
 
@@ -29,7 +30,7 @@ function logNormality(data) {
 
     var mu = 0, sigmaSqr = 0;
 
-    for(i = 0; i < data.length; ++i)
+    for(var i = 0; i < data.length; ++i)
     {
         if(data[i] <= 0)
         {
@@ -50,9 +51,9 @@ function logNormality(data) {
 
     var log_mean = mu, log_sd = mathjs.sqrt(sigmaSqr);
 
-    transformed = [];
+    var transformed = [];
 
-    for (i = 0; i < data.length; ++i) 
+    for(i = 0; i < data.length; ++i) 
     {    
         transformed.push(0.5 + spMath.erf((Math.log(data[i]) - log_mean) / (Math.SQRT2 * log_sd)) / 2);
     }
@@ -89,9 +90,9 @@ function uniform(data) {
 
     var len = maxVal - minVal;
 
-    transformed = [];
+    var transformed = [];
 
-    for (i = 0; i < data.length; ++i) {
+    for(var i = 0; i < data.length; ++i) {
         transformed.push((data[i] - minVal) / len);
     }
 
@@ -100,9 +101,9 @@ function uniform(data) {
 
 function triangle(data) 
 {
-    var a = b = c = data[0], z = 0;
+    var a = data[0], b = data[0], c = data[0], z = 0;
 
-    for (i = 0; i < data.length; ++i)
+    for (var i = 0; i < data.length; ++i)
     {
         if (a > data[i]) {
             a = data[i];
@@ -113,7 +114,7 @@ function triangle(data)
         }
     }
 
-    for(var i = 0; i < data.length; ++i)
+    for(i = 0; i < data.length; ++i)
     {
         z += (data[i] - a) / (c - a);
     }
@@ -155,14 +156,14 @@ function triangle(data)
 
 function exponent(data) {
     
-    mu = spMath.mean(data);
+    var mu = spMath.mean(data);
 
-    lambda = 1 / mu;
+    var lambda = 1 / mu;
 
-    transformed = [];
+    var transformed = [];
 
-    for (i = 0; i < data.length; ++i)
-     {
+    for(var i = 0; i < data.length; ++i)
+    {
         if(data[i] <= 0)
         {
             return [];
@@ -192,7 +193,7 @@ function beta(data)
 
     var transformed = [];
 
-    for(var i = 0; i < data.length; ++i)
+    for(i = 0; i < data.length; ++i)
     {
         transformed.push(betaFunVal * mathfn.incBeta(data[i], alpha, beta));
     }
@@ -206,9 +207,9 @@ function gamma(data)
 
     var alpha = parameters["alpha"], beta = parameters["beta"];
 
-    transformed = [];
+    var transformed = [];
 
-    for(i = 0; i < data.length; ++i)
+    for(var i = 0; i < data.length; ++i)
     {
         transformed.push(spMath.regularizedLowerIncompleteGamma(beta * data[i], alpha));
     }
@@ -224,7 +225,7 @@ function weibull(data)
 
     var transformed = [];
 
-    for(i = 0; i < data.length; ++i)
+    for(var i = 0; i < data.length; ++i)
     {
         if(data[i] <= 0)
         {

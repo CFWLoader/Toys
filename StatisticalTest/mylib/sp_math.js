@@ -1,4 +1,4 @@
-'use strict';
+// 'use strict';
 
 var mathjs = require('mathjs');
 
@@ -37,7 +37,7 @@ function erf(x) {
         sign = -1;
     }
 
-    var x = Math.abs(x);
+    x = Math.abs(x);
 
     // A&S formula 7.1.26
     var t = 1.0 / (1.0 + p * x);
@@ -61,16 +61,16 @@ function mean(data)
 
 function means(dataset)
 {
-	var mus = [], tupleLen = dataset[0].length;
+	var mus = [], tupleLen = dataset[0].length, col;
 
-	for(var col = 0; col < tupleLen; ++col)
+	for(col = 0; col < tupleLen; ++col)
 	{
 		mus.push(0);
 	}
 
 	for(var row = 0; row < dataset.length; ++row)
 	{
-		for(var col = 0; col < tupleLen; ++col)
+		for(col = 0; col < tupleLen; ++col)
 		{
 			if(dataset[row][col] == null)
 			{
@@ -81,7 +81,7 @@ function means(dataset)
 		}
 	}
 
-	for(var col = 0; col < tupleLen; ++col)
+	for(col = 0; col < tupleLen; ++col)
 	{
 		mus[col] /= dataset.length;
 	}
@@ -178,11 +178,11 @@ function newtonMethodOpt2Var(firstDrv, secondDrv, xArray, initialVal, epsilon = 
 // Using maximum likehood. https://en.wikipedia.org/wiki/Gamma_distribution#Maximum_likelihood_estimation
 function gammaParameters(data)
 {
-	var mu = spMath.mean(data), sigma = mathjs.sqrt(spMath.variance(data));
+	var mu = mean(data), sigma = mathjs.sqrt(variance(data));
 
     var logMu = 0, len = data.length, logSumVal = 0, sumVal = 0;
 
-    for(i = 0; i < data.length; ++i)
+    for(var i = 0; i < data.length; ++i)
     {
         if(data[i] <= 0)
         {
