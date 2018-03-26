@@ -1,5 +1,7 @@
 spMath = require('./sp_math.js');
 
+mathjs = require('mathjs');
+
 transformations = require('./transformations.js');
 
 class AndersonDarling
@@ -772,6 +774,27 @@ class OneKeyTestReport
         return result;
     }
 
+    static beta(data)
+    {
+        var parameters = spMath.betaParameters(data);
+
+        var transformed = transformations.beta(data);        
+
+        var result = {
+            "type" : "beta",
+            "shape1" : parameters["shape1"],
+            "shape2" : parameters["shape2"],
+            // "mu" : mu,
+            // "sigma" : Math.sqrt(sigmaSqr),
+            "adValue" : AndersonDarling.test(transformed),
+            "adPvalue" : 'N/A',
+            "ksValue" : KolmogorovSmirnov.test(transformed),
+            "ksPvalue" : 'N/A'
+        };
+
+        return result;
+    }
+
     static formatReportString(data)
     {
         var header;
@@ -803,6 +826,10 @@ class OneKeyTestReport
         else if(data["type"] == "weibull")
         {
             header = "Weibull[shape1=" + data["shape1"].toString() + ", shape2=" + data["shape2"].toString() + "]:";
+        }
+        else if(data["type"] == "beta")
+        {
+            header = "Beta[shape1=" + data["shape1"].toString() + ", shape2=" + data["shape2"].toString() + "]:";            
         }
 
         return header + "\nAD: " + data["adValue"].toString() + ", ADP: " + data["adPvalue"].toString() + ", KS: " + data["ksValue"].toString() + ", KSP: " + data["ksPvalue"].toString();

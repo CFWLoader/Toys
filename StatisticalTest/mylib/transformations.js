@@ -1,6 +1,8 @@
-spMath = require('./sp_math.js')
+const spMath = require('./sp_math.js');
 
-mathjs = require('mathjs')
+const mathjs = require('mathjs');
+
+const mathfn = require('mathfn');
 
 function normality(data) 
 {
@@ -192,8 +194,10 @@ function beta(data)
 
     for(var i = 0; i < data.length; ++i)
     {
-        
+        transformed.push(betaFunVal * mathfn.incBeta(data[i], alpha, beta));
     }
+
+    return transformed;
 }
 
 function gamma(data)

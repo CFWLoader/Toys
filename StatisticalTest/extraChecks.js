@@ -1,4 +1,8 @@
+// import { gamma } from 'mathfn/functions/gamma';
+
 var transformations = require('./mylib/transformations.js');
+
+const adTest = require('./mylib/statistic_test').AndersonDarling;
 
 var oneKey = require('./mylib/statistic_test.js').OneKeyTestReport;
 
@@ -7,6 +11,8 @@ var digamma = require('math-digamma');
 var spMath = require('./mylib/sp_math.js');
 
 var mathjs = require('mathjs');
+
+const mathfn = require('mathfn');
 
 var fs = require('fs');
 
@@ -27,4 +33,4 @@ var fs = require('fs');
 var file = '.\\dataset\\beta_dist1.json';
 var distData = JSON.parse(fs.readFileSync(file));
 
-console.log(spMath.betaParameters(distData));
+console.log(oneKey.formatReportString(oneKey.beta(distData)));
