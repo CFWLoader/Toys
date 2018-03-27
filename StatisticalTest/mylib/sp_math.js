@@ -1,37 +1,51 @@
-// 'use strict';
+'use strict';
 
-var mathjs = require('mathjs');
+import mathjs from 'mathjs';
 
-var digamma = require('math-digamma');
+import digamma from 'math-digamma';
 
+/**
+ * Calculate gamma(x).
+ * @param {Number} x 
+ * @returns {Number}
+ */
 function gamma(x)
 {
-    var p = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+    const p = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
         771.32342877765313, -176.61502916214059, 12.507343278686905,
         -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
     ];
  
-    var g = 7;
+	const g = 7;
+	
     if (x < 0.5) {
-        return Math.PI / (Math.sin(Math.PI * x) * gamma(1 - x));
+        return mathjs.PI / (mathjs.sin(mathjs.PI * x) * gamma(1 - x));
     }
  
-    x -= 1;
-    var a = p[0];
-    var t = x + g + 0.5;
-    for (var i = 1; i < p.length; i++) {
+	x -= 1;
+	
+	let a = p[0];
+	
+	let t = x + g + 0.5;
+	
+    for (let i = 1; i < p.length; i++) {
         a += p[i] / (x + i);
     }
  
-    return Math.sqrt(2 * Math.PI) * Math.pow(t, x + 0.5) * Math.exp(-t) * a;
+    return mathjs.sqrt(2 * matjs.PI) * mathjs.pow(t, x + 0.5) * mathjs.exp(-t) * a;
 }
 
+/**
+ * Calculate error function's value of x.
+ * @param {Number} x 
+ * @returns {Number}
+ */
 function erf(x) {
     // constants
-    var a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+    let a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
 
     // Save the sign of x
-    var sign = 1;
+    let sign = 1;
 
     if (x < 0) {
         sign = -1;
@@ -40,48 +54,68 @@ function erf(x) {
     x = Math.abs(x);
 
     // A&S formula 7.1.26
-    var t = 1.0 / (1.0 + p * x);
+    let t = 1.0 / (1.0 + p * x);
 
-    var y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+    let y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
 
     return sign * y;
 }
 
+/**
+ * Calculate mean of an array.
+ * @param {Array} data 
+ * @returns {Number}
+ */
 function mean(data)
 {
-    var mu = 0;
+	if(data.length == 0)
+	{
+		return 0;
+	}
 
-    for(var i = 0; i < data.length; ++i)
+    let mu = 0;
+
+    for(let value of data)
     {
-        mu += data[i];
+        mu += value;
     }
 
     return mu /= data.length;
 }
 
+/**
+ * Calculate means of each columns.
+ * @param {Array[]} dataset 
+ * @returns {Array}
+ */
 function means(dataset)
 {
-	var mus = [], tupleLen = dataset[0].length, col;
+	if(!Array.isArray(dataset) || !Array.isArray(dataset[0]))
+	{
+		return [];
+	}
 
-	for(col = 0; col < tupleLen; ++col)
+	let mus = [], tupleLen = dataset[0].length;
+
+	for(let col = 0; col < tupleLen; ++col)
 	{
 		mus.push(0);
 	}
 
-	for(var row = 0; row < dataset.length; ++row)
+	for(let row of dataset)
 	{
-		for(col = 0; col < tupleLen; ++col)
+		for(let col = 0; col < tupleLen; ++col)
 		{
-			if(dataset[row][col] == null)
+			if(row[col] == null)
 			{
 				continue;
 			}
 
-			mus[col] += dataset[row][col];
+			mus[col] += row[col];
 		}
 	}
 
-	for(col = 0; col < tupleLen; ++col)
+	for(let col = 0; col < tupleLen; ++col)
 	{
 		mus[col] /= dataset.length;
 	}
@@ -89,13 +123,18 @@ function means(dataset)
     return mus;
 }
 
+/**
+ * Return variance of a sequence.
+ * @param {Array} data 
+ * @returns {Number}
+ */
 function variance(data)
 {
-    var mu = mean(data);
+    let mu = mean(data);
 
-    var varia = 0;
+    let varia = 0;
 
-    for(var i = 0; i < data.length; ++i)
+    for(let i = 0; i < data.length; ++i)
     {
         varia += (data[i] - mu)**2;
     }
@@ -103,24 +142,33 @@ function variance(data)
     return varia /= data.length;
 }
 
+/**
+ * Optimized Newtow's method for approximate coefficients of original function.
+ * @param {Array} firstDrv First derivate of original function. AKA Jacobian Matrix.
+ * @param {Array[]} secondDrv Second derivate of original function. AKA Hessian Matrix.
+ * @param {Array} xArray Observed values.
+ * @param {Array} initialVal 
+ * @param {Number} epsilon
+ * @returns {Key-Value}
+ */
 function newtonMethodOpt2Var(firstDrv, secondDrv, xArray, initialVal, epsilon = 1e-13)
 {
-	var x = [initialVal[0], initialVal[1]];
+	let x = [initialVal[0], initialVal[1]];
 
-	var hessian = [
+	let hessian = [
 		[secondDrv[0][0](x[0], x[1], xArray), secondDrv[0][1](x[0], x[1], xArray)],
 		[secondDrv[1][0](x[0], x[1], xArray), secondDrv[1][1](x[0], x[1], xArray)]
 	];
 
-	var hessianInv = mathjs.inv(hessian);
+	let hessianInv = mathjs.inv(hessian);
 
-	var jaccob = [firstDrv[0](x[0], x[1], xArray), firstDrv[1](x[0], x[1], xArray)];
+	let jaccob = [firstDrv[0](x[0], x[1], xArray), firstDrv[1](x[0], x[1], xArray)];
 
 	// console.log(firstDrv[0](x[0], x[1]));
 
-	var deltax = mathjs.multiply(hessianInv, jaccob);
+	let deltax = mathjs.multiply(hessianInv, jaccob);
 
-	var xn = [x[0] - deltax[0], x[1] - deltax[1]];
+	let xn = [x[0] - deltax[0], x[1] - deltax[1]];
 
 	// console.log("Delta: " + deltax.toString());
 
