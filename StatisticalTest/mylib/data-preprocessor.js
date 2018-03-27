@@ -1,20 +1,26 @@
 'use strict';
 
-const spMath = require('./special-math');
+import spMath from './special-math';
 
-const mvr = require('./multivariate-regress');
+import mvr from './multivariate-regress';
 
+/**
+ * Remove rows which has missing cell(s).
+ * @param {Array[]} dataset 
+ * @param {Any} missingTag
+ * @returns {Array[]}
+ */
 function removeMissings(dataset, missingTag = null)
 {
-    var cleaned = [], passed;
+    let cleaned = [], passed;
 
-    for(var row = 0; row < dataset.length; ++row)
+    for(let row of dataset)
     {
         passed = true;
 
-        for(var col = 0; col < dataset[row].length; ++col)
+        for(let cell of row)
         {
-            if(dataset[row][col] == missingTag)
+            if(cell == missingTag)
             {
                 passed = false;
 
@@ -24,60 +30,93 @@ function removeMissings(dataset, missingTag = null)
 
         if(passed)
         {
-            cleaned.push(dataset[row]);
+            cleaned.push(row);
         }
     }
 
     return cleaned;
 }
 
+/**
+ * Fill empty cells with responding global values.
+ * @param {Array[]} dataset 
+ * @param {Array} globalValues 
+ * @param {Any} missingTag 
+ * @returns {Array[]}
+ */
 function fillMissingsWithGlobal(dataset, globalValues, missingTag = null)
 {
-    for(var row = 0; row < dataset.length; ++row)
+    let dupMat = new Array(dataset.length);
+
+    for(let i = 0; i < dataset.length; ++i)
     {
-        for(var col = 0; col < dataset[row].length; ++col)
+        dupMat[i] = dataset[i].slice(0);
+    }
+
+    for(let row of dupMat)
+    {
+        for(let col = 0; col < row.length; ++col)
         {
-            if(dataset[row][col] == missingTag)
+            if(row[col] == missingTag)
             {
-                dataset[row][col] = globalValues[col];
+                row[col] = globalValues[col];
             }
         }
     }
 
-    return dataset;
+    return dupMat;
 }
 
+/**
+ * Fill empty cells with responding column's mean.
+ * @param {Array[]} dataset 
+ * @param {Any} missingTag 
+ * @returns {Array[]}
+ */
 function fillMissingsWithMean(dataset, missingTag = null)
 {
-    var means = spMath.means(dataset);
+    let dupMat = new Array(dataset.length);
 
-    // console.log(means);
-
-    for(var row = 0; row < dataset.length; ++row)
+    for(let i = 0; i < dataset.length; ++i)
     {
-        for(var col = 0; col < dataset[row].length; ++col)
+        dupMat[i] = dataset[i].slice(0);
+    }
+
+    let means = spMath.means(dupMat);
+
+    for(let row = 0; row < dupMat.length; ++row)
+    {
+        for(let col = 0; col < dupMat[row].length; ++col)
         {
-            if(dataset[row][col] == missingTag)
+            if(dupMat[row][col] == missingTag)
             {
-                dataset[row][col] = means[col];
+                dupMat[row][col] = means[col];
             }
         }
     }
 
-    return dataset;
+    return dupMat;
 }
 
 /**
  * Filling missing cell with Multivariate Linear Regression.
  * @param {Array[]} dataset 
+ * @returns {Array[]}
  */
 function fillMissingsWithMLR(dataset)
 {
-    var elementLength = dataset[0].length;
-    
-    var argumentSet = removeMissings(dataset), params, row, col, sum;
+    let dupMat = new Array(dataset.length);
 
-    for(var yCol = 0; yCol < elementLength; ++yCol)
+    for(let i = 0; i < dataset.length; ++i)
+    {
+        dupMat[i] = dataset[i].slice(0);
+    }
+
+    let elementLength = dupMat[0].length;
+    
+    let argumentSet = removeMissings(dupMat), params, row, col, sum;
+
+    for(let yCol = 0; yCol < elementLength; ++yCol)
     {
         // console.log(yCol);
         // console.log("Start filling " + yCol.toString() + " column.");
@@ -90,13 +129,13 @@ function fillMissingsWithMLR(dataset)
         {
             // console.log(dataset[row][yCol]);
 
-            if(null == dataset[row][yCol])
+            if(null == dupMat[row][yCol])
             {
                 sum = 0;
 
                 for(col = 0; col < yCol; ++col)
                 {
-                    sum += params[col] * dataset[row][col];
+                    sum += params[col] * dupMat[row][col];
                 }
 
                 for(col = yCol + 1; col < elementLength; ++col)
@@ -110,7 +149,7 @@ function fillMissingsWithMLR(dataset)
 
                 // console.log("Sum=" + sum.toString());                
 
-                dataset[row][yCol] = Math.round(sum);
+                dupMat[row][yCol] = sum;
             }
         }
     }

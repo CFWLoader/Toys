@@ -95,29 +95,32 @@ function means(dataset)
 		return [];
 	}
 
-	let mus = [], tupleLen = dataset[0].length;
+	let mus = [], tupleLen = dataset[0].length, validRowCount = [];
 
 	for(let col = 0; col < tupleLen; ++col)
 	{
 		mus.push(0);
+		validRowCount.push(0);
 	}
 
 	for(let row of dataset)
 	{
 		for(let col = 0; col < tupleLen; ++col)
 		{
-			if(row[col] == null)
+			if(null == row[col])
 			{
 				continue;
 			}
 
 			mus[col] += row[col];
+
+			++validRowCount[col];
 		}
 	}
 
 	for(let col = 0; col < tupleLen; ++col)
 	{
-		mus[col] /= dataset.length;
+		mus[col] /= validRowCount[col];
 	}
 
     return mus;

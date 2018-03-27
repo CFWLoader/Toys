@@ -1,16 +1,24 @@
 'use strict'
 
-const fs = require('fs');
+import fs from 'fs';
 
+/**
+ * Read a csv file synchronously. Data in every cells would be read as a string.
+ * @param {String} filePath 
+ * @param {String} encoding 
+ * @param {String} delimiter 
+ * @param {Boolean} readHeader 
+ * @returns {Array[]}
+ */
 function readCSVsync(filePath, encoding = 'UTF-8', delimiter = ',', readHeader = true)
 {
-    var lines = fs.readFileSync(filePath, encoding).split('\r\n');
+    let lines = fs.readFileSync(filePath, encoding).split('\r\n');
 
-    var result = [];
+    let result = [];
 
-    for(var i = readHeader ? 0 : 1; i < lines.length; ++i)
+    for(let line of lines)
     {
-        result.push(lines[i].trim().split(delimiter));
+        result.push(line.trim().split(delimiter));
     }
 
     return result;
