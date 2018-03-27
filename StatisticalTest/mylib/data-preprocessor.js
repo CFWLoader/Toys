@@ -1,8 +1,8 @@
-'use strict'
+'use strict';
 
-const spMath = require('./sp_math');
+const spMath = require('./special-math');
 
-const mvr = require('./multivariate_regress');
+const mvr = require('./multivariate-regress');
 
 function removeMissings(dataset, missingTag = null)
 {

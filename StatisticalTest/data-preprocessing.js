@@ -1,24 +1,24 @@
 'use strict';
 
-const fs = require('fs');
+import fs from 'fs';
 
-const auxLib = require('./mylib/aux_lib');
+import auxLib from './mylib/aux-lib';
 
-const multiRegress = require('./mylib/multivariate_regress');
+import multiRegress from './mylib/multivariate-regress';
 
-const preprocessor = require('./mylib/data_preprocessor');
+import preprocessor from './mylib/data-preprocessor';
 
-var dataset = auxLib.readCSVsync('./dataset/wiki4HE.csv', 'UTF-8', ';', false);
+let dataset = auxLib.readCSVsync('./dataset/wiki4HE.csv', 'UTF-8', ';', false);
 
 dataset.pop();
 
-var reformedData = [], rwVal, tupleLen = 17;
+let reformedData = [], rwVal, tupleLen = 17;
 
-for(var row = 0; row < dataset.length; ++row)
+for(let row = 0; row < dataset.length; ++row)
 {
     rwVal = [];
 
-    for(var col = 10; col < tupleLen; ++col)
+    for(let col = 10; col < tupleLen; ++col)
     {
         if(dataset[row][col] == '?')
         {
@@ -44,11 +44,11 @@ for(var row = 0; row < dataset.length; ++row)
 //     console.log(reformedData[row]);
 // }
 
-var cleaned2 = preprocessor.fillMissingsWithMLR(reformedData);
+let cleaned2 = preprocessor.fillMissingsWithMLR(reformedData);
 
-for(var row = 0; row < cleaned2.length; ++row)
+for(let row = 0; row < cleaned2.length; ++row)
 {
-    for(var col = 0; col < cleaned2[row].lenght; ++col)
+    for(let col = 0; col < cleaned2[row].lenght; ++col)
     {
         if(cleaned2[row][col] == null)
         {

@@ -1,6 +1,6 @@
 import {readFileSync} from 'fs';
 
-import {erf, gamma, trigamma, mean, means, gammaParameters, betaParameters, weibullParameters} from '../mylib/sp_math';
+import {erf, gamma, trigamma, mean, means, gammaParameters, betaParameters, weibullParameters} from '../mylib/special-math';
 
 const aqiData = JSON.parse(readFileSync('./dataset/aqi_dist.json'));
 

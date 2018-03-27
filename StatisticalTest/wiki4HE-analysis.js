@@ -1,26 +1,26 @@
-'use strict'
+'use strict';
 
-const auxLib = require('./mylib/aux_lib');
+import auxLib from './mylib/aux-lib';
 
-const dataPreprocessor = require('./mylib/data_preprocessor');
+import dataPreprocessor from './mylib/data-preprocessor';
 
-const spMath = require('./mylib/sp_math');
+import spMath from './mylib/special-math';
 
-const mathjs = require('mathjs');
+import mathjs from 'mathjs';
 
-const multiRegress = require('./mylib/multivariate_regress');
+import multiRegress from './mylib/multivariate-regress';
 
-var dataset = auxLib.readCSVsync('./dataset/wiki4HE.csv', 'UTF-8', ';', false);
+let dataset = auxLib.readCSVsync('./dataset/wiki4HE.csv', 'UTF-8', ';', false);
 
 dataset.pop();
 
-var reformedData = [], rwVal, tupleLen = 17;
+let reformedData = [], rwVal, tupleLen = 17;
 
-for(var row = 0; row < dataset.length; ++row)
+for(let row = 0; row < dataset.length; ++row)
 {
     rwVal = [];
 
-    for(var col = 10; col < tupleLen; ++col)
+    for(let col = 10; col < tupleLen; ++col)
     {
         if(dataset[row][col] == '?')
         {
@@ -39,13 +39,13 @@ for(var row = 0; row < dataset.length; ++row)
 
 // console.log(reformedData[0]);
 
-var cleaned1 = dataPreprocessor.removeMissings(reformedData);
+let cleaned1 = dataPreprocessor.removeMissings(reformedData);
 
-var w = multiRegress.deriveMultivariateLinearParameters(cleaned1, 0);
+let w = multiRegress.deriveMultivariateLinearParameters(cleaned1, 0);
 
-var x = multiRegress.excludeColumn(cleaned1, 0);
+let x = multiRegress.excludeColumn(cleaned1, 0);
 
-var y = multiRegress.extractColumn(cleaned1, 0);
+let y = multiRegress.extractColumn(cleaned1, 0);
 
 console.log(y[2]);
 

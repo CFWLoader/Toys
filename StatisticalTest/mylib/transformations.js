@@ -1,8 +1,8 @@
-const spMath = require('./sp_math.js');
+import spMath from './special-math';
 
-const mathjs = require('mathjs');
+import mathjs from 'mathjs';
 
-const mathfn = require('mathfn');
+import mathfn from 'mathfn';
 
 function normality(data) 
 {

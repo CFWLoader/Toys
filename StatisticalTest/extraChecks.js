@@ -1,20 +1,18 @@
 // import { gamma } from 'mathfn/functions/gamma';
 
-var transformations = require('./mylib/transformations.js');
+import transformations from "./mylib/transformations.js";
 
-const adTest = require('./mylib/statistic_test').AndersonDarling;
+import {AndersonDarling as adTest, OneKeyTestReport as oneKey} from "./mylib/statistic_test";
 
-var oneKey = require('./mylib/statistic_test.js').OneKeyTestReport;
+import digamma from "math-digamma";
 
-var digamma = require('math-digamma');
+import spMath from "./mylib/special-math";
 
-var spMath = require('./mylib/sp_math.js');
+import mathjs from "mathjs";
 
-var mathjs = require('mathjs');
+import mathfn from "mathfn";
 
-const mathfn = require('mathfn');
-
-var fs = require('fs');
+import fs from "fs";
 
 // console.log("Uniform:")
 // var file = ".\\unif_dist1.json";
@@ -30,7 +28,7 @@ var fs = require('fs');
 //     }
 // }
 
-var file = '.\\dataset\\beta_dist1.json';
-var distData = JSON.parse(fs.readFileSync(file));
+let file = ".\\dataset\\beta_dist1.json";
+let distData = JSON.parse(fs.readFileSync(file));
 
 console.log(oneKey.formatReportString(oneKey.beta(distData)));

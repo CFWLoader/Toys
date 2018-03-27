@@ -1,12 +1,12 @@
-const transformations = require('./mylib/transformations.js');
+import fs from 'fs';
 
-const spMath = require('./mylib/sp_math.js');
+import transformations from './mylib/transformations';
 
-const statisticTest = require('./mylib/statistic_test.js');
+import spMath from './mylib/special-math';
+
+import statisticTest from './mylib/statistic-test';
 
 const adTest = statisticTest.AndersonDarling, ksTest = statisticTest.KolmogorovSmirnov, oneKey = statisticTest.OneKeyTestReport;
-
-const fs = require('fs');
 
 function formatDisplay(val)
 {
@@ -134,7 +134,7 @@ function batchTestReport(dist_data) {
 
 function batchTestDetailedReport(dist_data) {
 
-    var report;
+    let report;
 
     console.log("Beta:");
 
@@ -176,8 +176,8 @@ function batchTestDetailedReport(dist_data) {
 // batchTest(dist_data)
 
 // console.log("PM2.5:")
-var file = ".\\dataset\\pm25_dist.json"
-var dist_data = JSON.parse(fs.readFileSync(file));
+let file = ".\\dataset\\pm25_dist.json"
+let dist_data = JSON.parse(fs.readFileSync(file));
 batchTest(dist_data);
 
 // console.log("Norm:");

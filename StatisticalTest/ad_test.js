@@ -1,15 +1,16 @@
-transformations = require('./mylib/transformations.js');
+import transformations from './mylib/transformations';
 
-spMath = require('./mylib/sp_math.js');
+import spMath from './mylib/special-math.js';
 
-statisticTest = require('./mylib/statistic_test.js');
+import statisticTest from './mylib/statistic-test.js';
 
 function andersonDarlingTest(data) {
-    n = data.length;
+    
+    let n = data.length;
 
-    s = 0;
+    let s = 0;
 
-    for (i = 0; i < data.length; ++i) {
+    for (let i = 0; i < data.length; ++i) {
         // console.log(data[i]);
 
         s += (2 * i + 1) * Math.log(data[i] * (1 - data[n - 1 - i]))      // Notice original is (2 * i - 1) and data[n + 1 - i]. Fix head offset.
@@ -21,7 +22,8 @@ function andersonDarlingTest(data) {
 }
 
 function adpValueNormal(z, n) {
-    zStar = z * (1 + 0.75 / n + 2.25 / (n ** 2));
+    
+    let zStar = z * (1 + 0.75 / n + 2.25 / (n ** 2));
 
     // var math = require('mathjs');
 
@@ -45,13 +47,13 @@ function adpValueNormal(z, n) {
 }
 
 function adpValueUniform(z) {
-    p = 0;
+    let p = 0;
 
-    g = function (zz) {
+    let g = (zz) => {
         return (2.00012 + (0.247105 - (0.0649821 - (0.0347962 - (0.0116720 - 0.00168691 * zz) * zz) * zz) * zz) * zz);
     }
 
-    gg = function (zz) {
+    let gg = (zz) => {
         return (1.0776 - (2.30695 - (0.43424 - (0.082433 - (0.008056 - 0.0003146 * zz) * zz) * zz) * zz) * zz);
     }
 
@@ -66,7 +68,7 @@ function adpValueUniform(z) {
 }
 
 function adpValueExponent(adValue, n) {
-    zStar = adValue * (1 + 0.6 / n);
+    let zStar = adValue * (1 + 0.6 / n);
 
     // console.log(zStar);
 
@@ -92,13 +94,13 @@ function adpValueGamma(adValue, alpha)
 }
 
 function kolmogorovSmirnovTest(data) {
-    len = wn = data.length;
+    let len = data.length, wn = data.length;
 
-    wi = 1;
+    let wi = 1;
 
-    dplus = dminus = 0;
+    let dplus = 0, dminus = 0, dp, dm;
 
-    for (i = 0; i < len; ++i, ++wi) {
+    for (let i = 0; i < len; ++i, ++wi) {
         dp = Math.abs(data[i] - wi / wn);
 
         dm = Math.abs(data[i] - (wi - 1) / wn);
@@ -135,16 +137,16 @@ function kolmogorovSmirnovTest(data) {
 }
 
 function kspValueUniform(wn, dn) {
-    D = Math.sqrt(wn) * dn;
+    let D = Math.sqrt(wn) * dn;
 
-    k = 100;
+    let k = 100;
 
-    var ak;
+    let ak;
 
     while (true) {
         ak = 0;
 
-        for (i = -k; i <= k; ++i) {
+        for (let i = -k; i <= k; ++i) {
             ak += Math.pow(-1, i) * Math.exp(-2 * (i * D) ** 2);
         }
 
@@ -157,7 +159,7 @@ function kspValueUniform(wn, dn) {
 }
 
 function kspValueNormal(wn, dn) {
-    d = dn * (Math.sqrt(wn) - 0.01 + 0.85 / Math.sqrt(wn));
+    let d = dn * (Math.sqrt(wn) - 0.01 + 0.85 / Math.sqrt(wn));
 
     if (d < 0.775) {
         return "0.15+";
@@ -180,7 +182,7 @@ function kspValueNormal(wn, dn) {
 }
 
 function kspValueExponent(wn, dn) {
-    d = (dn - 0.2 / wn) * (Math.sqrt(wn) + 0.25 + 0.5 / Math.sqrt(wn));
+    let d = (dn - 0.2 / wn) * (Math.sqrt(wn) + 0.25 + 0.5 / Math.sqrt(wn));
 
     if (d < 0.926) {
         return "0.15+";
@@ -204,7 +206,7 @@ function kspValueExponent(wn, dn) {
 
 function batchTest(dist_data) {
     // Calculating p value for normal dist.
-    transformed = transformations.normality(dist_data);
+    let transformed = transformations.normality(dist_data), z, dn, pvalue, ksp;
 
     // z = andersonDarlingTest(transformed);
     // z = statisticTest.AndersonDarling.test(transformed);
@@ -287,8 +289,6 @@ function batchTest(dist_data) {
     // Calculating p value for exponent dist.
     transformed = transformations.exponent(dist_data);
 
-    var pvalue, z;
-
     if (transformed == 0) {
         z = 'N/A';
 
@@ -328,8 +328,8 @@ var fs = require('fs');
 // batchTest(dist_data);
 
 console.log("Norm:");
-var file = ".\\norm_dist1.json"
-var dist_data = JSON.parse(fs.readFileSync(file));
+let file = ".\\dataset\\norm_dist1.json"
+let dist_data = JSON.parse(fs.readFileSync(file));
 batchTest(dist_data);
 
 // console.log("Log-Norm:");

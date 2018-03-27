@@ -1,4 +1,4 @@
-const spMath = require('./sp_math.js');
+const spMath = require('./special-math.js');
 
 const mathjs = require('mathjs');
 
