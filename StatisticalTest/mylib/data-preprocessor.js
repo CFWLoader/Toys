@@ -121,7 +121,14 @@ function fillMissingsWithMLR(dataset)
         // console.log(yCol);
         // console.log("Start filling " + yCol.toString() + " column.");
 
-        params = mvr.deriveMultivariateLinearParameters(argumentSet, yCol);
+        try 
+        {
+            params = mvr.deriveMultivariateLinearParameters(argumentSet, yCol);    
+        } catch (error) 
+        {
+            throw error;    
+        }
+        
 
         // console.log(params);
 

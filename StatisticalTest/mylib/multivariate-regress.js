@@ -74,22 +74,27 @@ function deriveMultivariateLinearParameters(dataset, yCol)
 
     var x = excludeColumn(dataset, yCol), y = mathjs.transpose(extractColumn(dataset, yCol));
 
-    var xt = mathjs.transpose(x);
-
-    // console.log(x);
-
-    // console.log(xt);
-
-    var mul = mathjs.multiply(xt, x);
-
     for(var row = 0; row < x.length; ++row)
     {
         x[row].push(1);
     }
 
-    // return 'Unavailable';
+    var xt = mathjs.transpose(x);
 
-    return mathjs.multiply(mathjs.multiply(mathjs.inv(mul), xt), y);
+    var mul = mathjs.multiply(xt, x);
+
+    let mulInv = null;
+
+    try
+    {
+        mulInv = mathjs.inv(mul);
+    }
+    catch(err)
+    {
+        throw err;
+    }
+
+    return mathjs.multiply(mathjs.multiply(mulInv, xt), y);
 }
 
 module.exports = {
