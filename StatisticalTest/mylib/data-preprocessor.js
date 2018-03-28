@@ -124,7 +124,8 @@ function fillMissingsWithMLR(dataset)
         try 
         {
             params = mvr.deriveMultivariateLinearParameters(argumentSet, yCol);    
-        } catch (error) 
+        } 
+        catch (error) 
         {
             throw error;    
         }
@@ -161,7 +162,7 @@ function fillMissingsWithMLR(dataset)
         }
     }
 
-    return dataset;
+    return dupMat;
 }
 
 module.exports = {

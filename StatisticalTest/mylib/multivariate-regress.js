@@ -2,23 +2,37 @@
 
 const mathjs = require('mathjs');
 
+/**
+ * Extract a specified column from a matrix.
+ * @param {Array[]} dataset 
+ * @param {Integer} targetColumn
+ * @returns {Array} 
+ */
 function extractColumn(dataset, targetColumn)
 {
-    if(dataset.length == 0)
+    if(!Array.isArray(dataset) || dataset.length == 0)
     {
         return [];
     }
 
-    if(Object.prototype.toString.call(dataset[0]) != '[object Array]' || dataset[0].length <= targetColumn)
+    for(let row of dataset)
     {
-        return [];
+        if(!Array.isArray(row) || row.length <= targetColumn)
+        {
+            return [];
+        }
     }
 
-    var result = [], tupleLen = dataset[0].length;
+    // if(!Array.isArray(dataset[0]) || dataset[0].length <= targetColumn)
+    // {
+    //     return [];
+    // }
+
+    let result = [], tupleLen = dataset[0].length;
     
-    for(var row = 0; row < dataset.length; ++row)
+    for(let row of dataset)
     {
-        result.push(dataset[row][targetColumn]);
+        result.push(row[targetColumn]);
     }
 
     return result;
@@ -26,14 +40,17 @@ function extractColumn(dataset, targetColumn)
 
 function excludeColumn(dataset, targetColumn)
 {   
-    if(dataset.length == 0)
+    if(!Array.isArray(dataset) || dataset.length == 0)
     {
         return [];
     }
 
-    if(Object.prototype.toString.call(dataset[0]) != '[object Array]' || dataset[0].length <= targetColumn)
+    for(let row of dataset)
     {
-        return [];
+        if(!Array.isArray(row) || row.length <= targetColumn)
+        {
+            return [];
+        }
     }
 
     var result = [], tupleLen = dataset[0].length, col, rwVal;
