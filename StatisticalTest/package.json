@@ -4,7 +4,6 @@
     "jstat": "^1.7.1",
     "lodash": "^4.17.5",
     "math-digamma": "^1.0.2",
-    "math-power": "^1.0.0",
     "math-sinpi": "^1.0.1",
     "mathjs": "^4.0.1"
   },

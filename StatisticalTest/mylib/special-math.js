@@ -1,8 +1,14 @@
 'use strict';
 
-import mathjs from 'mathjs';
+import mathjs, {floor, pow} from 'mathjs';
 
 import digamma from 'math-digamma';
+
+import { factory as evalrational } from 'math-evalrational';
+
+import sinpi from 'math-sinpi';
+
+const PI = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679;
 
 /**
  * Calculate complete gamma(x).
@@ -473,16 +479,9 @@ function weibullParameters(data)
 
 // MODULES //
 
-const evalrational = require( 'math-evalrational' ).factory;
-const floor = mathjs.floor;
-const pow = mathjs.pow;
-import sinpi from 'math-sinpi';
-
-
 // CONSTANTS //
 
 const Y_OFFSET_2_4 = 3.558437347412109375;
-const PI = require( 'const-pi' );
 
 // Polynomial coefficients...
 const P_1_2 = [
