@@ -2,6 +2,8 @@
 
 import mathjs, {floor, pow} from 'mathjs';
 
+import {mean, variance} from 'jstat';
+
 import digamma from 'math-digamma';
 
 import { factory as evalrational } from 'math-evalrational';
@@ -15,79 +17,79 @@ const PI = 3.1415926535897932384626433832795028841971693993751058209749445923078
  * @param {Number} x 
  * @returns {Number}
  */
-function cgamma(x)
-{
-    const p = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
-        771.32342877765313, -176.61502916214059, 12.507343278686905,
-        -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
-    ];
+// function cgamma(x)
+// {
+//     const p = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+//         771.32342877765313, -176.61502916214059, 12.507343278686905,
+//         -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
+//     ];
  
-	const g = 7;
+// 	const g = 7;
 	
-    if (x < 0.5) {
-        return mathjs.PI / (mathjs.sin(mathjs.PI * x) * gamma(1 - x));
-    }
+//     if (x < 0.5) {
+//         return mathjs.PI / (mathjs.sin(mathjs.PI * x) * gamma(1 - x));
+//     }
  
-	x -= 1;
+// 	x -= 1;
 	
-	let a = p[0];
+// 	let a = p[0];
 	
-	let t = x + g + 0.5;
+// 	let t = x + g + 0.5;
 	
-    for (let i = 1; i < p.length; i++) {
-        a += p[i] / (x + i);
-    }
+//     for (let i = 1; i < p.length; i++) {
+//         a += p[i] / (x + i);
+//     }
  
-    return mathjs.sqrt(2 * mathjs.PI) * mathjs.pow(t, x + 0.5) * mathjs.exp(-t) * a;
-}
+//     return mathjs.sqrt(2 * mathjs.PI) * mathjs.pow(t, x + 0.5) * mathjs.exp(-t) * a;
+// }
 
 /**
  * Calculate error function's value of x.
  * @param {Number} x 
  * @returns {Number}
  */
-function erf(x) {
-    // constants
-    let a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+// function erf(x) {
+//     // constants
+//     let a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
 
-    // Save the sign of x
-    let sign = 1;
+//     // Save the sign of x
+//     let sign = 1;
 
-    if (x < 0) {
-        sign = -1;
-    }
+//     if (x < 0) {
+//         sign = -1;
+//     }
 
-    x = Math.abs(x);
+//     x = Math.abs(x);
 
-    // A&S formula 7.1.26
-    let t = 1.0 / (1.0 + p * x);
+//     // A&S formula 7.1.26
+//     let t = 1.0 / (1.0 + p * x);
 
-    let y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+//     let y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
 
-    return sign * y;
-}
+//     return sign * y;
+// }
 
 /**
  * Calculate mean of an array.
  * @param {Array} data 
  * @returns {Number}
  */
-function mean(data)
-{
-	if(data.length == 0)
-	{
-		return 0;
-	}
+// function mean(data)
+// {
+// 	if(data.length == 0)
+// 	{
+// 		return 0;
+// 	}
 
-    let mu = 0;
+//     let mu = 0;
 
-    for(let value of data)
-    {
-        mu += value;
-    }
+//     for(let value of data)
+//     {
+//         mu += value;
+//     }
 
-    return mu /= data.length;
-}
+//     return mu /= data.length;
+// }
 
 /**
  * Calculate means of each columns.
@@ -126,7 +128,14 @@ function means(dataset)
 
 	for(let col = 0; col < tupleLen; ++col)
 	{
-		mus[col] /= validRowCount[col];
+		if(validRowCount[col] > 0)
+		{
+			mus[col] /= validRowCount[col];
+		}
+		else
+		{
+			mus[col] = 0;
+		}
 	}
 
     return mus;
@@ -137,19 +146,19 @@ function means(dataset)
  * @param {Array} data 
  * @returns {Number}
  */
-function variance(data)
-{
-    let mu = mean(data);
+// function variance(data)
+// {
+//     let mu = mean(data);
 
-    let varia = 0;
+//     let varia = 0;
 
-    for(let i = 0; i < data.length; ++i)
-    {
-        varia += (data[i] - mu)**2;
-    }
+//     for(let i = 0; i < data.length; ++i)
+//     {
+//         varia += (data[i] - mu)**2;
+//     }
 
-    return varia /= data.length;
-}
+//     return varia /= data.length;
+// }
 
 /**
  * Optimized Newtow's method for approximate coefficients of original function.
@@ -158,7 +167,7 @@ function variance(data)
  * @param {Array} xArray Observed values.
  * @param {Array} initialVal 
  * @param {Number} epsilon
- * @returns {Key-Value}
+ * @returns {Object}
  */
 function newtonMethodOpt2Var(firstDrv, secondDrv, xArray, initialVal, epsilon = 1e-13)
 {
@@ -204,7 +213,7 @@ function newtonMethodOpt2Var(firstDrv, secondDrv, xArray, initialVal, epsilon = 
  * Retrieve parameters of gamma distribution.
  * Using maximum likehood. https://en.wikipedia.org/wiki/Gamma_distribution#Maximum_likelihood_estimation
  * @param {Array} data
- * @returns {Key-Value}
+ * @returns {Object}
  */
 function gammaParameters(data)
 {
@@ -254,7 +263,7 @@ function gammaParameters(data)
 /**
  * Retrieve parameters of beta distribution.
  * @param {Array} data 
- * @returns {Key-Value}
+ * @returns {Object}
  */
 function betaParameters(data)
 {
@@ -316,7 +325,7 @@ function betaParameters(data)
 /**
  * Retrieve parameters of Weibull distribution.
  * @param {Array} data 
- * @returns {Key-Value}
+ * @returns {Object}
  */
 function weibullParameters(data)
 {
@@ -696,11 +705,11 @@ function trigamma( x ) {
 
 module.exports =
 {
-    "gamma" : cgamma,
-    "erf" : erf,
-	"mean" : mean,
+    // "gamma" : cgamma,
+    // "erf" : erf,
+	// "mean" : mean,
 	"means" : means,
-    "variance" : variance,
+    // "variance" : variance,
     // "regularizedLowerIncompleteGamma" : gammainc_l,
 	// "regularizedupperIncompleteGamme" : gammainc_u,
 	"gammaParameters" : gammaParameters,

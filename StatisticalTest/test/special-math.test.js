@@ -70,10 +70,10 @@ test("means([[1], [1], [1], [1]]) should be [1].", () => {
 });
 
 test("means([[1, null], [1, null], [1, 4], [1, null]]) should be [1, 1].", () => {
-    expect(means([[1, null], [1, null], [1, 4], [1, null]])).toEqual([1, 1]);
+    expect(means([[1, null], [1, null], [1, 4], [1, null]])).toEqual([1, 4]);
 });
 
-test("means([[1, null], [1, null], [1, null], [1, null]]) should be [1, 1].", () => {
+test("means([[1, null], [1, null], [1, null], [1, null]]) should be [1, 0].", () => {
     expect(means([[1, null], [1, null], [1, null], [1, null]])).toEqual([1, 0]);
 });
 

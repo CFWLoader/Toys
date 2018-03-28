@@ -178,7 +178,8 @@ function batchTestDetailedReport(dist_data) {
 // console.log("PM2.5:")
 let file = ".\\dataset\\pm25_dist.json"
 let dist_data = JSON.parse(fs.readFileSync(file));
-batchTest(dist_data);
+// batchTest(dist_data);
+batchTestDetailedReport(dist_data);
 
 // console.log("Norm:");
 // var file = ".\\norm_dist1.json"

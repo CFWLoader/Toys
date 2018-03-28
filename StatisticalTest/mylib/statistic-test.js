@@ -1,8 +1,79 @@
-const spMath = require('./special-math');
+import spMath from './special-math';
 
-const mathjs = require('mathjs');
+import mathjs from 'mathjs';
 
-const transformations = require('./transformations');
+import transformations from './transformations';
+
+import {mean, variance} from 'jstat';
+
+/**
+ * Statistic of data shape.
+ * @param {Array} data 
+ * @returns {Object}
+ */
+function shape(data)
+{
+    if(!Array.isArray(data) || data.length == 0)
+    {
+        return {};
+    }
+
+    // For Log-Normal, we need to know sum of log(xi) and log sigma.
+    let [length, sumVal, sigma, logSum, logSigma, minVal, maxVal] = [data.length, 0, 0, 0, 0, data[0], data[0]];
+
+    let tempLog;
+
+    for(let val of data)
+    {
+        sumVal += val;
+
+        sigma += val**2;
+
+        tempLog = mathjs.log(val);
+
+        logSum += tempLog;
+
+        logSigma += tempLog**2;
+
+        minVal = minVal > val ? val : minVal;
+
+        maxVal = maxVal < val ? val : maxVal;
+    }
+
+    // Retrieving mode.
+    let interval = maxVal - minVal, z, mode;
+
+    if(interval == 0)
+    {
+        mode = minVal;
+    }
+    else
+    {
+        z = sumVal / (length * (interval)) - minVal / (interval);
+
+        mode = minVal + (maxVal - minVal) * (3 * z - 1);
+    }
+
+    if(mode < minVal)
+    {
+        mode = minVal;
+    }
+    else if(mode > maxVal)
+    {
+        mode = maxVal;
+    }
+
+    return {
+        'length' : length,
+        'mean' : sumVal / length,
+        'sigma' : mathjs.sqrt(sigma / length - (sumVal / length)**2),
+        'logMean' : logSum / length,
+        'logSigma' : mathjs.sqrt(logSigma / length - (logSum / length)**2),
+        'min' : minVal,
+        'max' : maxVal,
+        'mode' : mode
+    }
+}
 
 class AndersonDarling
 {
@@ -578,14 +649,14 @@ class OneKeyTestReport
     {
         var transformed = transformations.normality(data);
 
-        var sigmaSqr = spMath.variance(data);
+        var sigmaSqr = variance(data);
         // var deviantSum = spMath.variance(data);
 
         // var sigma = Math.sqrt((data.length - 1) * deviantSum / data.length);
 
         var result = {
             "type" : "normality",
-            "mu" : spMath.mean(data),
+            "mu" : mean(data),
             "sigma" : mathjs.sqrt(sigmaSqr),
             "adValue" : AndersonDarling.test(transformed),
             "adPvalue" : AndersonDarling.pValueNormal(data),
@@ -663,7 +734,7 @@ class OneKeyTestReport
 
     static exponent(data)
     {
-        var mu = spMath.mean(data), sigma = Math.sqrt(spMath.variance(data));
+        var mu = mean(data), sigma = mathjs.sqrt(variance(data));
 
         var transformed = transformations.exponent(data);
 
@@ -838,6 +909,7 @@ class OneKeyTestReport
 
 module.exports = 
 {
+    'shape' : shape,
     "AndersonDarling" : AndersonDarling,
     "KolmogorovSmirnov" : KolmogorovSmirnov,
     "OneKeyTestReport" : OneKeyTestReport
