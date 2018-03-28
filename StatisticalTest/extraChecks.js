@@ -2,15 +2,13 @@
 
 import transformations from "./mylib/transformations.js";
 
-import {AndersonDarling as adTest, OneKeyTestReport as oneKey} from "./mylib/statistic_test";
+import {AndersonDarling as adTest, OneKeyTestReport as oneKey} from "./mylib/statistic-test";
 
 import digamma from "math-digamma";
 
 import spMath from "./mylib/special-math";
 
 import mathjs from "mathjs";
-
-import mathfn from "mathfn";
 
 import fs from "fs";
 

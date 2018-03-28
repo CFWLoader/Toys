@@ -263,26 +263,18 @@ function gammaParameters(data)
 /**
  * Retrieve parameters of beta distribution.
  * @param {Array} data 
+ * @param {Object} shape
  * @returns {Object}
  */
-function betaParameters(data)
+function betaParameters(data, shape)
 {
-	if(data.length == 0)
-	{
-		return {};
-	}
+	let obsX = shape.mean;
 
-	for(let val of data)
-	{
-		if(val <= 0 || val >= 1)
-		{
-			return {};
-		}
-	}
+	let obsSigma = shape.sigma;
 
-	let obsX = mean(data);
+	// let lnSum = shape.length * shape.logMean;
 
-	let obsVar = variance(data);
+	// let len = shape.length
 
 	let f1 = (a, b, xArr) =>
 	{
@@ -317,7 +309,7 @@ function betaParameters(data)
 		return xArr.length * (trigamma(a + b) - trigamma(b));
 	}
 
-	let alpha = obsX * (obsX * (1 - obsX) / obsVar - 1), beta = (1 - obsX) * (obsX * (1 - obsX) / obsVar - 1);
+	let alpha = obsX * (obsX * (1 - obsX) / obsSigma**2 - 1), beta = (1 - obsX) * (obsX * (1 - obsX) / obsSigma**2 - 1);
 
 	return newtonMethodOpt2Var([f1, f2], [[f11, f12], [f21, f22]], data, [alpha, beta]);
 }

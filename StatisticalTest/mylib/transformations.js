@@ -209,11 +209,12 @@ function beta(x, shape1, shape2, betaFunVal)
 /**
  * Transform a array via beta's CDF.
  * @param {Array} data 
+ * @param {Array} shape
  * @returns {Array}
  */
-function betaBatch(data)
+function betaBatch(data, shape)
 {
-    let parameters = spMath.betaParameters(data);
+    let parameters = spMath.betaParameters(data, shape);
 
     let shape1 = parameters['shape1'], shape2 = parameters['shape2'];
 
@@ -285,5 +286,11 @@ module.exports =
     "exponent" : exponent,
     "beta" : beta,
     "gamma" : gamma,
-    "weibull" : weibull
+    "weibull" : weibull,
+    "normalityBatch" : normalityBatch,
+    "logNormalityBatch" : logNormalityBatch,
+    "uniformBatch" : uniformBatch,
+    "triangleBatch" : triangleBatch,
+    "exponentBatch" : exponentBatch,
+    "betaBatch" : betaBatch,
 };

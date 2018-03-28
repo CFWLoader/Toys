@@ -847,16 +847,18 @@ class OneKeyTestReport
 
     static beta(data)
     {
-        var parameters = spMath.betaParameters(data);
+        let betaShape = shape(data);
 
-        var transformed = transformations.beta(data);        
+        let parameters = spMath.betaParameters(data, betaShape);
+
+        let transformed = transformations.betaBatch(data, betaShape);        
 
         var result = {
             "type" : "beta",
             "shape1" : parameters["shape1"],
             "shape2" : parameters["shape2"],
-            // "mu" : mu,
-            // "sigma" : Math.sqrt(sigmaSqr),
+            "mu" : betaShape.mean,
+            "sigma" : betaShape.sigma,
             "adValue" : AndersonDarling.test(transformed),
             "adPvalue" : 'N/A',
             "ksValue" : KolmogorovSmirnov.test(transformed),
