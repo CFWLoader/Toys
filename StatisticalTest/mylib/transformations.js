@@ -4,174 +4,206 @@ import spMath from './special-math';
 
 import mathjs from 'mathjs';
 
-import {ibeta, lowRegGamma, mean, variance, erf, gamma as cgamma} from 'jstat';
+import {ibeta, lowRegGamma, erf, gamma as cgamma} from 'jstat';
+
+/**
+ * Transform a value via normality's CDF.
+ * @param {Number} x
+ * @returns {Number}
+ */
+function normality(x, mu, sigma)
+{
+    return 0.5 + erf((x - mu) / (mathjs.SQRT2 * sigma)) / 2;
+}
 
 /**
  * Transform a array via normality's CDF.
- * @param {Array} data 
+ * @param {Array} data
+ * @param {Object} shape
  * @returns {Array}
  */
-function normality(data) 
+function normalityBatch(data, shape) 
 {
     let transformed = [];
 
-    let mu = mean(data);
+    let mu = shape.mean;
 
-    let sigma = mathjs.sqrt(variance(data));
+    let sigma = shape.sigma;
 
-    for(let i = 0; i < data.length; ++i) 
+    for(let val of data) 
     {
-        transformed.push(0.5 + erf((data[i] - mu) / (mathjs.SQRT2 * sigma)) / 2);
+        transformed.push(normality(val, mu, sigma));
+        // transformed.push(0.5 + erf((data[i] - mu) / (mathjs.SQRT2 * sigma)) / 2);
     }
 
     return mathjs.sort(transformed);
 
+}
+
+/**
+ * Transform a value via log-normality's CDF.
+ * @param {Number} x 
+ * @param {Number} logMean 
+ * @param {Number} logSigma 
+ * @returns {Number}
+ */
+function logNormality(x, logMean, logSigma)
+{
+    return 0.5 + erf((mathjs.log(x) - logMean) / (mathjs.SQRT2 * logSigma)) / 2;
 }
 
 /**
  * Transform a array via log-normality's CDF.
  * @param {Array} data 
+ * @param {Object} shape
  * @returns {Array}
  */
-function logNormality(data) {
-
-    let mu = 0, sigmaSqr = 0;
-
-    for(let i = 0; i < data.length; ++i)
-    {
-        if(data[i] <= 0)
-        {
-            return [];
-        }
-
-        mu += mathjs.log(data[i]);
-    }
-
-    mu /= data.length;
-
-    for(let i = 0; i < data.length; ++i)
-    {
-        sigmaSqr += (mathjs.log(data[i]) - mu) ** 2;
-    }
-
-    sigmaSqr /= data.length;
-
-    let log_mean = mu, log_sd = mathjs.sqrt(sigmaSqr);
+function logNormalityBatch(data, shape) 
+{
+    let logMean = shape.logMean, logSd = shape.logSigma;
 
     let transformed = [];
 
-    for(let i = 0; i < data.length; ++i) 
+    for(let val of data) 
     {    
-        transformed.push(0.5 + erf((mathjs.log(data[i]) - log_mean) / (mathjs.SQRT2 * log_sd)) / 2);
+        transformed.push(logNormality(val, logMean, logSigma));
+        // transformed.push(0.5 + erf((mathjs.log(data[i]) - log_mean) / (mathjs.SQRT2 * log_sd)) / 2);
     }
 
     return mathjs.sort(transformed);
+}
+
+/**
+ * Transform a value via uniform's CDF.
+ * @param {Number} x 
+ * @param {Number} minVal 
+ * @param {Number} maxVal
+ * @returns {Number}
+ */
+function uniform(x, minVal, maxVal)
+{
+    if(x == minVal || x == maxVal)
+    {
+        return 0;
+    }
+
+    return (x - minVal) / (maxVal - minVal);
 }
 
 /**
  * Transform a array via uniform's CDF.
  * @param {Array} data 
+ * @param {Object} shape
  * @returns {Array}
  */
-function uniform(data) {
+function uniformBatch(data, shape) {
 
-    let minVal = data.reduce(function (a, b) { return a < b ? a : b; });
+    let minVal = shape.min;
 
-    let maxVal = data.reduce(function (a, b) { return a > b ? a : b; });
-
-    let len = maxVal - minVal;
+    let maxVal = shape.max;
 
     let transformed = [];
 
-    for(let i = 0; i < data.length; ++i) {
-        transformed.push((data[i] - minVal) / len);
+    for(let val of data) 
+    {
+        transformed.push(uniform(val, minVal, maxVal));
     }
 
     return mathjs.sort(transformed);
+}
+
+/**
+ * Transform a value via triangle's CDF.
+ * @param {Number} x 
+ * @param {Number} minVal 
+ * @param {Number} maxVal 
+ * @param {Number} mode 
+ * @returns {Number}
+ */
+function triangle(x, minVal, maxVal, mode)
+{
+    if(x == minVal || x == maxVal)
+    {
+        return 0;
+    }
+
+    let len = maxVal - minVal;
+
+    if (x < mode) 
+    {
+        return (x - minVal) * 2 / (len * (mode - minVal));
+    }
+    else if (x == mode) 
+    {
+        return 2 / len;
+    }
+    else 
+    {
+        return 1 - (maxVal - data[i]) * 2 / (len * (maxVal - mode));
+    }
 }
 
 /**
  * Transform a array via triangle's CDF.
  * @param {Array} data 
+ * @param {Object} shape
  * @returns {Array}
  */
-function triangle(data) 
+function triangleBatch(data, shape) 
 {
-    let a = data[0], b = data[0], c = data[0], z = 0;
-
-    for (let i = 0; i < data.length; ++i)
-    {
-        if (a > data[i]) {
-            a = data[i];
-        }
-
-        if (c < data[i]) {
-            c = data[i];
-        }
-    }
-
-    for(let i = 0; i < data.length; ++i)
-    {
-        z += (data[i] - a) / (c - a);
-    }
-
-    z /= data.length;
-
-    let len = c - a;
-
-    b = a + len * (3 * z - 1);
-
-    if(b < a)
-    {
-        b = a;
-    }
-    else if(b > c)
-    {
-        b = c;
-    }
-
+    let [minVal, maxVal, mode] = [shape.min, shape.max, shape.mode];
+    
     let transformed = [];
 
-    for(let i = 0; i < data.length; ++i) 
+    for(let val of data) 
     {
-        if (data[i] < b) {
-            transformed.push((data[i] - a) ** 2 / (len * (b - a)));
-        }
-        else if (data[i] == b) {
-            transformed.push((b - a) / len);
-        }
-        else {
-            transformed.push(1 - (c - data[i]) ** 2 / (len * (c - b)));
-        }
+        transformed.push(triangle(val, minVal, maxVal, mode));
     }
 
     return mathjs.sort(transformed);
 }
 
 /**
+ * Transform a value via exponent's CDF.
+ * @param {Number} x 
+ * @param {Number} lambda 
+ * @returns {Number}
+ */
+function exponent(x, lambda)
+{
+    return 1 - mathjs.exp(- lambda * x);
+}
+
+/**
  * Transform a array via exponent's CDF.
  * @param {Array} data 
+ * @param {Object} shape
  * @returns {Array}
  */
-function exponent(data) {
-    
-    let mu = mean(data);
-
-    let lambda = 1 / mu;
+function exponentBatch(data, shape) 
+{
+    let lambda = 1 / shape.mean;
 
     let transformed = [];
 
-    for(let i = 0; i < data.length; ++i)
+    for(let val of data)
     {
-        if(data[i] <= 0)
-        {
-            return [];
-        }
-
-        transformed.push(1 - mathjs.exp(- lambda * data[i]));
+        transformed.push(exponent(val, lambda));
     }
 
     return mathjs.sort(transformed);
+}
+
+/**
+ * Transform a value via beta's CDF.
+ * @param {Number} x 
+ * @param {Number} shape1 
+ * @param {Number} shape2 
+ * @returns {Number}
+ */
+function beta(x, shape1, shape2, betaFunVal)
+{
+    return betaFunVal * ibeta(x, shape1, shape2);
 }
 
 /**
@@ -179,27 +211,19 @@ function exponent(data) {
  * @param {Array} data 
  * @returns {Array}
  */
-function beta(data)
+function betaBatch(data)
 {
-    for(let i = 0; i < data.length; ++i)
-    {
-        if(data[i] <= 0 || data[i] >= 1)
-        {
-            return [];
-        }
-    }
-
     let parameters = spMath.betaParameters(data);
 
-    let alpha = parameters['shape1'], beta = parameters['shape2'];
+    let shape1 = parameters['shape1'], shape2 = parameters['shape2'];
 
-    let betaFunVal = cgamma(alpha) * cgamma(beta) / cgamma(alpha + beta);
+    let betaFunVal = cgamma(shape1) * cgamma(shape2) / cgamma(shape1 + shape2);
 
     let transformed = [];
 
-    for(let i = 0; i < data.length; ++i)
+    for(let val of data)
     {
-        transformed.push(betaFunVal * ibeta(data[i], alpha, beta));
+        transformed.push(beta(val, shape1, shape2, betaFunVal));
     }
 
     return transformed;
