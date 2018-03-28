@@ -1,11 +1,11 @@
 'use strict';
 
-const mathjs = require('mathjs');
+import mathjs from 'mathjs';
 
 /**
  * Extract a specified column from a matrix.
  * @param {Array[]} dataset 
- * @param {Integer} targetColumn
+ * @param {Number} targetColumn
  * @returns {Array} 
  */
 function extractColumn(dataset, targetColumn)
@@ -23,12 +23,7 @@ function extractColumn(dataset, targetColumn)
         }
     }
 
-    // if(!Array.isArray(dataset[0]) || dataset[0].length <= targetColumn)
-    // {
-    //     return [];
-    // }
-
-    let result = [], tupleLen = dataset[0].length;
+    let [result, tupleLen] = [[], dataset[0].length];
     
     for(let row of dataset)
     {
@@ -38,6 +33,12 @@ function extractColumn(dataset, targetColumn)
     return result;
 }
 
+/**
+ * Return a matrix without specific column.
+ * @param {Array[]} dataset 
+ * @param {Number} targetColumn 
+ * @returns {Array[]}
+ */
 function excludeColumn(dataset, targetColumn)
 {   
     if(!Array.isArray(dataset) || dataset.length == 0)
@@ -53,22 +54,20 @@ function excludeColumn(dataset, targetColumn)
         }
     }
 
-    var result = [], tupleLen = dataset[0].length, col, rwVal;
+    let [result, tupleLen, rwVal] = [[], dataset[0].length];
     
-    for(var row = 0; row < dataset.length; ++row)
+    for(let row of dataset)
     {
-        col = 0;
-
         rwVal = [];
 
-        for(; col < targetColumn; ++col)
+        for(let col = 0; col < targetColumn; ++col)
         {
-            rwVal.push(dataset[row][col]);
+            rwVal.push(row[col]);
         }
 
-        for(col = targetColumn + 1; col < tupleLen; ++col)
+        for(let col = targetColumn + 1; col < tupleLen; ++col)
         {
-            rwVal.push(dataset[row][col]);
+            rwVal.push(row[col]);
         }
         
         result.push(rwVal);
@@ -77,31 +76,44 @@ function excludeColumn(dataset, targetColumn)
     return result;  
 }
 
+/**
+ * Return a an array of multivariate function's weights.
+ * @param {Array[]} dataset 
+ * @param {Number} yCol
+ * @returns {Array} 
+ */
 function deriveMultivariateLinearParameters(dataset, yCol)
 {
-    if(dataset.length == 0)
+    if(!Array.isArray(dataset) || dataset.length == 0)
     {
         return [];
     }
 
-    if(Object.prototype.toString.call(dataset[0]) != '[object Array]' || dataset[0].length <= yCol)
+    for(let row of dataset)
     {
-        return [];
+        if(!Array.isArray(row) || row.length <= yCol)
+        {
+            return [];
+        }
     }
 
-    var x = excludeColumn(dataset, yCol), y = mathjs.transpose(extractColumn(dataset, yCol));
+    let x = excludeColumn(dataset, yCol), y = mathjs.transpose(extractColumn(dataset, yCol));
 
-    for(var row = 0; row < x.length; ++row)
+    // Add 1 for each tuple in x matrix since wt=[w1,w2,...,wn,b], xi=[xi1, xi2,....xni, 1];
+    // yi = wt * xi.
+    for(let row = 0; row < x.length; ++row)
     {
         x[row].push(1);
     }
 
-    var xt = mathjs.transpose(x);
+    let xt = mathjs.transpose(x);
 
-    var mul = mathjs.multiply(xt, x);
+    let mul = mathjs.multiply(xt, x);
 
     let mulInv = null;
 
+    // This multiplied square matrix may be a singular matrix.
+    // And mathjs.inv may throw a zero determinant error.
     try
     {
         mulInv = mathjs.inv(mul);

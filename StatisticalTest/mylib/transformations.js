@@ -1,8 +1,10 @@
+'use strict';
+
 import spMath from './special-math';
 
 import mathjs from 'mathjs';
 
-import mathfn from 'mathfn';
+import {ibeta, lowRegGamma} from 'jstat';
 
 function normality(data) 
 {
@@ -11,11 +13,6 @@ function normality(data)
     var mu = spMath.mean(data);
 
     var sigma = mathjs.sqrt(spMath.variance(data));
-
-    // sigmaSqr = spMath.variance(data);
-    // deviantSum = spMath.variance(data);
-
-    // sigma = Math.sqrt((data.length - 1) * deviantSum / data.length);
 
     for(var i = 0; i < data.length; ++i) 
     {
@@ -55,7 +52,7 @@ function logNormality(data) {
 
     for(i = 0; i < data.length; ++i) 
     {    
-        transformed.push(0.5 + spMath.erf((Math.log(data[i]) - log_mean) / (Math.SQRT2 * log_sd)) / 2);
+        transformed.push(0.5 + spMath.erf((mathjs.log(data[i]) - log_mean) / (mathjs.SQRT2 * log_sd)) / 2);
     }
 
     return mathjs.sort(transformed);
@@ -66,27 +63,6 @@ function uniform(data) {
     var minVal = data.reduce(function (a, b) { return a < b ? a : b; });
 
     var maxVal = data.reduce(function (a, b) { return a > b ? a : b; });
-
-    // var mu = spMath.mean(data), sigma = Math.sqrt(spMath.variance(data));
-
-    // var a1 = Math.sqrt(3) * sigma + mu, a2 = - Math.sqrt(3) * sigma + mu;
-
-    // var a, b;
-
-    // if(a1 < a2)
-    // {
-    //     a = a1, b = a2;
-    // }
-    // else
-    // {
-    //     a = a2, b = a1;
-    // }
-
-    // len = b - a;
-
-    // console.log(maxVal - minVal);
-
-    // console.log(len);
 
     var len = maxVal - minVal;
 
@@ -195,7 +171,7 @@ function beta(data)
 
     for(i = 0; i < data.length; ++i)
     {
-        transformed.push(betaFunVal * mathfn.incBeta(data[i], alpha, beta));
+        transformed.push(betaFunVal * ibeta(data[i], alpha, beta));
     }
 
     return transformed;
@@ -211,7 +187,7 @@ function gamma(data)
 
     for(var i = 0; i < data.length; ++i)
     {
-        transformed.push(spMath.regularizedLowerIncompleteGamma(beta * data[i], alpha));
+        transformed.push(lowRegGamma(beta * data[i], alpha));
     }
 
     return mathjs.sort(transformed);

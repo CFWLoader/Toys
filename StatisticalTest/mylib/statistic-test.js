@@ -1,8 +1,8 @@
-const spMath = require('./special-math.js');
+const spMath = require('./special-math');
 
 const mathjs = require('mathjs');
 
-const transformations = require('./transformations.js');
+const transformations = require('./transformations');
 
 class AndersonDarling
 {
