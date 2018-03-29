@@ -2,7 +2,7 @@
 
 import {shape} from './shape';
 
-import {trigamma} from './special-math';
+import {trigamma} from './special-functions';
 
 import mathjs from 'mathjs';
 
@@ -86,15 +86,11 @@ function gammaParameters(param)
 
 	let f1 = (a, b, xArr) =>
 	{
-		// let logSumVal = xArr.reduce((pre, val) => pre + mathjs.log(val), 0);
-
 		return len * mathjs.log(b) - len * digamma(a) + logSumVal;
 	}
 
 	let f2 = (a, b, xArr) =>
 	{
-		// let sumVal = xArr.reduce((pre, val) => pre + val, 0);
-
 		return len * a / b - sumVal;
 	}
 

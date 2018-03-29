@@ -1,6 +1,6 @@
 'use strict';
 
-import spMath from './special-math';
+import * as spMath from './special-functions';
 
 import mathjs from 'mathjs';
 

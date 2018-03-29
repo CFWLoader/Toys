@@ -1,8 +1,8 @@
 'use strict';
 
-import spMath from './special-math';
+import {means} from './special-functions';
 
-import mvr from './multivariate-regress';
+import {deriveMultivariateLinearParameters} from './multivariate-regress';
 
 /**
  * Remove rows which has missing cell(s).
@@ -82,7 +82,7 @@ function fillMissingsWithMean(dataset, missingTag = null)
         dupMat[i] = dataset[i].slice(0);
     }
 
-    let means = spMath.means(dupMat);
+    let mus = means(dupMat);
 
     for(let row = 0; row < dupMat.length; ++row)
     {
@@ -90,7 +90,7 @@ function fillMissingsWithMean(dataset, missingTag = null)
         {
             if(dupMat[row][col] == missingTag)
             {
-                dupMat[row][col] = means[col];
+                dupMat[row][col] = mus[col];
             }
         }
     }
@@ -118,24 +118,18 @@ function fillMissingsWithMLR(dataset)
 
     for(let yCol = 0; yCol < elementLength; ++yCol)
     {
-        // console.log(yCol);
-        // console.log("Start filling " + yCol.toString() + " column.");
 
         try 
         {
-            params = mvr.deriveMultivariateLinearParameters(argumentSet, yCol);    
+            params = deriveMultivariateLinearParameters(argumentSet, yCol);    
         } 
         catch (error) 
         {
             throw error;    
         }
-        
-
-        // console.log(params);
 
         for(row = 0; row < dataset.length; ++row)
         {
-            // console.log(dataset[row][yCol]);
 
             if(null == dupMat[row][yCol])
             {
@@ -151,11 +145,7 @@ function fillMissingsWithMLR(dataset)
                     sum += params[col - 1] * dataset[row][col];
                 }
 
-                // console.log(elementLength);
-
-                sum += params[elementLength - 2];
-
-                // console.log("Sum=" + sum.toString());                
+                sum += params[elementLength - 2];            
 
                 dupMat[row][yCol] = sum;
             }

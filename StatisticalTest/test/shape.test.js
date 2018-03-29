@@ -1,17 +1,35 @@
 import {shape} from '../lib/shape';
 
-import datasets from './test-datasets';
+import {aqiData, betaSynData} from './test-datasets';
 
 /**
  * Tests of shape() function.
  */
-test('shape([]) should be map([]).', () => {
+test('shape(3) should throw TypeError(\'Array type required.\')', () => {
+    expect(() => shape(3)).toThrowError('Array type required.');
+});
+
+test('shape(\'hello\') should throw TypeError(\'Array type required.\')', () => {
+    expect(() => shape('hello')).toThrowError('Array type required.');
+});
+
+test('shape([]) should be map(Map([[\'length\', 0], [\'mean\', 0], [\'sigma\', 0], [\'logMean\', 0], [\'logSigma\', 0], [\'min\', 0], [\'max\', 0], [\'mode\', 0],[\'logOneMinusSum\', 0]])).', () => {
     
     let result = expect(shape([]));
 
     result.toBeInstanceOf(Map);
 
-    result.toEqual(new Map([]));
+    result.toEqual(new Map([
+        ['length', 0],
+        ['mean', 0],
+        ['sigma', 0],
+        ['logMean', 0],
+        ['logSigma', 0],
+        ['min', 0],
+        ['max', 0],
+        ['mode', 0],
+        ['logOneMinusSum', 0]
+    ]));
 });
 
 test('shape([1]) should be Map([length: 1, mean:1, sigma: 0, logMean: 0, logOneMinusSum: -Inf, logSigma: 0, min: 1, max: 1, mode: 1]).', () => {
@@ -29,9 +47,7 @@ test('shape([1]) should be Map([length: 1, mean:1, sigma: 0, logMean: 0, logOneM
         ]));
 });
 
-test('shape(aqiData) should be {length: 912, mean:70.5241228070175, sigma: 30.66384223583148, logMean: 4.171365, logSigma: 0.407784223583148, min: 17, max: 205, mode: 17}.', () => {
-
-    let aqiData = datasets.aqiData;
+test('shape(aqiData) should be Map{length: 912, mean:70.5241228070175, sigma: 30.66384223583148, logMean: 4.171365, logSigma: 0.407784223583148, min: 17, max: 205, mode: 17}.', () => {
 
     let result = shape(aqiData);
 
@@ -48,10 +64,3 @@ test('shape(aqiData) should be {length: 912, mean:70.5241228070175, sigma: 30.66
 /**
  * Others tests.
  */
-// test('Testing Map.isMap({}).', () => {
-//     let mapInstance = new Map();
-
-//     expect(mapInstance instanceof Map).toBe(true);
-
-//     expect(Array.isArray(mapInstance)).toBe(false);
-// });

@@ -1,14 +1,6 @@
 import {readFileSync} from 'fs';
 
-import {trigamma, means} from '../lib/special-math';
-
-import {shape} from '../lib/shape';
-
-const aqiData = JSON.parse(readFileSync('./dataset/aqi_dist.json'));
-
-const aqiShape = shape(aqiData);
-
-// const betaSynData = JSON.parse(readFileSync('./dataset/beta_dist1.json'));
+import {trigamma, means} from '../lib/special-functions';
 
 /**
  * Tests of erf function.

@@ -9,9 +9,24 @@ import mathjs from 'mathjs';
  */
 function shape(data)
 {
-    if(!Array.isArray(data) || data.length == 0)
+    if(!Array.isArray(data))
     {
-        return new Map();
+        throw TypeError('Array type required.');
+    }
+
+    if(data.length == 0)
+    {
+        return new Map([
+            ['length', 0],
+            ['mean', 0],
+            ['sigma', 0],
+            ['logMean', 0],
+            ['logSigma', 0],
+            ['min', 0],
+            ['max', 0],
+            ['mode', 0],
+            ['logOneMinusSum', 0]
+        ]);
     }
 
     // For Log-Normal, we need to know sum of log(xi) and log sigma.
