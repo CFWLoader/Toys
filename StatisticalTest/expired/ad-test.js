@@ -1,8 +1,8 @@
-import transformations from './mylib/transformations';
+import transformations from './lib/transformations';
 
-import spMath from './mylib/special-math.js';
+import spMath from './lib/special-math';
 
-import statisticTest from './mylib/statistic-test.js';
+import statisticTest from './lib/statistic-test';
 
 function andersonDarlingTest(data) {
     

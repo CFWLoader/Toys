@@ -2,11 +2,11 @@
 
 import fs from 'fs';
 
-import auxLib from './mylib/aux-lib';
+import auxLib from './lib/aux-lib';
 
-import multiRegress from './mylib/multivariate-regress';
+import multiRegress from './lib/multivariate-regress';
 
-import preprocessor from './mylib/data-preprocessor';
+import preprocessor from './lib/data-preprocessor';
 
 let dataset = auxLib.readCSVsync('./dataset/wiki4HE.csv', 'UTF-8', ';', false);
 

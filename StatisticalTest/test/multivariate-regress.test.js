@@ -1,6 +1,6 @@
 'use strict';
 
-import {extractColumn, excludeColumn, deriveMultivariateLinearParameters} from '../mylib/multivariate-regress';
+import {extractColumn, excludeColumn, deriveMultivariateLinearParameters} from '../lib/multivariate-regress';
 
 /**
  * Tests of extractColumn().

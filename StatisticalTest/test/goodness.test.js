@@ -1,4 +1,4 @@
-import {shape} from '../mylib/goodness';
+import {shape} from '../lib/goodness';
 
 /**
  * Tests of shape() function.

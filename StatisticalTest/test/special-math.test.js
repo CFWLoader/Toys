@@ -1,8 +1,8 @@
 import {readFileSync} from 'fs';
 
-import {trigamma, means, gammaParameters, betaParameters, weibullParameters} from '../mylib/special-math';
+import {trigamma, means, gammaParameters, betaParameters, weibullParameters} from '../lib/special-math';
 
-import {shape} from '../mylib/goodness';
+import {shape} from '../lib/goodness';
 
 const aqiData = JSON.parse(readFileSync('./dataset/aqi_dist.json'));
 

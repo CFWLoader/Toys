@@ -1,6 +1,6 @@
 import {inv, det, transpose, multiply} from 'mathjs';
 
-import {removeMissings, fillMissingsWithGlobal, fillMissingsWithMean, fillMissingsWithMLR} from '../mylib/data-preprocessor';
+import {removeMissings, fillMissingsWithGlobal, fillMissingsWithMean, fillMissingsWithMLR} from '../lib/data-preprocessor';
 
 const originalDataset = [
     [1, 2, 3, 4],

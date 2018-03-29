@@ -1,14 +1,14 @@
 'use strict';
 
-import auxLib from './mylib/aux-lib';
+import auxLib from './lib/aux-lib';
 
-import dataPreprocessor from './mylib/data-preprocessor';
+import dataPreprocessor from './lib/data-preprocessor';
 
-import spMath from './mylib/special-math';
+import spMath from './lib/special-math';
 
 import mathjs from 'mathjs';
 
-import multiRegress from './mylib/multivariate-regress';
+import multiRegress from './lib/multivariate-regress';
 
 let dataset = auxLib.readCSVsync('./dataset/wiki4HE.csv', 'UTF-8', ';', false);
 

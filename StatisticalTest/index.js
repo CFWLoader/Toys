@@ -1,0 +1,1 @@
+import goodness from './lib/goodness';

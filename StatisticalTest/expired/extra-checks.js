@@ -1,12 +1,12 @@
 // import { gamma } from 'mathfn/functions/gamma';
 
-import transformations from "./mylib/transformations.js";
+import transformations from "./lib/transformations";
 
-import {AndersonDarling as adTest, OneKeyTestReport as oneKey} from "./mylib/statistic-test";
+import {AndersonDarling as adTest, OneKeyTestReport as oneKey} from "./lib/statistic-test";
 
 import digamma from "math-digamma";
 
-import spMath from "./mylib/special-math";
+import spMath from "./lib/special-math";
 
 import mathjs from "mathjs";
 

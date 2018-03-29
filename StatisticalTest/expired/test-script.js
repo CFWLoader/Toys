@@ -1,10 +1,10 @@
 import fs from 'fs';
 
-import transformations from './mylib/transformations';
+import transformations from './lib/transformations';
 
-import spMath from './mylib/special-math';
+import spMath from './lib/special-math';
 
-import statisticTest from './mylib/statistic-test';
+import statisticTest from './lib/statistic-test';
 
 const adTest = statisticTest.AndersonDarling, ksTest = statisticTest.KolmogorovSmirnov, oneKey = statisticTest.OneKeyTestReport;
 
