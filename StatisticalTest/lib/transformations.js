@@ -4,7 +4,7 @@ import {gammaParameters, betaParameters, weibullParameters} from './estimators';
 
 import mathjs from 'mathjs';
 
-import {ibeta, lowRegGamma, erf, gamma as cgamma} from 'jstat';
+import {ibeta, lowRegGamma, erf, gammafn as cgamma} from 'jstat';
 
 /**
  * Transform a value via normality's CDF.
@@ -53,19 +53,18 @@ function logNormality(x, logMean, logSigma)
 /**
  * Transform a array via log-normality's CDF.
  * @param {Array} data 
- * @param {Object} shape
+ * @param {Map} shape
  * @returns {Array}
  */
 function logNormalityBatch(data, shape) 
 {
-    let logMean = shape.logMean, logSd = shape.logSigma;
+    let logMean = shape.get('logMean'), logSigma = shape.get('logSigma');
 
     let transformed = [];
 
     for(let val of data) 
     {    
         transformed.push(logNormality(val, logMean, logSigma));
-        // transformed.push(0.5 + erf((mathjs.log(data[i]) - log_mean) / (mathjs.SQRT2 * log_sd)) / 2);
     }
 
     return mathjs.sort(transformed);
@@ -91,7 +90,7 @@ function uniform(x, minVal, maxVal)
 /**
  * Transform a array via uniform's CDF.
  * @param {Array} data 
- * @param {Object} shape
+ * @param {Map} shape
  * @returns {Array}
  */
 function uniformBatch(data, shape) {
@@ -129,15 +128,15 @@ function triangle(x, minVal, maxVal, mode)
 
     if (x < mode) 
     {
-        return (x - minVal) * 2 / (len * (mode - minVal));
+        return (x - minVal) ** 2 / (len * (mode - minVal));
     }
     else if (x == mode) 
     {
-        return 2 / len;
+        return (x - minVal) / len;
     }
     else 
     {
-        return 1 - (maxVal - data[i]) * 2 / (len * (maxVal - mode));
+        return 1 - (maxVal - x) ** 2 / (len * (maxVal - mode));
     }
 }
 
@@ -149,7 +148,7 @@ function triangle(x, minVal, maxVal, mode)
  */
 function triangleBatch(data, shape) 
 {
-    let [minVal, maxVal, mode] = [shape.min, shape.max, shape.mode];
+    let [minVal, maxVal, mode] = [shape.get('min'), shape.get('max'), shape.get('mode')];
     
     let transformed = [];
 
@@ -175,12 +174,12 @@ function exponent(x, lambda)
 /**
  * Transform a array via exponent's CDF.
  * @param {Array} data 
- * @param {Object} shape
+ * @param {Map} shape
  * @returns {Array}
  */
 function exponentBatch(data, shape) 
 {
-    let lambda = 1 / shape.mean;
+    let lambda = 1 / shape.get('mean');
 
     let transformed = [];
 
@@ -199,9 +198,9 @@ function exponentBatch(data, shape)
  * @param {Number} shape2 
  * @returns {Number}
  */
-function beta(x, shape1, shape2, betaFunVal)
+function beta(x, shape1, shape2)
 {
-    return betaFunVal * ibeta(x, shape1, shape2);
+    return ibeta(x, shape1, shape2) * cgamma(shape1) * cgamma(shape2) / cgamma(shape1 + shape2);
 }
 
 /**
@@ -214,15 +213,16 @@ function betaBatch(data, shape)
 {
     let parameters = betaParameters(data, shape);
 
-    let shape1 = parameters['shape1'], shape2 = parameters['shape2'];
+    let shape1 = parameters.get('shape1'), shape2 = parameters.get('shape2');
 
-    let betaFunVal = cgamma(shape1) * cgamma(shape2) / cgamma(shape1 + shape2);
+    // let betaFunVal = cgamma(shape1) * cgamma(shape2) / cgamma(shape1 + shape2);
 
     let transformed = [];
 
     for(let val of data)
     {
-        transformed.push(beta(val, shape1, shape2, betaFunVal));
+        transformed.push(beta(val, shape1, shape2));        
+        // transformed.push(beta(val, shape1, shape2, betaFunVal));
     }
 
     return transformed;
