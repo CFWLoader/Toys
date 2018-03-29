@@ -126,8 +126,4 @@ function deriveMultivariateLinearParameters(dataset, yCol)
     return mathjs.multiply(mathjs.multiply(mulInv, xt), y);
 }
 
-module.exports = {
-    "extractColumn" : extractColumn,
-    "excludeColumn" : excludeColumn,
-    "deriveMultivariateLinearParameters" : deriveMultivariateLinearParameters
-};
+export { extractColumn, excludeColumn, deriveMultivariateLinearParameters };

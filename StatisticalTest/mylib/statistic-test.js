@@ -840,10 +840,4 @@ class OneKeyTestReport
     }
 };
 
-module.exports = 
-{
-    'shape' : shape,
-    "AndersonDarling" : AndersonDarling,
-    "KolmogorovSmirnov" : KolmogorovSmirnov,
-    "OneKeyTestReport" : OneKeyTestReport
-};
+export { AndersonDarling, KolmogorovSmirnov, OneKeyTestReport };

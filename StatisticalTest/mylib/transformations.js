@@ -304,22 +304,6 @@ function weibullBatch(data)
     return mathjs.sort(transformed);
 }
 
-module.exports = 
-{
-    "normality" : normality,
-    "logNormality" : logNormality,
-    "uniform" : uniform,
-    "triangle" : triangle,
-    "exponent" : exponent,
-    "beta" : beta,
-    "gamma" : gamma,
-    "weibull" : weibull,
-    "normalityBatch" : normalityBatch,
-    "logNormalityBatch" : logNormalityBatch,
-    "uniformBatch" : uniformBatch,
-    "triangleBatch" : triangleBatch,
-    "exponentBatch" : exponentBatch,
-    "betaBatch" : betaBatch,
-    "gammaBatch" : gammaBatch,
-    "weibullBatch" : weibullBatch
-};
+export { normality, logNormality, uniform, triangle, exponent, beta, gamma, weibull,
+    normalityBatch, logNormalityBatch, uniformBatch, triangleBatch, exponentBatch,
+    betaBatch, gammaBatch, weibullBatch };

@@ -74,7 +74,4 @@ function shape(data)
     }
 }
 
-module.exports = 
-{
-    'shape' : shape
-}
+export {shape};

@@ -165,9 +165,4 @@ function fillMissingsWithMLR(dataset)
     return dupMat;
 }
 
-module.exports = {
-    "removeMissings" : removeMissings,
-    "fillMissingsWithGlobal" : fillMissingsWithGlobal,
-    "fillMissingsWithMean" :  fillMissingsWithMean,
-    "fillMissingsWithMLR" : fillMissingsWithMLR
-};
+export { removeMissings, fillMissingsWithGlobal, fillMissingsWithMean, fillMissingsWithMLR };

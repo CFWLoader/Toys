@@ -67,8 +67,8 @@ test('deriveMultivariateLinearParameters([[]], 0) should be [].', () => {
     expect(deriveMultivariateLinearParameters([[]], 0)).toEqual([]);
 });
 
-test('deriveMultivariateLinearParameters([[1,2],[1,2]], 0) should be Array.length==2.', () => {
-    expect(deriveMultivariateLinearParameters([[1,2],[1,2]], 0).length).toEqual(2);
+test('deriveMultivariateLinearParameters([[1,2],[1,2]], 0) should throw zero determinant error.', () => {
+    expect(() => deriveMultivariateLinearParameters([[1,2],[1,2]], 0).length).toThrowError('Cannot calculate inverse, determinant is zero');
 });
 
 test('extractColumn([[1,2],[1,2]], 2) should be [].', () => {

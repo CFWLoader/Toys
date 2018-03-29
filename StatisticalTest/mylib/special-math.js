@@ -215,7 +215,7 @@ function newtonMethodOpt2Var(firstDrv, secondDrv, xArray, initialVal, epsilon = 
  * @param {Object} dataShape
  * @returns {Object}
  */
-function gammaParameters(dataShape)
+function gammaParameters(data, dataShape = null)
 {
 	let mu = dataShape.mean, sigma = dataShape.sigma, len = dataShape.length;
 
@@ -690,17 +690,16 @@ function trigamma( x ) {
 // 	'upper': gammainc_u
 // };
 
-module.exports =
-{
+export {
     // "gamma" : cgamma,
     // "erf" : erf,
 	// "mean" : mean,
-	"means" : means,
+	means,
     // "variance" : variance,
     // "regularizedLowerIncompleteGamma" : gammainc_l,
 	// "regularizedupperIncompleteGamme" : gammainc_u,
-	"gammaParameters" : gammaParameters,
-	"betaParameters" : betaParameters,
-	"weibullParameters" : weibullParameters,
-	"trigamma" : trigamma
+	gammaParameters,
+	betaParameters,
+	weibullParameters,
+	trigamma
 };
