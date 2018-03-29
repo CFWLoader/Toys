@@ -212,106 +212,101 @@ function newtonMethodOpt2Var(firstDrv, secondDrv, xArray, initialVal, epsilon = 
 /**
  * Retrieve parameters of gamma distribution.
  * Using maximum likehood. https://en.wikipedia.org/wiki/Gamma_distribution#Maximum_likelihood_estimation
- * @param {Array} data
+ * @param {Object} dataShape
  * @returns {Object}
  */
-function gammaParameters(data)
+function gammaParameters(dataShape)
 {
-	if(data.length == 0)
-	{
-		return {};
-	}
+	let mu = dataShape.mean, sigma = dataShape.sigma, len = dataShape.length;
 
-	let mu = mean(data), sigma = mathjs.sqrt(variance(data));
+	let logSumVal = dataShape.logMean * dataShape.length, sumVal = dataShape.mean * dataShape.length;
 
 	let f1 = (a, b, xArr) =>
 	{
-		let logSumVal = xArr.reduce((pre, val) => pre + mathjs.log(val), 0);
+		// let logSumVal = xArr.reduce((pre, val) => pre + mathjs.log(val), 0);
 
-		return xArr.length * mathjs.log(b) - xArr.length * digamma(a) + logSumVal;
+		return len * mathjs.log(b) - len * digamma(a) + logSumVal;
 	}
 
 	let f2 = (a, b, xArr) =>
 	{
-		let sumVal = xArr.reduce((pre, val) => pre + val, 0);
+		// let sumVal = xArr.reduce((pre, val) => pre + val, 0);
 
-		return xArr.length * a / b - sumVal;
+		return len * a / b - sumVal;
 	}
 
 	let f11 = (a, b, xArr) =>
 	{
-		return -xArr.length * trigamma(a);
+		return -len * trigamma(a);
 	}
 
 	let f12 = (a, b, xArr) =>
 	{
-		return xArr.length / b;
+		return len / b;
 	}
 
 	let f21 = f12;
 
 	let f22 = (a, b, xArr) =>
 	{
-		return - xArr.length * a / b**2;
+		return - len * a / b**2;
 	}
 
 	let alpha = (mu / sigma)**2, beta = mu / sigma**2;
 
-	return newtonMethodOpt2Var([f1, f2], [[f11, f12], [f21, f22]], data, [alpha, beta]);
+	return newtonMethodOpt2Var([f1, f2], [[f11, f12], [f21, f22]], null, [alpha, beta]);
 }
 
 /**
  * Retrieve parameters of beta distribution.
- * @param {Array} data 
  * @param {Object} shape
  * @returns {Object}
  */
-function betaParameters(data, shape)
+function betaParameters(shape)
 {
 	let obsX = shape.mean;
 
 	let obsSigma = shape.sigma;
 
-	// let lnSum = shape.length * shape.logMean;
+	let lnSum = shape.length * shape.logMean, lnOneMinusSum = shape.logOneMinusSum;
 
-	// let len = shape.length
+	let len = shape.length;
 
 	let f1 = (a, b, xArr) =>
 	{
-		let lnSum = xArr.reduce((pre, val) => pre + mathjs.log(val), 0), 
-			len = xArr.length;
+		// let lnSum = xArr.reduce((pre, val) => pre + mathjs.log(val), 0), 
+		// 	len = xArr.length;
 
 		return len * digamma(a + b) - len * digamma(a) + lnSum;
 	}
 
 	let f2 = (a, b, xArr) =>
 	{
-		let lnSum = xArr.reduce((pre, val) => pre + mathjs.log(1 - val), 0),
-			len = xArr.length;
+		// let OneMinusLnSum = xArr.reduce((pre, val) => pre + mathjs.log(1 - val), 0);
 
-		return len * digamma(a + b) - len * digamma(b) + lnSum;
+		return len * digamma(a + b) - len * digamma(b) + lnOneMinusSum;
 	}
 
 	let f11 = (a, b, xArr) =>
 	{
-		return xArr.length * (trigamma(a + b) - trigamma(a));
+		return len * (trigamma(a + b) - trigamma(a));
 	}
 
 	let f12 = (a, b, xArr) =>
 	{
-		return xArr.length * trigamma(a + b);
+		return len * trigamma(a + b);
 	}
 
 	let f21 = f12;
 
 	let f22 = (a, b, xArr) =>
 	{
-		return xArr.length * (trigamma(a + b) - trigamma(b));
+		return len * (trigamma(a + b) - trigamma(b));
 	}
 
 	let alpha = obsX * (obsX * (1 - obsX) / obsSigma**2 - 1), beta = (1 - obsX) * (obsX * (1 - obsX) / obsSigma**2 - 1);
 
-	return newtonMethodOpt2Var([f1, f2], [[f11, f12], [f21, f22]], data, [alpha, beta]);
+	return newtonMethodOpt2Var([f1, f2], [[f11, f12], [f21, f22]], null, [alpha, beta]);
 }
 
 /**

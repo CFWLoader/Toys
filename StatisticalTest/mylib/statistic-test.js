@@ -19,7 +19,7 @@ function shape(data)
     }
 
     // For Log-Normal, we need to know sum of log(xi) and log sigma.
-    let [length, sumVal, sigma, logSum, logSigma, minVal, maxVal] = [data.length, 0, 0, 0, 0, data[0], data[0]];
+    let [length, sumVal, sigma, logSum, logOneMinusSum, logSigma, minVal, maxVal] = [data.length, 0, 0, 0, 0, 0, data[0], data[0]];
 
     let tempLog;
 
@@ -30,6 +30,8 @@ function shape(data)
         sigma += val**2;
 
         tempLog = mathjs.log(val);
+
+        logOneMinusSum += mathjs.log(1 - val);
 
         logSum += tempLog;
 
@@ -71,7 +73,8 @@ function shape(data)
         'logSigma' : mathjs.sqrt(logSigma / length - (logSum / length)**2),
         'min' : minVal,
         'max' : maxVal,
-        'mode' : mode
+        'mode' : mode,
+        'logOneMinusSum' : logOneMinusSum
     }
 }
 
