@@ -1,1 +1,3 @@
-import goodness from './lib/goodness';
+import {goodnessOfFit} from './lib/goodness';
+
+export {goodnessOfFit};

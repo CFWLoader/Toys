@@ -24,4 +24,4 @@ function readCSVsync(filePath, encoding = 'UTF-8', delimiter = ',', readHeader =
     return result;
 }
 
-exports = { readCSVsync };
+export { readCSVsync };
