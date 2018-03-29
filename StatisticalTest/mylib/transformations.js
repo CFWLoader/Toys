@@ -231,13 +231,26 @@ function betaBatch(data, shape)
 }
 
 /**
- * Transform a array via gamma's CDF.
+ * Transform a value via gamma's CDF.
+ * @param {Number} x
+ * @param {Number} shape1
+ * @param {Number} shape2
+ * @returns {Number}
+ */
+function gamma(x, shape1, shape2)
+{
+    return lowRegGamma(shape2 * x, shape1)
+}
+
+/**
+ * Transform an array via gamma's CDF.
  * @param {Array} data 
+ * @param {Object} shape
  * @returns {Array}
  */
-function gamma(data)
+function gammaBatch(data, shape)
 {
-    let parameters = spMath.gammaParameters(data);
+    let parameters = spMath.gammaParameters(shape);
 
     let alpha = parameters["alpha"], beta = parameters["beta"];
 
@@ -245,18 +258,30 @@ function gamma(data)
 
     for(let i = 0; i < data.length; ++i)
     {
-        transformed.push(lowRegGamma(beta * data[i], alpha));
+        transformed.push(gamma(data[i], alpha, beta));
     }
 
     return mathjs.sort(transformed);
 }
 
 /**
- * Transform a array via weibull's CDF.
+ * Transform a value via weibull's CDF.
+ * @param {Number} x 
+ * @param {Number} lambda 
+ * @param {Number} k 
+ * @returns {Number}
+ */
+function weibull(x, lambda, k)
+{
+    return 1 - mathjs.exp(- mathjs.pow(x / lambda, k))
+}
+
+/**
+ * Transform an array via weibull's CDF.
  * @param {Array} data 
  * @returns {Array}
  */
-function weibull(data)
+function weibullBatch(data)
 {
     let parameters = spMath.weibullParameters(data);
 
@@ -271,7 +296,9 @@ function weibull(data)
             return [];
         }
 
-        transformed.push(1 - mathjs.exp(- mathjs.pow(data[i] / lambda, k)));
+        transformed.push(weibull(x, lambda, k));
+
+        // transformed.push(1 - mathjs.exp(- mathjs.pow(data[i] / lambda, k)));
     }
 
     return mathjs.sort(transformed);
@@ -293,4 +320,6 @@ module.exports =
     "triangleBatch" : triangleBatch,
     "exponentBatch" : exponentBatch,
     "betaBatch" : betaBatch,
+    "gammaBatch" : gammaBatch,
+    "weibullBatch" : weibullBatch
 };
