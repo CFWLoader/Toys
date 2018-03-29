@@ -32,7 +32,7 @@ import {trigamma, means} from '../lib/special-functions';
  * Tests of trigamma().
  */
 test("trigamma(1) should be 1.644934.", () => {
-    expect(trigamma(1)).toBeCloseTo(1.644934);
+    expect(trigamma(1)).toBeCloseTo(1.644934, 6);
 });
 
 /**

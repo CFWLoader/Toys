@@ -52,10 +52,10 @@ test('shape(aqiData) should be Map{length: 912, mean:70.5241228070175, sigma: 30
     let result = shape(aqiData);
 
     expect(result.get('length')).toBe(912);
-    expect(result.get('mean')).toBeCloseTo(70.5241228070175);
-    expect(result.get('sigma')).toBeCloseTo(30.66384223583148);
-    expect(result.get('logMean')).toBeCloseTo(4.171365);
-    expect(result.get('logSigma')).toBeCloseTo(0.407784223583148);
+    expect(result.get('mean')).toBeCloseTo(70.5241228070175, 5);
+    expect(result.get('sigma')).toBeCloseTo(30.66384223583148, 5);
+    expect(result.get('logMean')).toBeCloseTo(4.171365, 5);
+    expect(result.get('logSigma')).toBeCloseTo(0.407784223583148, 5);
     expect(result.get('min')).toBe(17);
     expect(result.get('max')).toBe(205);
     expect(result.get('mode')).toBe(17);

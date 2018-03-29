@@ -41,8 +41,8 @@ test("fillMissingsWithGloabl(originalDataset) should be [[1, 2, 3, 4], [2, 2, 3,
  */
 test("fillMissingsWithMean(originalDataset) should trigger determinant zero.", () => {
     let result = fillMissingsWithMean(originalDataset);
-    expect(result[1][2]).toBeCloseTo(2.66666666666);
-    expect(result[3][0]).toBeCloseTo(1.33333333333);
+    expect(result[1][2]).toBeCloseTo(2.66666666666, 7);
+    expect(result[3][0]).toBeCloseTo(1.33333333333, 7);
     expect(result[3][1]).toBe(2);
 });
 
@@ -51,11 +51,6 @@ test("fillMissingsWithMean(originalDataset) should trigger determinant zero.", (
  */
 test('fillMissingsWithMLR(originalDataset) should throw determinant zero error.', () => {
     expect(() => fillMissingsWithMLR(originalDataset)).toThrowError('Cannot calculate inverse, determinant is zero');
-    // let result = fillMissingsWithMLR(originalDataset);
-    // expect(originalDataset[1][2]).toBe(null);
-    // expect(result[1][2]).toBeCloseTo(2.66666666666);
-    // expect(result[3][0]).toBeCloseTo(1.33333333333);
-    // expect(result[3][1]).toBe(2);
 });
 
 test('fillMissingsWithMLR(originalDataset1) should fix null cells.', () => {

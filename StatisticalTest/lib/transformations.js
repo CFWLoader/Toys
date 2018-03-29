@@ -1,6 +1,6 @@
 'use strict';
 
-import * as spMath from './special-functions';
+import {gammaParameters, betaParameters, weibullParameters} from './estimators';
 
 import mathjs from 'mathjs';
 
@@ -19,25 +19,23 @@ function normality(x, mu, sigma)
 /**
  * Transform a array via normality's CDF.
  * @param {Array} data
- * @param {Object} shape
+ * @param {Map} shape
  * @returns {Array}
  */
 function normalityBatch(data, shape) 
 {
     let transformed = [];
 
-    let mu = shape.mean;
+    let mu = shape.get('mean');
 
-    let sigma = shape.sigma;
+    let sigma = shape.get('sigma');
 
     for(let val of data) 
     {
         transformed.push(normality(val, mu, sigma));
-        // transformed.push(0.5 + erf((data[i] - mu) / (mathjs.SQRT2 * sigma)) / 2);
     }
 
     return mathjs.sort(transformed);
-
 }
 
 /**
@@ -82,7 +80,7 @@ function logNormalityBatch(data, shape)
  */
 function uniform(x, minVal, maxVal)
 {
-    if(x == minVal || x == maxVal)
+    if(x <= minVal || x >= maxVal)
     {
         return 0;
     }
@@ -98,9 +96,9 @@ function uniform(x, minVal, maxVal)
  */
 function uniformBatch(data, shape) {
 
-    let minVal = shape.min;
+    let minVal = shape.get('min');
 
-    let maxVal = shape.max;
+    let maxVal = shape.get('max');
 
     let transformed = [];
 
@@ -122,7 +120,7 @@ function uniformBatch(data, shape) {
  */
 function triangle(x, minVal, maxVal, mode)
 {
-    if(x == minVal || x == maxVal)
+    if(x <= minVal || x >= maxVal)
     {
         return 0;
     }
@@ -214,7 +212,7 @@ function beta(x, shape1, shape2, betaFunVal)
  */
 function betaBatch(data, shape)
 {
-    let parameters = spMath.betaParameters(data, shape);
+    let parameters = betaParameters(data, shape);
 
     let shape1 = parameters['shape1'], shape2 = parameters['shape2'];
 
@@ -250,7 +248,7 @@ function gamma(x, shape1, shape2)
  */
 function gammaBatch(data, shape)
 {
-    let parameters = spMath.gammaParameters(shape);
+    let parameters = gammaParameters(shape);
 
     let alpha = parameters["alpha"], beta = parameters["beta"];
 
@@ -283,7 +281,7 @@ function weibull(x, lambda, k)
  */
 function weibullBatch(data)
 {
-    let parameters = spMath.weibullParameters(data);
+    let parameters = weibullParameters(data);
 
     let lambda = parameters["shape1"], k = parameters["shape2"];
 
