@@ -147,10 +147,63 @@ test('beta(0, 1, 1) should be 0.', () => {
     expect(transformations.beta(0, 1, 1)).toBe(0);
 });
 
-test('beta(0.1, 1, 1) should be 0.1.', () => {
-    expect(transformations.beta(0.1, 1, 1)).toBe(0.1);
+test('beta(0.1, 1, 1) should be close to 0.1.', () => {
+    expect(transformations.beta(0.1, 1, 1)).toBeCloseTo(0.1, 8);
 });
 
 test('beta(0.1, 2, 3) should be close to 0.0523.', () => {
     expect(transformations.beta(0.1, 2, 3)).toBeCloseTo(0.0523, 4);
+});
+
+test('beta(0.33, 0.21, 0.13) should be close to 0.3331312.', () => {
+    expect(transformations.beta(0.33, 0.21, 0.13)).toBeCloseTo(0.3331312, 6);
+});
+
+/**
+ * Tests of betaBatch().
+ */
+test('betaBatch(betaSynData, betaShape) should has [0]=, [911]=', () => {
+    let result = transformations.betaBatch(datasets.betaSynData, betaShape);
+    expect(result[0]).toBeCloseTo(0.00039836209898537033, 10);
+    expect(result[911]).toBeCloseTo(0.9147515498866492, 10);
+});
+
+/**
+ * Tests of gamma().
+ */
+test('gamma(1, 1, 1) should be close to 0.6321206.', () => {
+    expect(transformations.gamma(1, 1, 1)).toBeCloseTo(0.6321206, 6);
+});
+
+test('gamma(6, 11, 0.25) should be close to 0.998915.', () => {
+    expect(transformations.gamma(6, 11, 0.25)).toBeCloseTo(0.998915, 2);
+});
+
+/**
+ * Tests of gammaBatch().
+ */
+test('gammaBatch(aqiData, aqiShape) should has [0]=0.00009784321525305008, [911]=.', () => {
+    let result = transformations.gammaBatch(datasets.aqiData, aqiShape);
+    expect(result[0]).toBeCloseTo(0.00009784321525305008, 10);
+    expect(result[911]).toBeCloseTo(0.9935652453695955, 10);
+});
+
+/**
+ * Tests of weibull().
+ */
+test('weibull(1, 1, 1) should be close to 0.6321206', () => {
+    expect(transformations.weibull(1, 1, 1)).toBeCloseTo(0.6321206, 6);
+});
+
+test('weibull(3, 6, 6) should be close to 0.01550356', () => {
+    expect(transformations.weibull(3, 6, 6)).toBeCloseTo(0.01550356, 6);
+});
+
+/**
+ * Tests of weibullBatch().
+ */
+test('weibullBatch(aqiData) should has [0]=0.02392054075670158, [911]=0.9999411268344259', () => {
+    let result = transformations.weibullBatch(datasets.aqiData);
+    expect(result[0]).toBeCloseTo(0.02392054075670158, 10);
+    expect(result[911]).toBeCloseTo(0.9999411268344259, 10);
 });

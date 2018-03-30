@@ -143,7 +143,7 @@ function triangle(x, minVal, maxVal, mode)
 /**
  * Transform a array via triangle's CDF.
  * @param {Array} data 
- * @param {Object} shape
+ * @param {Map} shape
  * @returns {Array}
  */
 function triangleBatch(data, shape) 
@@ -200,13 +200,14 @@ function exponentBatch(data, shape)
  */
 function beta(x, shape1, shape2)
 {
-    return ibeta(x, shape1, shape2) * cgamma(shape1) * cgamma(shape2) / cgamma(shape1 + shape2);
+    return ibeta(x, shape1, shape2);
+    // return ibeta(x, shape1, shape2) * cgamma(shape1) * cgamma(shape2) / cgamma(shape1 + shape2);
 }
 
 /**
  * Transform a array via beta's CDF.
  * @param {Array} data 
- * @param {Array} shape
+ * @param {Map} shape
  * @returns {Array}
  */
 function betaBatch(data, shape)
@@ -225,7 +226,7 @@ function betaBatch(data, shape)
         // transformed.push(beta(val, shape1, shape2, betaFunVal));
     }
 
-    return transformed;
+    return mathjs.sort(transformed);
 }
 
 /**
@@ -243,14 +244,14 @@ function gamma(x, shape1, shape2)
 /**
  * Transform an array via gamma's CDF.
  * @param {Array} data 
- * @param {Object} shape
+ * @param {Map} shape
  * @returns {Array}
  */
 function gammaBatch(data, shape)
 {
     let parameters = gammaParameters(shape);
 
-    let alpha = parameters["alpha"], beta = parameters["beta"];
+    let alpha = parameters.get('shape1'), beta = parameters.get('shape2');
 
     let transformed = [];
 
@@ -283,18 +284,13 @@ function weibullBatch(data)
 {
     let parameters = weibullParameters(data);
 
-    let lambda = parameters["shape1"], k = parameters["shape2"];
+    let lambda = parameters.get('shape1'), k = parameters.get('shape2');
 
     let transformed = [];
 
     for(let i = 0; i < data.length; ++i)
     {
-        if(data[i] <= 0)
-        {
-            return [];
-        }
-
-        transformed.push(weibull(x, lambda, k));
+        transformed.push(weibull(data[i], lambda, k));
 
         // transformed.push(1 - mathjs.exp(- mathjs.pow(data[i] / lambda, k)));
     }
