@@ -25,11 +25,6 @@ test('prepareCalculations(shape([1, 2]), [\'uniform\'])[0](0.5) should be 0, [0]
 test('prepareCalculations(shape([1, 2, 3]), [\'normality\'])[0](0.5) should be 0.03309629, [0](1.5) should be 0.2701457.', () => {
 
     let calculations = prepareCalculations(shape([1, 2, 3]), ['normality']);
-
-    console.log(shape([1,2,3]).get('mean'));
-
-    console.log(shape([1,2,3]).get('sigma'));
-
     expect(calculations[0](0.5)).toBeCloseTo(0.03309629, 6);
     expect(calculations[0](1.5)).toBeCloseTo(0.2701457, 6);
 });

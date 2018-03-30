@@ -238,7 +238,7 @@ function betaBatch(data, shape)
  */
 function gamma(x, shape1, shape2)
 {
-    return lowRegGamma(shape2 * x, shape1)
+    return lowRegGamma(shape1, x * shape2);
 }
 
 /**

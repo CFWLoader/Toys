@@ -178,17 +178,17 @@ test('gamma(1, 1, 1) should be close to 0.6321206.', () => {
     expect(transformations.gamma(1, 1, 1)).toBeCloseTo(0.6321206, 6);
 });
 
-test('gamma(6, 11, 0.25) should be close to 0.998915.', () => {
-    expect(transformations.gamma(6, 11, 0.25)).toBeCloseTo(0.998915, 2);
+test('gamma(6, 11, 4) should be close to 0.998915.', () => {
+    expect(transformations.gamma(6, 11, 4)).toBeCloseTo(0.998915, 2);
 });
 
 /**
  * Tests of gammaBatch().
  */
-test('gammaBatch(aqiData, aqiShape) should has [0]=0.00009784321525305008, [911]=.', () => {
+test('gammaBatch(aqiData, aqiShape) should has [0]=0.0035488355744155912, [911]=.', () => {
     let result = transformations.gammaBatch(datasets.aqiData, aqiShape);
-    expect(result[0]).toBeCloseTo(0.00009784321525305008, 10);
-    expect(result[911]).toBeCloseTo(0.9935652453695955, 10);
+    expect(result[0]).toBeCloseTo(0.0035488355744155912, 10);
+    expect(result[911]).toBeCloseTo(0.9995420525455475, 10);
 });
 
 /**
