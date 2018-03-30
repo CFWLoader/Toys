@@ -55,6 +55,10 @@ test('normality(1, 2, 3) should be close to 0.3694413.', () => {
     expect(transformations.normality(1, 2, 3)).toBeCloseTo(0.3694413, 6);
 });
 
+test('normality(11, 11, 3) should be close to 0.5.', () => {
+    expect(transformations.normality(11, 11, 3)).toBeCloseTo(0.5, 6);
+});
+
 /**
  * Tests of normalityBatch().
  */

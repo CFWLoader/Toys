@@ -16,7 +16,7 @@ function filterDistributions(dataShape, distList)
 
     let distSet = new Set(distList);
 
-    let availList = [];
+    let availList = [], minVal = dataShape.get('min'), maxVal = dataShape.get('max');
 
     // Filter Uniform.
     if(distSet.has('uniform'))
@@ -32,12 +32,39 @@ function filterDistributions(dataShape, distList)
     }
 
     // Filter lognormality.
-    if(distSet.has('lognormality') && shape.get('min') > 0)
+    if(distSet.has('lognormality') && minVal > 0)
     {
         availList.push('lognormality');
     }
 
-    // Filter 
+    if(distSet.has('triangle'))
+    {
+        availList.push('triangle');
+    }
+
+    // Filter exponent.
+    if(distSet.has('exponent') && minVal >= 0)
+    {
+        availList.push('exponent');
+    }
+
+    // Filter beta.
+    if(distSet.has('beta') && minVal >= 0 && maxVal <= 1)
+    {
+        availList.push('beta');
+    }
+
+    // Filter gamma.
+    if(distSet.has('gamma') && minVal > 0)
+    {
+        availList.push('gamma');
+    }
+
+    // Filter weibull.
+    if(distSet.has('weibull') && minVal >= 0)
+    {
+        availList.push('weibull');
+    }
 
     return availList;
 }
