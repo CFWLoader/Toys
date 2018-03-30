@@ -291,8 +291,6 @@ function weibullBatch(data)
     for(let i = 0; i < data.length; ++i)
     {
         transformed.push(weibull(data[i], lambda, k));
-
-        // transformed.push(1 - mathjs.exp(- mathjs.pow(data[i] / lambda, k)));
     }
 
     return mathjs.sort(transformed);

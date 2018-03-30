@@ -18,6 +18,8 @@ function shape(data)
     {
         return new Map([
             ['length', 0],
+            ['validLength', 0],
+            ['nullIndexes', []],
             ['mean', 0],
             ['sigma', 0],
             ['logMean', 0],
@@ -35,8 +37,21 @@ function shape(data)
 
     let tempLog;
 
+    let validLength = 0, nullIndexes = new Array(), index = -1;
+
     for(let val of data)
     {
+        ++index;
+
+        if(val == null)
+        {
+            nullIndexes.push(index);
+
+            continue;
+        }
+
+        ++validLength;
+
         sumVal += val;
 
         sigma += val**2;
@@ -52,6 +67,23 @@ function shape(data)
         minVal = minVal > val ? val : minVal;
 
         maxVal = maxVal < val ? val : maxVal;
+    }
+
+    if(validLength == 0)
+    {
+        return new Map([
+            ['length', data.length],
+            ['validLength', 0],
+            ['nullIndexes', []],
+            ['mean', 0],
+            ['sigma', 0],
+            ['logMean', 0],
+            ['logSigma', 0],
+            ['min', 0],
+            ['max', 0],
+            ['mode', 0],
+            ['logOneMinusSum', 0]
+        ]);
     }
 
     // Retrieving mode.
@@ -79,10 +111,12 @@ function shape(data)
 
     return new Map([
         ['length', length],
-        ['mean', sumVal / length],
-        ['sigma', mathjs.sqrt(sigma / length - (sumVal / length)**2)],
-        ['logMean', logSum / length],
-        ['logSigma', mathjs.sqrt(logSigma / length - (logSum / length)**2)],
+        ['validLength', validLength],
+        ['nullIndexes', nullIndexes],
+        ['mean', sumVal / validLength],
+        ['sigma', mathjs.sqrt(sigma / validLength - (sumVal / validLength)**2)],
+        ['logMean', logSum / validLength],
+        ['logSigma', mathjs.sqrt(logSigma / validLength - (logSum / validLength)**2)],
         ['min', minVal],
         ['max', maxVal],
         ['mode', mode],
