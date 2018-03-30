@@ -25,6 +25,10 @@ test('filterDistributions(shape([1]), 33) should be [].', () => {
     expect(filterDistributions(shape([1]), 33)).toEqual([]);
 });
 
-test('filterDistributions(shape([1]), ) should be [].', () => {
+test('filterDistributions(shape([1]), []) should be [].', () => {
     expect(filterDistributions(shape([1]), [])).toEqual([]);
+});
+
+test('filterDistributions(shape([1, 1, 1]), DEFAULT_CONSTRIBUTION_NAME_LIST) should be [].', () => {
+    expect(filterDistributions(shape([1, 1, 1]), [])).toEqual([]);
 });
