@@ -21,8 +21,8 @@ test('uniform(1, 2, 3) should be 0.', () => {
     expect(transformations.uniform(1, 2, 3)).toBe(0);
 });
 
-test('uniform(1, 0, 1) should be 0.', () => {
-    expect(transformations.uniform(1, 0, 1)).toBe(0);
+test('uniform(1, 0, 1) should be 1.', () => {
+    expect(transformations.uniform(1, 0, 1)).toBe(1);
 });
 
 test('uniform(0.5, 0, 1) should be 0.5.', () => {
@@ -32,13 +32,12 @@ test('uniform(0.5, 0, 1) should be 0.5.', () => {
 /**
  * Tests of uniformBatch().
  */
-test('uniformBatch(aqiData, aqiShape) should match [0]=0, [1]=0, [2]=0.005319148936170213, [3]=0.02127659574468085, [911]=0.9840425531914894', () => {
+test('uniformBatch(aqiData, aqiShape) should match [0]=0, [1]=0.005319148936170213, [2]=0.02127659574468085, [911]=1', () => {
     let result = transformations.uniformBatch(datasets.aqiData, aqiShape);
     expect(result[0]).toBe(0);
-    expect(result[1]).toBe(0);
-    expect(result[2]).toBeCloseTo(0.005319148936170213);
-    expect(result[3]).toBeCloseTo(0.02127659574468085);
-    expect(result[911]).toBeCloseTo(0.9840425531914894);
+    expect(result[1]).toBeCloseTo(0.005319148936170213);
+    expect(result[2]).toBeCloseTo(0.02127659574468085);
+    expect(result[911]).toBe(1);
 });
 
 /**
@@ -116,7 +115,7 @@ test('triangleBatch(aqiData, aqiShape) should has [0]=, [911]=', () => {
 
     expect(result[0]).toBe(0);
 
-    expect(result[911]).toBeCloseTo(0.9997453598913536, 10);
+    expect(result[911]).toBe(1);
 });
 
 /**

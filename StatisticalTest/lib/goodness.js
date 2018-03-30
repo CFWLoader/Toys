@@ -15,6 +15,16 @@ import {shape} from './shape';
  */
 function goodnessOfFit(data, distributions = null)
 {
+    let dataShape = shape(data);
+
+    // @TODO
+    // pseudo:fixNullCell(data, fixStrategy)
+
+    // Using default distributions to test if null.
+    distributions = null == distributions ? DEFAULT_CONSTRIBUTION_NAME_LIST : distributions;
+
+    
+
     return {};
 }
 

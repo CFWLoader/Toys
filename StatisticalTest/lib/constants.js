@@ -168,4 +168,4 @@ export const rateval_4_8 = evalrational( P_4_8, Q_4_8 );
 export const rateval_8_16 = evalrational( P_8_16, Q_8_16 );
 export const rateval_16_INF = evalrational( P_16_INF, Q_16_INF );
 
-export const DEFAULT_CONSTRIBUTION_NAME_LISTS = ['uniform', 'normality', 'lognormality', 'triangle', 'exponent'];
+export const DEFAULT_CONSTRIBUTION_NAME_LIST = ['uniform', 'normality', 'lognormality', 'triangle', 'exponent'];

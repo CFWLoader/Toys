@@ -79,7 +79,7 @@ function logNormalityBatch(data, shape)
  */
 function uniform(x, minVal, maxVal)
 {
-    if(x <= minVal || x >= maxVal)
+    if(x < minVal || x > maxVal)
     {
         return 0;
     }
@@ -119,7 +119,7 @@ function uniformBatch(data, shape) {
  */
 function triangle(x, minVal, maxVal, mode)
 {
-    if(x <= minVal || x >= maxVal)
+    if(x < minVal || x > maxVal)
     {
         return 0;
     }
