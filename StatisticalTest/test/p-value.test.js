@@ -131,7 +131,19 @@ test('AndersonDarlingEvaluation.normality(19.7474369825644, aqiDataShape) should
     expect(AndersonDarlingEvaluation.normality(19.7474369825644, aqiDataShape)).toBeCloseTo(5.18999529922001e-46, 57);
 });
 
-
 test('AndersonDarlingEvaluation.normality(1.10149026748664, aqiDataShape) should beCloseTo 0.0068927023396101.', () => {
     expect(AndersonDarlingEvaluation.normality(1.10149026748664, aqiDataShape)).toBeCloseTo(0.0068927023396101, 10);
+});
+
+test('AndersonDarlingEvaluation.exponent(154.31339412696, aqiDataShape) should be 0.', () => {
+    expect(AndersonDarlingEvaluation.exponent(154.31339412696, aqiDataShape)).toBe(0);
+});
+
+test('AndersonDarlingEvaluation.gamma(4.30165803301067, aqiDataShape) should be 0.005.', () => {
+    let params = new Map([['shape1', 6.0726199636468]]);
+    expect(AndersonDarlingEvaluation.gamma(4.30165803301067, aqiDataShape, params)).toBe(0.005);
+});
+
+test('AndersonDarlingEvaluation.weibull(14.4191153154662, aqiDataShape) should be 0.01.', () => {
+    expect(AndersonDarlingEvaluation.weibull(14.4191153154662, aqiDataShape)).toBe(0.01);
 });

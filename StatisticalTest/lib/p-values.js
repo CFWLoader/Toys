@@ -2,7 +2,7 @@
 
 import {log, abs, exp, pow, sqrt} from 'mathjs';
 
-import {AD_NORMALITY_TABLE} from './p-value-tables';
+import {uniform_g, uniform_gg, AD_NORMALITY_TABLE, AD_EXPONENT_TABLE, AD_GAMMA_TABLE, AD_WEIBULL_TABLE} from './p-value-tables';
 
 /**
  * Calculate AD-Value and KD-Value on transformed and sorted data.
@@ -88,24 +88,22 @@ class AndersonDarlingEvaluation
     {
         let p = 0;
 
-        const g = (zz) =>  {
-            return (2.00012 + (0.247105 - (0.0649821 - (0.0347962 - (0.0116720 - 0.00168691 * zz) * zz) * zz) * zz) * zz);
-        }
-
-        const gg = (zz) => {
-            return (1.0776 - (2.30695 - (0.43424 - (0.082433 - (0.008056 - 0.0003146 * zz) * zz) * zz) * zz) * zz);
-        }
-
         if (adValue < 2) {
-            p = 1 - pow(adValue, - 0.5) * exp(-1.2337141 / adValue) * g(adValue);
+            p = 1 - pow(adValue, - 0.5) * exp(-1.2337141 / adValue) * uniform_g(adValue);
         }
         else {
-            p = 1 - exp(-exp(gg(adValue)));
+            p = 1 - exp(-exp(uniform_gg(adValue)));
         }
 
         return p;
     }
 
+    /**
+     * Evaluating p-value of (log)normality.
+     * @param {Number} adValue 
+     * @param {Map} dataShape 
+     * @returns {Number}
+     */
     static normality(adValue, dataShape)
     {
         let n = dataShape.get('validLength');
@@ -130,22 +128,130 @@ class AndersonDarlingEvaluation
             result = 1 - result;
         }
 
-        // if (zStar <= 0.2) {
-        //     return 1 - Math.exp(-13.436 + 101.14 * zStar - 223.73 * (zStar ** 2));
-        // }
-        // else if (zStar <= 0.34) {
-        //     return 1 - Math.exp(-8.318 + 42.796 * zStar - 59.938 * (zStar ** 2));
-        // }
-        // else if (zStar <= 0.6) {
-        //     return Math.exp(0.9177 - 4.279 * zStar - 1.38 * (zStar ** 2));
-        // }
-        // else if (zStar <= 153.467) {
-        //     return Math.exp(1.2937 - 5.709 * zStar + 0.0186 * (zStar ** 2));
-        // }
-        // else {
-        //     return 0;
-        // }
         return result;
+    }
+    
+    /**
+     * Evaluating p-value of exponent.
+     * @param {Number} adValue 
+     * @param {Map} dataShape 
+     * @returns {Number}
+     */
+    static exponent(adValue, dataShape)
+    {
+        let n = dataShape.get('validLength');
+
+        let zStar = adValue * (1 + 0.6 / n);
+
+        let pValue = 0;
+
+        for(let tuple of AD_EXPONENT_TABLE)
+        {
+            if(zStar < tuple[0])
+            {
+                pValue = exp(tuple[1] + tuple[2] * zStar + tuple[3] * zStar**2);
+            }
+        }
+
+        // Extra calculation in z* <= 0.34 cases.
+        if(pValue > 0 && zStar <= AD_EXPONENT_TABLE[1][0])
+        {
+            pValue = 1 - pValue;
+        }
+
+        return pValue;
+    }
+
+    /**
+     * Evaluating p-value of gamma.
+     * @param {Number} adValue 
+     * @param {Map} dataShape 
+     * @param {Map} parameters
+     * @returns {Number}
+     */
+    static gamma(adValue, dataShape, parameters)
+    {
+        let alpha = parameters.get('shape1');
+
+        let paramTable = null;
+
+        // Determine table according to alpha's value.
+        for(let val of AD_GAMMA_TABLE)
+        {
+            if(alpha < val[0])
+            {
+                paramTable = val[1];
+
+                break;
+            }
+        }
+
+        // Edge condition.
+        if(adValue < paramTable[0][0])
+        {
+            return paramTable[0][1];
+        }
+
+        let pValue = 0;
+
+        for(let idx = 1; idx < paramTable.length; ++idx)
+        {
+            if(adValue < paramTable[idx][0])
+            {
+                pValue = (adValue - paramTable[idx - 1][0])
+                * (paramTable[idx][1] - paramTable[idx - 1][1]) / (paramTable[idx][0] - paramTable[idx - 1][0])
+                + paramTable[idx - 1][1];
+            }
+        }
+
+        // Edge condition.
+        if(pValue == 0)
+        {
+            pValue = 0.005;
+        }
+
+        return pValue;
+    }
+
+    /**
+     * Evaluating p-value of Weibull.
+     * @param {Number} adValue
+     * @param {Map} dataShape
+     * @returns {Number}
+     */
+    static weibull(adValue, dataShape)
+    {
+        let wn = dataShape.get('validLength');
+
+        let zStar = adValue * (1 + 0.2 / sqrt(wn));
+
+        // Edge condition.
+        if(zStar < AD_WEIBULL_TABLE[0][0])
+        {
+            return AD_WEIBULL_TABLE[0][1];
+        }
+        
+        let pValue = 0;
+
+        let paramTable = AD_WEIBULL_TABLE;
+
+        for(let idx = 1; idx < paramTable.length; ++idx)
+        {
+            if(adValue < paramTable[idx][0])
+            {
+                pValue = (adValue - paramTable[idx - 1][0])
+                * (paramTable[idx][1] - paramTable[idx - 1][1]) / (paramTable[idx][0] - paramTable[idx - 1][0])
+                + paramTable[idx - 1][1];
+            }
+        }
+
+        // Edge condition.
+        if(pValue == 0)
+        {
+            pValue = 0.01;
+        }
+
+        return pValue;
     }
 };
 
@@ -183,6 +289,43 @@ class KolmogorovSmirnov
         }
 
         return 1 - ak;
+    }
+
+    /**
+     * p-value of Normality.
+     * @param {Number} ksValue 
+     * @param {Map} dataShape 
+     */
+    static pValueNormal(ksValue, dataShape)
+    {
+        var ksValue = KolmogorovSmirnov.test(data, transformations.normality);
+
+        var n = data.length;
+
+        var d = ksValue * (Math.sqrt(n) - 0.01 + 0.85 / Math.sqrt(n));
+
+        if (d < 0.775) {
+            return "0.15+";
+        }
+        else if (d < 0.819) {
+            // return "0.1~0.15";
+            return (d - 0.775) * (0.1 - 0.15) / (0.819 - 0.775) + 0.15;
+        }
+        else if (d < 0.895) {
+            // return "0.05~0.1";
+            return (d - 0.819) * (0.05 - 0.1) / (0.895 - 0.819) + 0.1;
+        }
+        else if (d < 0.995) {
+            // return "0.025~0.05";
+            return (d - 0.895) * (0.025 - 0.05) / (0.995 - 0.895) + 0.05;
+        }
+        else if (d < 1.035) {
+            // return "0.01~0.025";
+            return (d - 0.995) * (0.01 - 0.025) / (1.035 - 0.995) + 0.025;
+        }
+        else {
+            return "0.01-";
+        }
     }
 };
 
