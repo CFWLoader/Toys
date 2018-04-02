@@ -95,7 +95,7 @@ function calculatePvalueByTable(param, paramTable)
     {
         if(param < paramTable[idx][0])
         {
-            pValue = (adValue - paramTable[idx - 1][0])
+            pValue = (param - paramTable[idx - 1][0])
             * (paramTable[idx][1] - paramTable[idx - 1][1]) / (paramTable[idx][0] - paramTable[idx - 1][0])
             + paramTable[idx - 1][1];
 
