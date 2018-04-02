@@ -1,8 +1,8 @@
 'use strict';
 
-import {measures} from '../lib/p-values';
+import {measures, AndersonDarlingEvaluation, KolmogorovSmirnov} from '../lib/p-values';
 
-import {aqiData} from './test-datasets';
+import {aqiData, uniformSynData} from './test-datasets';
 
 import {shape} from '../lib/shape';
 
@@ -11,6 +11,8 @@ import {filterDistributions} from '../lib/filter-distributions';
 import {prepareCalculations} from '../lib/prepare-calculations';
 
 import {DEFAULT_CONSTRIBUTION_NAME_LIST} from '../lib/constants';
+
+import * as transformations from '../lib/transformations';
 
 import mathjs from 'mathjs';
 
@@ -22,18 +24,42 @@ allDistributions.push('gamma');
 
 allDistributions.push('weibull');
 
-test('Test all on AQI dataset.', () => {
+const aqiDataShape = shape(aqiData);
 
-    let data = aqiData;
+const uniformDataShape = shape(uniformSynData);
 
-    let dataShape = shape(aqiData);                            // Pass 1, T(n).
+function andersonDarlingTest(data) {
+    
+    let n = data.length;
+
+    let s = 0, mul;
+
+    for (let i = 0; i < data.length; ++i) {
+
+        mul = data[i] * (1 - data[n - 1 - i]);
+
+        if(mul <= 0)
+        {
+            continue;
+            // console.log(i.toString() + "  " + data[i].toString() + "  " + data[n - 1 - i].toString());
+        }
+
+        s += (2 * i + 1) * mathjs.log(mul)      // Notice original is (2 * i - 1) and data[n + 1 - i]. Fix head offset.
+    }
+
+    return -n - s / n;
+}
+
+function prepareTestValue(data, dataShape, distList)
+{
+    // let dataShape = shape(aqiData);                            // Pass 1, T(n).
 
     // @TODO
     // pseudo:fixNullCell(data, fixStrategy)
 
     // Using default distributions to test if null.
 
-    let availDist = filterDistributions(dataShape, allDistributions);
+    let availDist = filterDistributions(dataShape, distList);
 
     let numOfDist = availDist.length, dataLen = dataShape.get('validLength');
 
@@ -56,7 +82,44 @@ test('Test all on AQI dataset.', () => {
         sortedTransMat[calIdx] = mathjs.sort(transformedMatrix[calIdx]);
     }
 
-    let result = measures(sortedTransMat, dataShape);
+    return measures(sortedTransMat, dataShape);
+}
+
+test('Test all on AQI dataset.', () => {
+
+    // let data = aqiData;
+
+    // let dataShape = shape(aqiData);                            // Pass 1, T(n).
+
+    // @TODO
+    // pseudo:fixNullCell(data, fixStrategy)
+
+    // Using default distributions to test if null.
+
+    // let availDist = filterDistributions(aqiDataShape, allDistributions);
+
+    // let numOfDist = availDist.length, dataLen = aqiDataShape.get('validLength');
+
+    // let calculations = prepareCalculations(aqiDataShape, availDist, data);
+
+    // let transformedMatrix = availDist.map(() => new Array(dataLen));
+
+    // for(let dataIdx = 0; dataIdx < dataLen; ++dataIdx)      // Pass 2, T(n) = n * numOfDist.
+    // {
+    //     for(let calIdx = 0; calIdx < numOfDist; ++calIdx)
+    //     {
+    //         transformedMatrix[calIdx][dataIdx] = calculations[calIdx](data[dataIdx]);
+    //     }
+    // }
+
+    // let sortedTransMat = new Array(numOfDist);
+
+    // for(let calIdx = 0; calIdx < numOfDist; ++calIdx)       // Pass 3, T(nlogn) = n*log(n) * numOfDist. Assume Mathjs uses T(nlogn).
+    // {
+    //     sortedTransMat[calIdx] = mathjs.sort(transformedMatrix[calIdx]);
+    // }
+
+    let result = prepareTestValue(aqiData, aqiDataShape, allDistributions);
 
     // console.log(availDist);
 
@@ -67,4 +130,21 @@ test('Test all on AQI dataset.', () => {
     expect(result[4][0]).toBeCloseTo(154.31339412696, 10);
     expect(result[5][0]).toBeCloseTo(4.30165803301067, 4);
     expect(result[6][0]).toBeCloseTo(14.4191153154662, 5);
+});
+
+test('AndersonDarlingEvaluation.uniform(291.2782761317, dataShape) should be 0.', () => {
+    expect(AndersonDarlingEvaluation.uniform(291.2782761317, aqiDataShape)).toBeCloseTo(5.18999529922001e-046, 40);
+});
+
+test('AndersonDarlingEvaluation.uniform() on uniformSynData should be close to 0.1199872754481357.', () => {
+
+    let testValues = prepareTestValue(uniformSynData, uniformDataShape, ['uniform']);
+
+    expect(AndersonDarlingEvaluation.uniform(testValues[0][0], uniformDataShape)).toBeCloseTo(0.1199872754481357, 10);
+
+    console.log(testValues.length);
+
+    console.log(testValues[0][1]);
+
+    // expect(KolmogorovSmirnov.uniform(testValues[0][1], uniformDataShape)).toBeCloseTo(1);
 });
