@@ -56,7 +56,7 @@ function measures(data, dataShape)
 
             if(dm > dminus[distIdx])
             {
-                dminus = dm;
+                dminus[distIdx] = dm;
             }
         }
     }

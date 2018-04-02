@@ -363,6 +363,14 @@ console.log(z);
 
 console.log(adpValueUniform(z));
 
+let ksV = kolmogorovSmirnovTest(transformed);
+
+console.log(ksV);
+
+let kspV = kspValueUniform(transformed.length, ksV);
+
+console.log(kspV);
+
 // let dn = kolmogorovSmirnovTest(transformed);
 
 // console.log("|Uniform|" + z.toFixed(5).toString() + "|" + adpValueUniform(z).toFixed(5).toString() + "|" + dn.toFixed(5).toString() + "|" + kspValueUniform(transformed.length, dn).toFixed(5).toString() + "|");

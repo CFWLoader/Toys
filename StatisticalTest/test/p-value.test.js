@@ -28,28 +28,6 @@ const aqiDataShape = shape(aqiData);
 
 const uniformDataShape = shape(uniformSynData);
 
-function andersonDarlingTest(data) {
-    
-    let n = data.length;
-
-    let s = 0, mul;
-
-    for (let i = 0; i < data.length; ++i) {
-
-        mul = data[i] * (1 - data[n - 1 - i]);
-
-        if(mul <= 0)
-        {
-            continue;
-            // console.log(i.toString() + "  " + data[i].toString() + "  " + data[n - 1 - i].toString());
-        }
-
-        s += (2 * i + 1) * mathjs.log(mul)      // Notice original is (2 * i - 1) and data[n + 1 - i]. Fix head offset.
-    }
-
-    return -n - s / n;
-}
-
 function prepareTestValue(data, dataShape, distList)
 {
     // let dataShape = shape(aqiData);                            // Pass 1, T(n).
@@ -136,15 +114,15 @@ test('AndersonDarlingEvaluation.uniform(291.2782761317, dataShape) should be 0.'
     expect(AndersonDarlingEvaluation.uniform(291.2782761317, aqiDataShape)).toBeCloseTo(5.18999529922001e-046, 40);
 });
 
-test('AndersonDarlingEvaluation.uniform() on uniformSynData should be close to 0.1199872754481357.', () => {
+test('ADE.uniform(), KSE.uniform on uniformSynData should be close to 0.1199872754481357 and 0.1835615939079147 respectively.', () => {
 
     let testValues = prepareTestValue(uniformSynData, uniformDataShape, ['uniform']);
 
     expect(AndersonDarlingEvaluation.uniform(testValues[0][0], uniformDataShape)).toBeCloseTo(0.1199872754481357, 10);
 
-    console.log(testValues.length);
+    // console.log(testValues[0].length);
 
-    console.log(testValues[0][1]);
+    // console.log(testValues[0][1]);
 
-    // expect(KolmogorovSmirnov.uniform(testValues[0][1], uniformDataShape)).toBeCloseTo(1);
+    expect(KolmogorovSmirnov.uniform(testValues[0][1], uniformDataShape)).toBeCloseTo(0.1835615939079147, 10);
 });
