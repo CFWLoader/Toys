@@ -2,6 +2,8 @@
 
 import {log, abs, exp, pow, sqrt} from 'mathjs';
 
+import {AD_NORMALITY_TABLE} from './p-value-tables';
+
 /**
  * Calculate AD-Value and KD-Value on transformed and sorted data.
  * @param {Array[]} data 
@@ -102,6 +104,48 @@ class AndersonDarlingEvaluation
         }
 
         return p;
+    }
+
+    static normality(adValue, dataShape)
+    {
+        let n = dataShape.get('validLength');
+
+        let zStar = adValue * (1 + 0.75 / n + 2.25 / (n ** 2));
+
+        let result = 0;
+
+        for(let tuple of AD_NORMALITY_TABLE)
+        {
+            if(zStar <= tuple[0])
+            {
+                result = exp(tuple[1] + tuple[2] * zStar + tuple[3] * zStar**2);
+
+                break;
+            }
+        }
+
+        // Extra calculation in z* <= 0.34 cases.
+        if(result > 0 && zStar <= AD_NORMALITY_TABLE[1][0])
+        {
+            result = 1 - result;
+        }
+
+        // if (zStar <= 0.2) {
+        //     return 1 - Math.exp(-13.436 + 101.14 * zStar - 223.73 * (zStar ** 2));
+        // }
+        // else if (zStar <= 0.34) {
+        //     return 1 - Math.exp(-8.318 + 42.796 * zStar - 59.938 * (zStar ** 2));
+        // }
+        // else if (zStar <= 0.6) {
+        //     return Math.exp(0.9177 - 4.279 * zStar - 1.38 * (zStar ** 2));
+        // }
+        // else if (zStar <= 153.467) {
+        //     return Math.exp(1.2937 - 5.709 * zStar + 0.0186 * (zStar ** 2));
+        // }
+        // else {
+        //     return 0;
+        // }
+        return result;
     }
 };
 

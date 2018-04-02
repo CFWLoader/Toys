@@ -110,8 +110,8 @@ test('Test all on AQI dataset.', () => {
     expect(result[6][0]).toBeCloseTo(14.4191153154662, 5);
 });
 
-test('AndersonDarlingEvaluation.uniform(291.2782761317, dataShape) should be 0.', () => {
-    expect(AndersonDarlingEvaluation.uniform(291.2782761317, aqiDataShape)).toBeCloseTo(5.18999529922001e-046, 40);
+test('AndersonDarlingEvaluation.uniform(291.2782761317, aqiDataShape) should be 0.', () => {
+    expect(AndersonDarlingEvaluation.uniform(291.2782761317, aqiDataShape)).toBe(0);
 });
 
 test('ADE.uniform(), KSE.uniform on uniformSynData should be close to 0.1199872754481357 and 0.1835615939079147 respectively.', () => {
@@ -125,4 +125,13 @@ test('ADE.uniform(), KSE.uniform on uniformSynData should be close to 0.11998727
     // console.log(testValues[0][1]);
 
     expect(KolmogorovSmirnov.uniform(testValues[0][1], uniformDataShape)).toBeCloseTo(0.1835615939079147, 10);
+});
+
+test('AndersonDarlingEvaluation.normality(19.7474369825644, aqiDataShape) should beCloseTo 5.18999529922001e-46.', () => {
+    expect(AndersonDarlingEvaluation.normality(19.7474369825644, aqiDataShape)).toBeCloseTo(5.18999529922001e-46, 57);
+});
+
+
+test('AndersonDarlingEvaluation.normality(1.10149026748664, aqiDataShape) should beCloseTo 0.0068927023396101.', () => {
+    expect(AndersonDarlingEvaluation.normality(1.10149026748664, aqiDataShape)).toBeCloseTo(0.0068927023396101, 10);
 });
