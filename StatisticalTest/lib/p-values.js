@@ -186,7 +186,7 @@ class AndersonDarlingEvaluation
 
         for(let tuple of AD_EXPONENT_TABLE)
         {
-            if(zStar < tuple[0])
+            if(zStar <= tuple[0])
             {
                 pValue = exp(tuple[1] + tuple[2] * zStar + tuple[3] * zStar**2);
 
@@ -219,7 +219,7 @@ class AndersonDarlingEvaluation
         // Determine table according to alpha's value.
         for(let val of AD_GAMMA_TABLE)
         {
-            if(alpha < val[0])
+            if(alpha <= val[0])
             {
                 paramTable = val[1];
 
