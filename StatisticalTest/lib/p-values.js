@@ -2,7 +2,8 @@
 
 import {log, abs, exp, pow, sqrt} from 'mathjs';
 
-import {uniform_g, uniform_gg, AD_NORMALITY_TABLE, AD_EXPONENT_TABLE, AD_GAMMA_TABLE, AD_WEIBULL_TABLE} from './p-value-tables';
+import {uniform_g, uniform_gg, AD_NORMALITY_TABLE, AD_EXPONENT_TABLE, AD_GAMMA_TABLE, AD_WEIBULL_TABLE, 
+    KS_NORMALITY_TABLE, KS_EXPONENT_TABLE, KS_GAMMA_TABLE, KS_WEIBULL_TABLE} from './p-value-tables';
 
 /**
  * Calculate AD-Value and KD-Value on transformed and sorted data.
@@ -71,6 +72,44 @@ function measures(data, dataShape)
     }
 
     return result;
+}
+
+/**
+ * Input an value and calculate corresponding p-value.
+ * @param {Number} param 
+ * @param {Array[]} paramTable 
+ * @returns {Number}
+ */
+function calculatePvalueByTable(param, paramTable)
+{
+    // Edge condition.
+    if(param < paramTable[0][0])
+    {
+        return paramTable[0][1];
+    }
+    
+    let pValue = 0;
+
+    // Linear Interpolation.
+    for(let idx = 1; idx < paramTable.length; ++idx)
+    {
+        if(param < paramTable[idx][0])
+        {
+            pValue = (adValue - paramTable[idx - 1][0])
+            * (paramTable[idx][1] - paramTable[idx - 1][1]) / (paramTable[idx][0] - paramTable[idx - 1][0])
+            + paramTable[idx - 1][1];
+
+            break;
+        }
+    }
+
+    // Edge condition.
+    if(pValue == 0)
+    {
+        pValue = paramTable[paramTable.length - 1][1];
+    }
+
+    return pValue;
 }
 
 /**
@@ -150,6 +189,8 @@ class AndersonDarlingEvaluation
             if(zStar < tuple[0])
             {
                 pValue = exp(tuple[1] + tuple[2] * zStar + tuple[3] * zStar**2);
+
+                break;
             }
         }
 
@@ -186,31 +227,31 @@ class AndersonDarlingEvaluation
             }
         }
 
-        // Edge condition.
-        if(adValue < paramTable[0][0])
-        {
-            return paramTable[0][1];
-        }
+        // // Edge condition.
+        // if(adValue < paramTable[0][0])
+        // {
+        //     return paramTable[0][1];
+        // }
 
-        let pValue = 0;
+        // let pValue = 0;
 
-        for(let idx = 1; idx < paramTable.length; ++idx)
-        {
-            if(adValue < paramTable[idx][0])
-            {
-                pValue = (adValue - paramTable[idx - 1][0])
-                * (paramTable[idx][1] - paramTable[idx - 1][1]) / (paramTable[idx][0] - paramTable[idx - 1][0])
-                + paramTable[idx - 1][1];
-            }
-        }
+        // for(let idx = 1; idx < paramTable.length; ++idx)
+        // {
+        //     if(adValue < paramTable[idx][0])
+        //     {
+        //         pValue = (adValue - paramTable[idx - 1][0])
+        //         * (paramTable[idx][1] - paramTable[idx - 1][1]) / (paramTable[idx][0] - paramTable[idx - 1][0])
+        //         + paramTable[idx - 1][1];
+        //     }
+        // }
 
-        // Edge condition.
-        if(pValue == 0)
-        {
-            pValue = 0.005;
-        }
+        // // Edge condition.
+        // if(pValue == 0)
+        // {
+        //     pValue = 0.005;
+        // }
 
-        return pValue;
+        return calculatePvalueByTable(adValue, paramTable);
     }
 
     /**
@@ -225,33 +266,33 @@ class AndersonDarlingEvaluation
 
         let zStar = adValue * (1 + 0.2 / sqrt(wn));
 
-        // Edge condition.
-        if(zStar < AD_WEIBULL_TABLE[0][0])
-        {
-            return AD_WEIBULL_TABLE[0][1];
-        }
+        // // Edge condition.
+        // if(zStar < AD_WEIBULL_TABLE[0][0])
+        // {
+        //     return AD_WEIBULL_TABLE[0][1];
+        // }
         
-        let pValue = 0;
+        // let pValue = 0;
 
-        let paramTable = AD_WEIBULL_TABLE;
+        // let paramTable = AD_WEIBULL_TABLE;
 
-        for(let idx = 1; idx < paramTable.length; ++idx)
-        {
-            if(adValue < paramTable[idx][0])
-            {
-                pValue = (adValue - paramTable[idx - 1][0])
-                * (paramTable[idx][1] - paramTable[idx - 1][1]) / (paramTable[idx][0] - paramTable[idx - 1][0])
-                + paramTable[idx - 1][1];
-            }
-        }
+        // for(let idx = 1; idx < paramTable.length; ++idx)
+        // {
+        //     if(adValue < paramTable[idx][0])
+        //     {
+        //         pValue = (adValue - paramTable[idx - 1][0])
+        //         * (paramTable[idx][1] - paramTable[idx - 1][1]) / (paramTable[idx][0] - paramTable[idx - 1][0])
+        //         + paramTable[idx - 1][1];
+        //     }
+        // }
 
-        // Edge condition.
-        if(pValue == 0)
-        {
-            pValue = 0.01;
-        }
+        // // Edge condition.
+        // if(pValue == 0)
+        // {
+        //     pValue = 0.01;
+        // }
 
-        return pValue;
+        return calculatePvalueByTable(zStar, AD_WEIBULL_TABLE);
     }
 };
 
@@ -292,40 +333,62 @@ class KolmogorovSmirnov
     }
 
     /**
-     * p-value of Normality.
+     * p-value of (Log)Normality.
      * @param {Number} ksValue 
      * @param {Map} dataShape 
      */
-    static pValueNormal(ksValue, dataShape)
+    static normality(ksValue, dataShape)
     {
-        var ksValue = KolmogorovSmirnov.test(data, transformations.normality);
+        let n = dataShape.get('validLength');
 
-        var n = data.length;
+        let d = ksValue * (sqrt(n) - 0.01 + 0.85 / sqrt(n));
 
-        var d = ksValue * (Math.sqrt(n) - 0.01 + 0.85 / Math.sqrt(n));
+        return calculatePvalueByTable(d, KS_NORMALITY_TABLE);
+    }
 
-        if (d < 0.775) {
-            return "0.15+";
-        }
-        else if (d < 0.819) {
-            // return "0.1~0.15";
-            return (d - 0.775) * (0.1 - 0.15) / (0.819 - 0.775) + 0.15;
-        }
-        else if (d < 0.895) {
-            // return "0.05~0.1";
-            return (d - 0.819) * (0.05 - 0.1) / (0.895 - 0.819) + 0.1;
-        }
-        else if (d < 0.995) {
-            // return "0.025~0.05";
-            return (d - 0.895) * (0.025 - 0.05) / (0.995 - 0.895) + 0.05;
-        }
-        else if (d < 1.035) {
-            // return "0.01~0.025";
-            return (d - 0.995) * (0.01 - 0.025) / (1.035 - 0.995) + 0.025;
-        }
-        else {
-            return "0.01-";
-        }
+    /**
+     * p-value of Exponent.
+     * @param {Number} ksValue 
+     * @param {Map} dataShape 
+     * @returns {Number}
+     */
+    static exponent(ksValue, dataShape)
+    {
+        let wn = dataShape.get('validLength');
+        
+        let d = (ksValue - 0.2 / wn) * (sqrt(wn) + 0.25 + 0.5 / sqrt(wn));
+
+        return calculatePvalueByTable(d, KS_EXPONENT_TABLE);
+    }
+
+    /**
+     * p-value of Gamma.
+     * @param {Number} ksValue 
+     * @param {Map} dataShape 
+     * @returns {Number}
+     */
+    static gamma(ksValue, dataShape)
+    {
+        let wn = dataShape.get('validLength');
+
+        let d = ksValue * (sqrt(wn) + 0.3 / sqrt(wn));
+
+        return calculatePvalueByTable(d, KS_GAMMA_TABLE);
+    }
+
+    /**
+     * p-value of Weibull.
+     * @param {Number} ksValue 
+     * @param {Map} dataShape 
+     * @returns {Number}
+     */
+    static weibull(ksValue, dataShape)
+    {
+        let wn = dataShape.get('validLength');
+
+        let d = sqrt(wn) * ksValue;
+
+        return calculatePvalueByTable(d, KS_WEIBULL_TABLE);
     }
 };
 

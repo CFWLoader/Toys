@@ -76,4 +76,54 @@ export const AD_WEIBULL_TABLE = [
     [1.038, 0.01]
 ];
 
+/**
+ * Table of (Log)Normality in KS's method.
+ * Format: [Threshold, probability]
+ */
+export const KS_NORMALITY_TABLE = [
+    [0.775, 0.15],
+    [0.819, 0.1],
+    [0.895, 0.05],
+    [0.995, 0.025],
+    [1.035, 0.01]
+];
+
+/**
+ * Table of Exponent in KS's method.
+ * Format: [Threshold, probability]
+ */
+export const KS_EXPONENT_TABLE = [
+    [0.926, 0.15],
+    [0.995, 0.1],
+    [1.094, 0.05],
+    [1.184, 0.025],
+    [1.298, 0.01]
+];
+
+/**
+ * Table of Gamma in KS's method.
+ * Format: [Threshold, probability]
+ */
+export const KS_GAMMA_TABLE = [
+    [0.74, 0.25], 
+    [0.78, 0.2],
+    [0.8, 0.15],
+    [0.858, 0.1],
+    [0.928, 0.05],
+    [0.99, 0.025],
+    [1.069, 0.01],
+    [1.13, 0.005]
+];
+
+/**
+ * Table of Weibull in KS's method.
+ * Format: [Threshold, probability]
+ */
+export const KS_WEIBULL_TABLE = [
+    [1.372, 0.1],
+    [1.477, 0.05],
+    [1.557, 0.025],
+    [1.671, 0.01]
+];
+
 export {uniform_g, uniform_gg};
