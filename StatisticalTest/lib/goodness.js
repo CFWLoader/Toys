@@ -13,11 +13,122 @@ import {prepareCalculations} from './prepare-calculations';
 import {measures, preparePvalueCalculations} from './p-values';
 
 /**
+ * Assembly vectors into an array.
+ * @param {Map<String, Number>} dataShape 
+ * @param {Array<String>} availDist 
+ * @param {Array<Array<Number>>} adksValues 
+ * @param {Array<Array<Number>>} pValues 
+ * @param {Map<String, Map<String, Number>>} parameters 
+ * @returns {Array<Map<String, Object>>}
+ */
+function assembleResult(dataShape, availDist, adksValues, pValues, parameters)
+{
+    let numOfDist = availDist.length;
+
+    let result = new Array(numOfDist);
+
+    for(let idx = 0; idx < numOfDist; ++idx)
+    {
+       result[idx] = new Map([
+           ['distName', availDist[idx]],
+           ['pa', pValues[idx][0]],
+           ['pk', pValues[idx][1]],
+           ['a', adksValues[idx][0]],
+           ['k', adksValues[idx][1]],
+           ['params', new Map(dataShape)]
+       ]);
+
+       if(availDist[idx] == 'beta')
+       {
+           result[idx].get('params').set('shape1', parameters.get('beta').get('shape1'));
+           result[idx].get('params').set('shape2', parameters.get('beta').get('shape2'));
+       }
+       else if(availDist[idx] == 'gamma')
+       {
+           result[idx].get('params').set('shape1', parameters.get('gamma').get('shape1'));
+           result[idx].get('params').set('shape2', parameters.get('gamma').get('shape2'));
+       }
+       else if(availDist[idx] == 'weibull')
+       {
+           result[idx].get('params').set('shape1', parameters.get('weibull').get('shape1'));
+           result[idx].get('params').set('shape2', parameters.get('weibull').get('shape2'));
+       }
+    }
+
+    return result;
+}
+
+/**
+ * For mathjs.sort() to compara assembled result.
+ * @param {Map<String, Object>} a 
+ * @param {Map<String, Object>} b 
+ * @returns {Number}
+ */
+function resultComparator(a, b)
+{
+    // p-value from AD's method take priority.
+    let val1 = a.get('pa');
+
+    let val2 = b.get('pa');
+
+    if(Number.isNaN(val1) && Number.isNaN(val2))
+    {
+        return 0;
+    }
+    else if(Number.isNaN(val1))
+    {
+        return 1;
+    }
+    else if(Number.isNaN(val2))
+    {
+        return -1;
+    }
+
+    if(val1 < val2)
+    {
+        return 1;
+    }
+    else if(val1 > val2)
+    {
+        return -1;
+    }
+
+    // Compare p-value from KS's method if their AD's p-values are equal.
+    val1 = a.get('pk');
+
+    val2 = b.get('pk');
+
+    if(Number.isNaN(val1) && Number.isNaN(val2))
+    {
+        return 0;
+    }
+    else if(Number.isNaN(val1))
+    {
+        return 1;
+    }
+    else if(Number.isNaN(val2))
+    {
+        return -1;
+    }
+
+    if(val1 < val2)
+    {
+        return 1;
+    }
+    else if(val1 > val2)
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
  * Accept an array and type of distributions, then return the goodness of fit.
  * Now just only a stub.
- * @param {Array} data 
- * @param {Array} distributions 
- * @returns {Array}
+ * @param {Array<Number>} data 
+ * @param {Array<String>} distributions 
+ * @returns {Array<Map<String, Object>>}
  */
 function goodnessOfFit(data, distributions = null)
 {
@@ -65,7 +176,10 @@ function goodnessOfFit(data, distributions = null)
             pValueCals.get(availDist[idx])[1](adksValues[idx][1]));
     }
 
-    return pValues;
+    // Assemble the report.
+    let result = assembleResult(dataShape, availDist, adksValues, pValues, parameters);
+
+    return mathjs.sort(result, resultComparator);
 }
 
 export {goodnessOfFit};

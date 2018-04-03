@@ -56,9 +56,19 @@ function shape(data)
 
         sigma += val**2;
 
-        tempLog = mathjs.log(val);
+        tempLog = 0;
 
-        logOneMinusSum += mathjs.log(1 - val);
+        // Only positive can be applied.
+        if(val > 0)
+        {
+            tempLog = mathjs.log(val);
+
+            // Only (1 - value) positive.
+            if(val < 1)
+            {
+                logOneMinusSum += mathjs.log(1 - val);
+            }
+        }
 
         logSum += tempLog;
 

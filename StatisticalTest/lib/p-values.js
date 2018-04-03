@@ -461,7 +461,7 @@ function preparePvalueCalculations(distNameList, dataShape, parameters)
         ]);
     }
 
-    if(distSet.has('weibull') && data != null)
+    if(distSet.has('weibull'))
     {
         calculations.set('weibull', [
             (x) => AndersonDarlingEvaluation.weibull(x, dataShape),
