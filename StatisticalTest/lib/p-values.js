@@ -356,7 +356,7 @@ class KolmogorovSmirnov
     {
         let wn = dataShape.get('validLength');
         
-        let d = (ksValue - 0.2 / wn) * (sqrt(wn) + 0.25 + 0.5 / sqrt(wn));
+        let d = (ksValue - 0.2 / wn) * (sqrt(wn) + 0.26 + 0.5 / sqrt(wn));
 
         return calculatePvalueByTable(d, KS_EXPONENT_TABLE);
     }
@@ -372,6 +372,8 @@ class KolmogorovSmirnov
         let wn = dataShape.get('validLength');
 
         let d = ksValue * (sqrt(wn) + 0.3 / sqrt(wn));
+
+        console.log(d);
 
         return calculatePvalueByTable(d, KS_GAMMA_TABLE);
     }
