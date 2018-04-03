@@ -42,7 +42,7 @@ test('shape([1]) should be Map([length: 1, mean:1, sigma: 0, logMean: 0, logOneM
     expect(result.get('min')).toBe(1);
     expect(result.get('max')).toBe(1);
     expect(result.get('mode')).toBe(1);
-    expect(result.get('logOneMinusSum')).toBe(-Infinity);
+    expect(result.get('logOneMinusSum')).toBe(0);
 });
 
 test('shape([1, null]) should be Map([length: 2, mean:1, sigma: 0, logMean: 0, logOneMinusSum: -Inf, logSigma: 0, min: 1, max: 1, mode: 1, validLength: 1, nullIndexes = [1]]).', () => {
@@ -57,7 +57,7 @@ test('shape([1, null]) should be Map([length: 2, mean:1, sigma: 0, logMean: 0, l
     expect(result.get('min')).toBe(1);
     expect(result.get('max')).toBe(1);
     expect(result.get('mode')).toBe(1);
-    expect(result.get('logOneMinusSum')).toBe(-Infinity);
+    expect(result.get('logOneMinusSum')).toBe(0);
     expect(result.get('validLength')).toBe(1);
     expect(result.get('nullIndexes')).toEqual([1]);
 });
