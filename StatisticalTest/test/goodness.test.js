@@ -9,5 +9,9 @@ import {DEFAULT_CONSTRIBUTION_NAME_LIST} from '../lib/constants';
 import {shape} from '../lib/shape';
 
 test('Total', () => {
-    expect(goodnessOfFit(aqiData, DEFAULT_CONSTRIBUTION_NAME_LIST)).toEqual([undefined, undefined, undefined, undefined, undefined]);
+    let result = goodnessOfFit(aqiData, DEFAULT_CONSTRIBUTION_NAME_LIST);
+
+    expect(result.length).toEqual(5);
+
+    console.log(result);
 });

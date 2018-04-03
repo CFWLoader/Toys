@@ -299,7 +299,7 @@ class AndersonDarlingEvaluation
 /**
  * Pack of KS's evaluation of p-value.
  */
-class KolmogorovSmirnov
+class KolmogorovSmirnovEvaluation
 {
     /**
      * p-value of uniform.
@@ -392,4 +392,84 @@ class KolmogorovSmirnov
     }
 };
 
-export{measures, AndersonDarlingEvaluation, KolmogorovSmirnov};
+/**
+ * Prepare calculations of p-value.
+ * @param {Array<String>} distNameList 
+ * @param {Map<String, Number>} dataShape 
+ * @param {Map<String, Map<String, Number>>} parameters 
+ * @return {Map<String, Array<Function>>}
+ */
+function preparePvalueCalculations(distNameList, dataShape, parameters)
+{
+    let calculations = new Map();
+
+    let distSet = new Set(distNameList);
+
+    if(distSet.has('uniform'))
+    {
+        calculations.set('uniform', [
+            (x) => AndersonDarlingEvaluation.uniform(x, dataShape),
+            (x) => KolmogorovSmirnovEvaluation.uniform(x, dataShape) 
+        ]);
+    }
+
+    if(distSet.has('normality'))
+    {
+        calculations.set('normality', [
+            (x) => AndersonDarlingEvaluation.normality(x, dataShape),
+            (x) => KolmogorovSmirnovEvaluation.normality(x, dataShape)
+        ]);
+    }
+
+    if(distSet.has('lognormality'))
+    {
+        calculations.set('lognormality', [
+            (x) => AndersonDarlingEvaluation.normality(x, dataShape),
+            (x) => KolmogorovSmirnovEvaluation.normality(x, dataShape)
+        ]);
+    }
+
+    if(distSet.has('triangle'))
+    {
+        calculations.set('triangle', [
+            (x) => NaN,
+            (x) => NaN
+        ]);
+    }
+
+    if(distSet.has('exponent'))
+    {
+        calculations.set('exponent', [
+            (x) => AndersonDarlingEvaluation.exponent(x, dataShape),
+            (x) => KolmogorovSmirnovEvaluation.exponent(x, dataShape)
+        ]);
+    }
+
+    if(distSet.has('beta'))
+    {
+        calculations.set('beta', [
+            (x) => NaN,
+            (x) => NaN
+        ]);
+    }
+
+    if(distSet.has('gamma'))
+    {
+        calculations.set('gamma', [
+            (x) => AndersonDarlingEvaluation.gamma(x, dataShape, parameters.get('gamma')),
+            (x) => KolmogorovSmirnovEvaluation.gamma(x, dataShape)
+        ]);
+    }
+
+    if(distSet.has('weibull') && data != null)
+    {
+        calculations.set('weibull', [
+            (x) => AndersonDarlingEvaluation.weibull(x, dataShape),
+            (x) => KolmogorovSmirnovEvaluation.weibull(x, dataShape)
+        ]);
+    }
+
+    return calculations;
+}
+
+export{measures, AndersonDarlingEvaluation, KolmogorovSmirnovEvaluation, preparePvalueCalculations};

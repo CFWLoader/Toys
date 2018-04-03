@@ -10,6 +10,8 @@ import {filterDistributions} from './filter-distributions';
 
 import {prepareCalculations} from './prepare-calculations';
 
+import {measures, preparePvalueCalculations} from './p-values';
+
 /**
  * Accept an array and type of distributions, then return the goodness of fit.
  * Now just only a stub.
@@ -31,10 +33,11 @@ function goodnessOfFit(data, distributions = null)
 
     let numOfDist = availDist.length, dataLen = dataShape.get('validLength');
 
-    let calculations = prepareCalculations(dataShape, availDist, data);
+    let {calculations, parameters} = prepareCalculations(dataShape, availDist, data);
 
     let transformedMatrix = availDist.map(() => new Array(dataLen));
 
+    // In the near future, I will merge Pass 2 and 3 into a single Pass for performance.
     for(let dataIdx = 0; dataIdx < dataLen; ++dataIdx)      // Pass 2, T(n) = n * numOfDist.
     {
         for(let calIdx = 0; calIdx < numOfDist; ++calIdx)
@@ -50,9 +53,19 @@ function goodnessOfFit(data, distributions = null)
         sortedTransMat[calIdx] = mathjs.sort(transformedMatrix[calIdx]);
     }
 
-    let result = new Array(numOfDist);
+    let adksValues = measures(sortedTransMat, dataShape);
 
-    return result;
+    let pValueCals = preparePvalueCalculations(availDist, dataShape, parameters);
+
+    let pValues = new Array(numOfDist);
+
+    for(let idx = 0; idx < numOfDist; ++idx)
+    {
+        pValues[idx] = new Array(pValueCals.get(availDist[idx])[0](adksValues[idx][0]), 
+            pValueCals.get(availDist[idx])[1](adksValues[idx][1]));
+    }
+
+    return pValues;
 }
 
 export {goodnessOfFit};

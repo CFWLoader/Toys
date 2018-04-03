@@ -1,6 +1,6 @@
 'use strict';
 
-import {KolmogorovSmirnov} from '../lib/p-values';
+import {KolmogorovSmirnovEvaluation as KolmogorovSmirnov} from '../lib/p-values';
 
 import {sqrt, abs} from 'mathjs';
 

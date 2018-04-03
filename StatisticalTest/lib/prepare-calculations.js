@@ -9,13 +9,15 @@ import * as estimators from './estimators';
  * @param {Map} dataShape 
  * @param {Array} distNameList 
  * @param {Array} data Once weibull required, this arguments is required.
- * @returns {Array}
+ * @returns {{Array, Map}}
  */
 function prepareCalculations(dataShape, distNameList, data = null)
 {
     let distSet = new Set(distNameList);
 
     let calculations = new Array();
+
+    let parameters = new Map();
 
     if(distSet.has('uniform'))
     {
@@ -46,12 +48,16 @@ function prepareCalculations(dataShape, distNameList, data = null)
     {
         let betaParams = estimators.betaParameters(dataShape);
 
+        parameters.set('beta', betaParams);
+
         calculations.push((val) => tranformations.beta(val, betaParams.get('shape1'), betaParams.get('shape2')));
     }
 
     if(distSet.has('gamma'))
     {
         let gammaParams = estimators.gammaParameters(dataShape);
+
+        parameters.set('gamma', gammaParams);
 
         calculations.push((val) => tranformations.gamma(val, gammaParams.get('shape1'), gammaParams.get('shape2')));
     }
@@ -60,10 +66,12 @@ function prepareCalculations(dataShape, distNameList, data = null)
     {
         let weibullParams = estimators.weibullParameters(data);
 
+        parameters.set('weibull', weibullParams);
+
         calculations.push((val) => tranformations.weibull(val, weibullParams.get('shape1'), weibullParams.get('shape2')));
     }
 
-    return calculations;
+    return {calculations, parameters};
 }
 
 export {prepareCalculations}

@@ -16,7 +16,7 @@ allDistributions.push('weibull');
 
 test('prepareCalculations(shape([1, 2]), [\'uniform\'])[0](0.5) should be 0, [0](1.5) should be 0.5.', () => {
 
-    let calculations = prepareCalculations(shape([1, 2]), ['uniform']);
+    let {calculations, params} = prepareCalculations(shape([1, 2]), ['uniform']);
 
     expect(calculations[0](0.5)).toBe(0);
     expect(calculations[0](1.5)).toBe(0.5);
@@ -24,7 +24,7 @@ test('prepareCalculations(shape([1, 2]), [\'uniform\'])[0](0.5) should be 0, [0]
 
 test('prepareCalculations(shape([1, 2, 3]), [\'normality\'])[0](0.5) should be 0.03309629, [0](1.5) should be 0.2701457.', () => {
 
-    let calculations = prepareCalculations(shape([1, 2, 3]), ['normality']);
+    let {calculations, params} = prepareCalculations(shape([1, 2, 3]), ['normality']);
     expect(calculations[0](0.5)).toBeCloseTo(0.03309629, 6);
     expect(calculations[0](1.5)).toBeCloseTo(0.2701457, 6);
 });

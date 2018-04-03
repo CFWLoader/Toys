@@ -1,6 +1,6 @@
 'use strict';
 
-import {measures, AndersonDarlingEvaluation, KolmogorovSmirnov} from '../lib/p-values';
+import {measures, AndersonDarlingEvaluation, KolmogorovSmirnovEvaluation as KolmogorovSmirnov} from '../lib/p-values';
 
 import {aqiData, uniformSynData} from './test-datasets';
 
@@ -43,7 +43,7 @@ function prepareTestValue(data, dataShape, distList)
 
     let numOfDist = availDist.length, dataLen = dataShape.get('validLength');
 
-    let calculations = prepareCalculations(dataShape, availDist, data);
+    let {calculations, parameters} = prepareCalculations(dataShape, availDist, data);
 
     let transformedMatrix = availDist.map(() => new Array(dataLen));
 
