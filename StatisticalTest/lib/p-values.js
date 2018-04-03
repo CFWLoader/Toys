@@ -373,8 +373,6 @@ class KolmogorovSmirnov
 
         let d = ksValue * (sqrt(wn) + 0.3 / sqrt(wn));
 
-        console.log(d);
-
         return calculatePvalueByTable(d, KS_GAMMA_TABLE);
     }
 
