@@ -39,3 +39,7 @@
 # cmake
 */CMakeFiles/
 */CMakeCache.txt
+
+*.vscode
+
+*.ipynb_checkpoints
